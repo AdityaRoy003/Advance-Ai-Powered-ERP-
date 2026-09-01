@@ -46,14 +46,21 @@ export async function seedDefaultInstitution(): Promise<void> {
 
     // Migrate orphaned users (no institutionId) to the default institution
     if (defaultInstitution) {
+      // Step 1: unset any empty-string institutionId values so they become null
+      // (empty string cannot be cast to ObjectId and would throw)
+      await User.updateMany(
+        { institutionId: '' },
+        { $unset: { institutionId: '' } }
+      ).catch(() => { /* ignore if field doesn't exist */ });
+
+      // Step 2: assign the default institution to all users that have no institutionId
       const migrated = await User.updateMany(
         {
           $or: [
             { institutionId: { $exists: false } },
-            { institutionId: null },
-            { institutionId: '' }
+            { institutionId: null }
           ],
-          // Don't assign SUPER_ADMIN to any institution (they're platform-level)
+          // SUPER_ADMIN is platform-level — don't tie them to any institution
           role: { $ne: 'SUPER_ADMIN' }
         },
         { $set: { institutionId: defaultInstitution._id } }
