@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: #f8fafc;
+    --foreground: #0f172a;
+    --card: #ffffff;
+    --card-foreground: #0f172a;
+    --primary: #4f46e5;
+    --primary-foreground: #ffffff;
+    --secondary: #f1f5f9;
+    --secondary-foreground: #0f172a;
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
+    --border: #e2e8f0;
+    --accent: #2563eb;
+    --accent-glow: rgba(37, 99, 235, 0.15);
+  }
+
+  .dark {
+    --background: #090d16;
+    --foreground: #f8fafc;
+    --card: #111827;
+    --card-foreground: #f8fafc;
+    --primary: #6366f1;
+    --primary-foreground: #ffffff;
+    --secondary: #1f2937;
+    --secondary-foreground: #f8fafc;
+    --muted: #1f2937;
+    --muted-foreground: #9ca3af;
+    --border: #374151;
+    --accent: #3b82f6;
+    --accent-glow: rgba(59, 130, 246, 0.25);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom Utilities for Premium Glow/Animations */
+.glass {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dark .glass {
+  background: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glow-card {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.glow-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle 200px at var(--mouse-x, 0) var(--mouse-y, 0), var(--accent-glow), transparent 80%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.glow-card:hover::after {
+  opacity: 1;
+}
+
+.neon-border-blue {
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.2), 0 0 3px rgba(59, 130, 246, 0.4);
+}
+
+.neon-border-indigo {
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.2), 0 0 3px rgba(99, 102, 241, 0.4);
+}
+
+.neon-text-blue {
+  text-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.5);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(55, 65, 81, 0.8);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.8);
+}
+
+/* Shimmer Loader */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+.dark .shimmer {
+  background: linear-gradient(90deg, rgba(17,24,39,0.5) 25%, rgba(31,41,55,0.8) 50%, rgba(17,24,39,0.5) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Accessibility Modes */
+.high-contrast-mode {
+  filter: contrast(125%) brightness(105%);
+}
+
+.high-contrast-mode .dark {
+  --background: #000000;
+  --card: #0a0a0a;
+  --border: #525252;
+}
+
+.large-text-mode {
+  font-size: 115% !important;
+}
+
+.reduced-motion-mode * {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+.enhanced-focus-mode *:focus-visible {
+  outline: 3px solid #14b8a6 !important;
+  outline-offset: 2px !important;
+}
+

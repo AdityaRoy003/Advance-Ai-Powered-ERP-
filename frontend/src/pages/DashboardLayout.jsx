@@ -1,0 +1,879 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate, Link, Outlet, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { useSocket } from '../context/SocketContext';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  FaUser, FaBuilding, FaCreditCard, FaCalendarCheck, 
+  FaFileSignature, FaRobot, FaLock, FaChartBar, FaComments, 
+  FaBell, FaSignOutAlt, FaSun, FaMoon, FaBars, FaChevronLeft, 
+  FaExchangeAlt, FaChevronRight, FaSearch, FaTimes, FaInbox,
+  FaFileAlt, FaCheck, FaProjectDiagram, FaIdCard, FaHistory, FaTools,
+  FaGraduationCap, FaDollarSign, FaBus, FaFilter,
+  FaUserGraduate, FaBook, FaFileInvoiceDollar, FaBullhorn,
+  FaShieldAlt, FaCog, FaExclamationTriangle, FaCheckCircle,
+  FaInfoCircle, FaStream, FaWifi, FaBriefcase, FaPhone, FaKey,
+  FaMicrophone, FaCubes, FaBookOpen, FaHeartbeat, FaFlask, FaTrophy, FaUserFriends, FaAward,
+  FaUtensils, FaLeaf, FaWrench, FaBoxes, FaCogs, FaPuzzlePiece, FaCode, FaCrown, FaLaptopCode, FaUserShield, FaGlobe, FaUniversalAccess
+} from 'react-icons/fa';
+import { useLanguage } from '../context/LanguageContext';
+import { useAccessibility } from '../context/AccessibilityContext';
+import AIAssistantWidget from '../components/AIAssistantWidget';
+
+// ─── NOTIFICATION CATEGORIES ───
+const NOTIF_CATEGORIES = ['All', 'Academic', 'Finance', 'Transport', 'Hostel', 'Security', 'System'];
+
+const SAMPLE_NOTIFICATIONS = [
+  { id: 'n1', category: 'Finance', icon: '🔴', title: 'Fee Payment Overdue', body: 'Semester 4 tuition fee of ₹42,000 is due by Sept 15, 2026.', time: '2h ago', read: false, color: 'rose' },
+  { id: 'n2', category: 'Academic', icon: '🟡', title: 'Assignment Due Tomorrow', body: 'AVL Tree Lab Implementation must be submitted by 11:59 PM.', time: '5h ago', read: false, color: 'amber' },
+  { id: 'n3', category: 'Academic', icon: '🟢', title: 'Leave Request Approved', body: 'Your leave application PL-4921 has been approved by the Class Coordinator.', time: 'Yesterday', read: true, color: 'emerald' },
+  { id: 'n4', category: 'Academic', icon: '🔵', title: 'New Announcement Posted', body: 'Mid-Term Examination Schedule has been published by the Principal.', time: '2 days ago', read: true, color: 'blue' },
+  { id: 'n5', category: 'System', icon: '🟣', title: 'AI Report Ready', body: 'Class Performance Analysis Report for August 2026 is now available.', time: '3 days ago', read: true, color: 'purple' },
+  { id: 'n6', category: 'Transport', icon: '🔵', title: 'Bus Route Change', body: 'Bus #12 will use alternate Gate 3 route tomorrow due to campus event.', time: '1 day ago', read: false, color: 'sky' },
+  { id: 'n7', category: 'Security', icon: '🔴', title: 'New Login Detected', body: 'Your account was accessed from a new device: Chrome on Windows 11.', time: '3h ago', read: false, color: 'rose' },
+  { id: 'n8', category: 'Hostel', icon: '🟡', title: 'Hostel Maintenance Notice', body: 'Block B water supply interrupted 8-10 AM tomorrow for pipe repair.', time: '4h ago', read: true, color: 'amber' }
+];
+
+// ─── GLOBAL SEARCH ITEMS (role-aware database items) ───
+const buildSearchItems = (userRole) => {
+  const base = [
+    { type: 'Student', title: 'Aditya Roy', desc: 'CSE • Semester 4 • CGPA: 8.43', link: '/dashboard/student', icon: '🎓' },
+    { type: 'Student', title: 'Ananya Mehta', desc: 'ECE • Semester 2 • CGPA: 9.01', link: '/dashboard/student', icon: '🎓' },
+    { type: 'Teacher', title: 'Dr. Priya Nair', desc: 'ECE • DBMS Faculty Lead', link: '/dashboard/teacher', icon: '👨‍🏫' },
+    { type: 'Course', title: 'Data Structures & Algorithms (CS301)', desc: 'CSE • 4 Credits • Semester 4', link: '/dashboard/courses', icon: '📚' },
+    { type: 'Course', title: 'DBMS (CS302)', desc: 'CSE • 3 Credits • Semester 4', link: '/dashboard/courses', icon: '📚' },
+    { type: 'Document', title: 'IT Security Policy v3.2.pdf', desc: 'System Config • 2.4 MB • All Access', link: '/dashboard/library', icon: '📄' },
+    { type: 'Announcement', title: 'Mid-Term Exam Schedule Published', desc: 'Posted by Principal Office • 2 days ago', link: '/dashboard/student', icon: '📢' },
+    { type: 'Fee Record', title: 'Invoice #EDV-2026-9081', desc: 'Aditya Roy • Semester 4 • ₹42,000 Due', link: '/dashboard/finance', icon: '💳' },
+    { type: 'Library Book', title: 'Introduction to Algorithms (CLRS)', desc: 'Available: 3 copies • CS Section', link: '/dashboard/library', icon: '📖' }
+  ];
+  if (userRole === 'STUDENT' || userRole === 'PARENT') {
+    return base.filter(item => !['Fee Record', 'System Config'].includes(item.type));
+  }
+  return base;
+};
+
+export default function DashboardLayout() {
+  const { user, logout, switchRole } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const { notifications, markAllAsRead, dismissNotification, addNotification } = useSocket();
+  const { currentLang, changeLanguage, languages } = useLanguage();
+  const { 
+    highContrast, toggleHighContrast, 
+    largeText, toggleLargeText, 
+    reducedMotion, toggleReducedMotion, 
+    focusIndicators, toggleFocusIndicators 
+  } = useAccessibility();
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifFilter, setNotifFilter] = useState('All');
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showA11yModal, setShowA11yModal] = useState(false);
+
+  // Global Ctrl+K Search
+  const [showGlobalSearch, setShowGlobalSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchCategory, setSearchCategory] = useState('All');
+
+  const searchItems = buildSearchItems(user?.role);
+  const searchCategories = ['All', 'Student', 'Teacher', 'Course', 'Document', 'Announcement', 'Fee Record', 'Library Book'];
+
+  // Ctrl+K listener
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        setShowGlobalSearch(prev => !prev);
+        setSearchQuery('');
+        setSearchResults([]);
+      }
+      if (e.key === 'Escape') {
+        setShowGlobalSearch(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Search logic
+  useEffect(() => {
+    if (!searchQuery.trim()) { setSearchResults([]); return; }
+    const q = searchQuery.toLowerCase();
+    let filtered = searchItems.filter(item =>
+      item.title.toLowerCase().includes(q) ||
+      item.type.toLowerCase().includes(q) ||
+      item.desc.toLowerCase().includes(q)
+    );
+    if (searchCategory !== 'All') {
+      filtered = filtered.filter(item => item.type === searchCategory);
+    }
+    setSearchResults(filtered);
+  }, [searchQuery, searchCategory]);
+
+  if (!user) return null;
+
+  // Real-time notification counts & category filtering
+  const allNotifs = Array.isArray(notifications) ? notifications : [];
+  const filteredNotifs = notifFilter === 'All' ? allNotifs : allNotifs.filter(n => n.category === notifFilter);
+  const unreadCount = allNotifs.filter(n => !n.read).length;
+
+  const markAllRead = () => {
+    markAllAsRead();
+  };
+
+  const dismissNotif = (id) => {
+    dismissNotification(id);
+  };
+
+  // Sidebar dynamic navigation configuration strictly filtered by role
+  const getSidebarMenu = () => {
+    const role = user.role?.toUpperCase() || 'EMPLOYEE';
+    switch (role) {
+      case 'SUPER_ADMIN':
+        return [
+          { name: 'Super Admin HQ', path: '/dashboard/super_admin', icon: <FaChartBar /> },
+          { name: 'Executive Command HQ', path: '/dashboard/executive', icon: <FaCrown /> },
+          { name: 'Institutions (Multi-Tenant)', path: '/dashboard/institutions', icon: <FaBuilding /> },
+          { name: 'Autonomous Workflows', path: '/dashboard/workflows', icon: <FaCogs /> },
+          { name: 'Plugins & Integrations', path: '/dashboard/plugins', icon: <FaPuzzlePiece /> },
+          { name: 'Developer Portal & APIs', path: '/dashboard/developer', icon: <FaCode /> },
+          { name: 'IT Ops & MLOps Registry', path: '/dashboard/it-ops', icon: <FaLaptopCode /> },
+          { name: 'AI Security Firewall', path: '/dashboard/ai-firewall', icon: <FaLock /> },
+          { name: 'SIEM Cybersecurity', path: '/dashboard/siem', icon: <FaShieldAlt /> },
+          { name: 'Audit Timeline & Logs', path: '/dashboard/admin-audits', icon: <FaHistory /> },
+          { name: 'Blockchain Notary Vault', path: '/dashboard/vault', icon: <FaLock /> },
+          { name: 'Privacy Governance', path: '/dashboard/privacy', icon: <FaUserShield /> },
+          { name: 'Global Analytics', path: '/dashboard/analytics', icon: <FaChartBar /> },
+          { name: 'Voice & AI Gateway', path: '/dashboard/ai', icon: <FaRobot /> },
+          { name: 'Live Chat', path: '/dashboard/chat', icon: <FaComments /> }
+        ];
+
+      case 'ADMIN':
+        return [
+          { name: 'Admin Dashboard', path: '/dashboard/admin', icon: <FaChartBar /> },
+          { name: 'Executive Command HQ', path: '/dashboard/executive', icon: <FaCrown /> },
+          { name: '3D Digital Twin Map', path: '/dashboard/digital-twin', icon: <FaCubes /> },
+          { name: 'Smart Campus IoT', path: '/dashboard/iot', icon: <FaWifi /> },
+          { name: 'Green Sustainability', path: '/dashboard/sustainability', icon: <FaLeaf /> },
+          { name: 'Smart Mess & Cafeteria', path: '/dashboard/mess', icon: <FaUtensils /> },
+          { name: 'Facility & Maintenance', path: '/dashboard/maintenance', icon: <FaWrench /> },
+          { name: 'Inventory & Procurement', path: '/dashboard/inventory', icon: <FaBoxes /> },
+          { name: 'Autonomous Workflows', path: '/dashboard/workflows', icon: <FaCogs /> },
+          { name: 'Accreditation & OBE', path: '/dashboard/accreditation', icon: <FaAward /> },
+          { name: 'Campus Attendance', path: '/dashboard/attendance', icon: <FaCalendarCheck /> },
+          { name: 'Exams & Schedules', path: '/dashboard/exams', icon: <FaFileAlt /> },
+          { name: 'Finance Control', path: '/dashboard/finance', icon: <FaCreditCard /> },
+          { name: 'Campus Health & Safety', path: '/dashboard/health', icon: <FaHeartbeat /> },
+          { name: 'Hostel System', path: '/dashboard/hostel', icon: <FaBuilding /> },
+          { name: 'Transport System', path: '/dashboard/transport', icon: <FaTools /> },
+          { name: 'Library System', path: '/dashboard/library', icon: <FaBookOpen /> },
+          { name: 'Leave Approvals', path: '/dashboard/approvals', icon: <FaFileSignature /> },
+          { name: 'Live Chat', path: '/dashboard/chat', icon: <FaComments /> }
+        ];
+
+      case 'CYBER_SECURITY_OFFICER':
+      case 'CYBER_SECURITY':
+      case 'CYBERSECURITY':
+        return [
+          { name: 'Security Command HQ', path: '/dashboard/cybersecurity', icon: <FaShieldAlt /> },
+          { name: 'SIEM SOC Operations', path: '/dashboard/siem', icon: <FaLock /> },
+          { name: 'AI Security Firewall', path: '/dashboard/ai-firewall', icon: <FaShieldAlt /> },
+          { name: 'Privacy Governance', path: '/dashboard/privacy', icon: <FaUserShield /> },
+          { name: 'Audit Trail & Timeline', path: '/dashboard/admin-audits', icon: <FaHistory /> },
+          { name: 'Live Chat', path: '/dashboard/chat', icon: <FaComments /> }
+        ];
+
+      case 'FINANCE_OFFICER':
+      case 'FINANCE':
+        return [
+          { name: 'Finance Officer HQ', path: '/dashboard/finance_officer', icon: <FaDollarSign /> },
+          { name: 'Fee Structures & Invoices', path: '/dashboard/finance', icon: <FaFileInvoiceDollar /> },
+          { name: 'Procurement Requests', path: '/dashboard/inventory', icon: <FaBoxes /> },
+          { name: 'Financial Analytics', path: '/dashboard/analytics', icon: <FaChartBar /> },
+          { name: 'Payment Approvals', path: '/dashboard/approvals', icon: <FaFileSignature /> },
+          { name: 'Live Chat', path: '/dashboard/chat', icon: <FaComments /> }
+        ];
+
+      case 'HR_MANAGER':
+      case 'HR':
+        return [
+          { name: 'HR Operations HQ', path: '/dashboard/hr', icon: <FaUserGraduate /> },
+          { name: 'Employee Directory', path: '/dashboard/hr', icon: <FaUser /> },
+          { name: 'Staff Attendance', path: '/dashboard/attendance', icon: <FaCalendarCheck /> },
+          { name: 'Leave Workflow', path: '/dashboard/approvals', icon: <FaFileSignature /> },
+          { name: 'Live Chat', path: '/dashboard/chat', icon: <FaComments /> }
+        ];
+
+      case 'PLACEMENT_OFFICER':
+      case 'PLACEMENT':
+        return [
+          { name: 'Placement Operations HQ', path: '/dashboard/placement', icon: <FaBriefcase /> },
+          { name: 'Career Intelligence AI', path: '/dashboard/career-ai', icon: <FaBriefcase /> },
+          { name: 'Hackathon & Innovation Hub', path: '/dashboard/hackathons', icon: <FaTrophy /> },
+          { name: 'Student Portfolios', path: '/dashboard/portfolio', icon: <FaAward /> },
+          { name: 'Campus Social Feed', path: '/dashboard/community', icon: <FaComments /> },
+          { name: 'Live Chat', path: '/dashboard/chat', icon: <FaComments /> }
+        ];
+
+      case 'TRANSPORT_MANAGER':
+      case 'TRANSPORT':
+        return [
+          { name: 'Fleet Operations HQ', path: '/dashboard/transport_manager', icon: <FaBus /> },
+          { name: 'Live GPS Bus Tracking', path: '/dashboard/transport', icon: <FaTools /> },
+          { name: 'Vehicle Maintenance', path: '/dashboard/maintenance', icon: <FaWrench /> },
+          { name: 'Live Chat', path: '/dashboard/chat', icon: <FaComments /> }
+        ];
+
+      case 'LIBRARIAN':
+        return [
+          { name: 'Library Operations HQ', path: '/dashboard/librarian', icon: <FaBook /> },
+          { name: 'Catalog & Digital Books', path: '/dashboard/library', icon: <FaBookOpen /> },
+          { name: 'Book Inventory', path: '/dashboard/inventory', icon: <FaBoxes /> },
+          { name: 'Live Chat', path: '/dashboard/chat', icon: <FaComments /> }
+        ];
+
+      case 'RECEPTIONIST':
+        return [
+          { name: 'Reception Desk HQ', path: '/dashboard/receptionist', icon: <FaPhone /> },
+          { name: 'Visitor Passes & Inquiries', path: '/dashboard/receptionist', icon: <FaIdCard /> },
+          { name: 'Live Chat', path: '/dashboard/chat', icon: <FaComments /> }
+        ];
+
+      case 'TEACHER':
+      case 'FACULTY':
+        return [
+          { name: 'Faculty Dashboard', path: '/dashboard/teacher', icon: <FaChartBar /> },
+          { name: 'LMS & Lesson Plans', path: '/dashboard/lms', icon: <FaBookOpen /> },
+          { name: 'Classroom Attendance', path: '/dashboard/attendance', icon: <FaCalendarCheck /> },
+          { name: 'Exams & Grading', path: '/dashboard/exams', icon: <FaFileAlt /> },
+          { name: 'Student Success AI', path: '/dashboard/student-success', icon: <FaHeartbeat /> },
+          { name: 'Mentorship Hub', path: '/dashboard/mentorship', icon: <FaUserFriends /> },
+          { name: 'Campus Guilds & Clubs', path: '/dashboard/community', icon: <FaComments /> },
+          { name: 'Smart Mess Menu', path: '/dashboard/mess', icon: <FaUtensils /> },
+          { name: 'Facility Ticket', path: '/dashboard/maintenance', icon: <FaWrench /> },
+          { name: 'Research & Grants', path: '/dashboard/research', icon: <FaFlask /> },
+          { name: 'Accreditation & OBE', path: '/dashboard/accreditation', icon: <FaAward /> },
+          { name: 'AI Teaching Suite', path: '/dashboard/ai', icon: <FaRobot /> },
+          { name: 'Voice ERP Assistant', path: '/dashboard/voice-vision', icon: <FaMicrophone /> },
+          { name: 'Live Chat', path: '/dashboard/chat', icon: <FaComments /> }
+        ];
+
+      case 'STUDENT':
+        return [
+          { name: 'Student Dashboard', path: '/dashboard/student', icon: <FaChartBar /> },
+          { name: 'LMS & Video Classes', path: '/dashboard/lms', icon: <FaBookOpen /> },
+          { name: 'Achievements & Badges', path: '/dashboard/gamification', icon: <FaTrophy /> },
+          { name: 'Campus Social Feed', path: '/dashboard/community', icon: <FaComments /> },
+          { name: 'Smart Mess & Tokens', path: '/dashboard/mess', icon: <FaUtensils /> },
+          { name: 'My Attendance', path: '/dashboard/attendance', icon: <FaCalendarCheck /> },
+          { name: 'Exams & Grades', path: '/dashboard/exams', icon: <FaFileAlt /> },
+          { name: 'Career Intelligence AI', path: '/dashboard/career-ai', icon: <FaBriefcase /> },
+          { name: 'Hackathons & Teams', path: '/dashboard/hackathons', icon: <FaTrophy /> },
+          { name: 'Mentorship Booking', path: '/dashboard/mentorship', icon: <FaUserFriends /> },
+          { name: 'Blockchain Vault', path: '/dashboard/vault', icon: <FaLock /> },
+          { name: 'Public Portfolio', path: '/dashboard/portfolio', icon: <FaAward /> },
+          { name: '3D Campus Map', path: '/dashboard/digital-twin', icon: <FaCubes /> },
+          { name: 'Smart Campus IoT', path: '/dashboard/iot', icon: <FaWifi /> },
+          { name: 'Sustainability Impact', path: '/dashboard/sustainability', icon: <FaLeaf /> },
+          { name: 'Maintenance Request', path: '/dashboard/maintenance', icon: <FaWrench /> },
+          { name: 'Privacy Center', path: '/dashboard/privacy', icon: <FaUserShield /> },
+          { name: 'My Fees & Payments', path: '/dashboard/finance', icon: <FaCreditCard /> },
+          { name: 'Library & Hostel', path: '/dashboard/library', icon: <FaBuilding /> },
+          { name: 'Health Clinic', path: '/dashboard/health', icon: <FaHeartbeat /> },
+          { name: 'AI Tutor & Voice', path: '/dashboard/ai', icon: <FaRobot /> },
+          { name: 'Live Chat', path: '/dashboard/chat', icon: <FaComments /> }
+        ];
+
+      case 'PARENT':
+        return [
+          { name: 'Parent Portal', path: '/dashboard/parent', icon: <FaChartBar /> },
+          { name: 'Ward Attendance', path: '/dashboard/attendance', icon: <FaCalendarCheck /> },
+          { name: 'Ward Academic Grades', path: '/dashboard/exams', icon: <FaFileAlt /> },
+          { name: 'Fee Payments', path: '/dashboard/finance', icon: <FaCreditCard /> },
+          { name: 'Mess & Nutrition Log', path: '/dashboard/mess', icon: <FaUtensils /> },
+          { name: 'Bus Tracking', path: '/dashboard/transport', icon: <FaBus /> },
+          { name: 'Privacy Preferences', path: '/dashboard/privacy', icon: <FaUserShield /> },
+          { name: 'Teacher Chat & PTM', path: '/dashboard/chat', icon: <FaComments /> }
+        ];
+
+      case 'EMPLOYEE':
+      default:
+        return [
+          { name: 'Employee Dashboard', path: '/dashboard/employee', icon: <FaChartBar /> },
+          { name: 'My Profile', path: '/dashboard/profile', icon: <FaUser /> },
+          { name: 'My Attendance', path: '/dashboard/attendance', icon: <FaCalendarCheck /> },
+          { name: 'Smart Mess Access', path: '/dashboard/mess', icon: <FaUtensils /> },
+          { name: 'Facility Ticket', path: '/dashboard/maintenance', icon: <FaWrench /> },
+          { name: 'Leave Workflow', path: '/dashboard/approvals', icon: <FaFileSignature /> },
+          { name: 'Live Chat', path: '/dashboard/chat', icon: <FaComments /> }
+        ];
+    }
+  };
+
+  const isSuperAdmin = Boolean(
+    user?.originalRole?.toUpperCase() === 'SUPER_ADMIN' || 
+    user?.role?.toUpperCase() === 'SUPER_ADMIN' || 
+    user?.email?.toLowerCase() === 'superadmin@eduverse.com'
+  );
+  const isImpersonating = isSuperAdmin && user?.role?.toUpperCase() !== 'SUPER_ADMIN';
+
+  const handleSignOut = () => { logout(); navigate('/login'); };
+  const handleReturnToSuperAdmin = () => {
+    switchRole('SUPER_ADMIN');
+    navigate('/dashboard/super_admin');
+  };
+  const handleRoleChange = (e) => {
+    const r = e.target.value;
+    switchRole(r);
+    const roleRoutes = {
+      SUPER_ADMIN: '/dashboard/super_admin',
+      ADMIN: '/dashboard/admin',
+      CYBER_SECURITY_OFFICER: '/dashboard/cybersecurity',
+      FINANCE_OFFICER: '/dashboard/finance_officer',
+      HR_MANAGER: '/dashboard/hr',
+      PLACEMENT_OFFICER: '/dashboard/placement',
+      TRANSPORT_MANAGER: '/dashboard/transport_manager',
+      LIBRARIAN: '/dashboard/librarian',
+      RECEPTIONIST: '/dashboard/receptionist',
+      TEACHER: '/dashboard/teacher',
+      STUDENT: '/dashboard/student',
+      PARENT: '/dashboard/parent',
+      EMPLOYEE: '/dashboard/employee'
+    };
+    navigate(roleRoutes[r] || `/dashboard/${r.toLowerCase()}`);
+  };
+
+  const menuItems = getSidebarMenu();
+  const activePath = location.pathname;
+
+  return (
+    <div className={`min-h-screen flex ${theme === 'dark' ? 'bg-[#090d16] text-slate-100' : 'bg-slate-50 text-slate-900'} transition-all duration-300`}>
+
+      {/* ─── SIDEBAR ─── */}
+      <motion.aside 
+        animate={{ width: sidebarOpen ? 280 : 80 }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        className="hidden md:flex flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827]/70 backdrop-blur-sm sticky top-0 h-screen overflow-y-auto z-40"
+      >
+        <div className="p-5 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
+          <Link to="/" className="flex items-center gap-3 overflow-hidden">
+            <div className="bg-indigo-600 p-2.5 rounded-xl text-white shadow-lg shadow-indigo-600/30">
+              <FaRobot className="text-lg" />
+            </div>
+            {sidebarOpen && (
+              <span className="font-extrabold text-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent truncate">
+                EduVerse ERP
+              </span>
+            )}
+          </Link>
+          <button 
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+          >
+            {sidebarOpen ? <FaChevronLeft size={12} /> : <FaChevronRight size={12} />}
+          </button>
+        </div>
+
+        <div className="p-4 flex flex-col gap-1.5 flex-1">
+          {sidebarOpen && (
+            <span className="text-xxs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-2 mb-2">
+              Navigation Menu
+            </span>
+          )}
+          {menuItems.map((item) => {
+            const isActive = activePath === item.path;
+            return (
+              <Link 
+                key={item.path} 
+                to={item.path}
+                className={`flex items-center gap-3.5 px-3 py-3 rounded-xl font-semibold transition ${
+                  isActive 
+                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25' 
+                    : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60'
+                }`}
+              >
+                <span className="text-lg">{item.icon}</span>
+                {sidebarOpen && <span className="text-sm truncate">{item.name}</span>}
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Ctrl+K hint in sidebar */}
+        {sidebarOpen && (
+          <div className="p-4 border-t border-slate-800">
+            <button 
+              onClick={() => setShowGlobalSearch(true)}
+              className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 text-xs font-semibold hover:border-indigo-500/40 transition"
+            >
+              <FaSearch size={11} />
+              <span className="flex-1 text-left">Global Search…</span>
+              <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-xxs font-mono text-slate-500">⌘K</kbd>
+            </button>
+          </div>
+        )}
+      </motion.aside>
+
+      {/* ─── MAIN CONTAINER ─── */}
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+        
+        {/* ─── TOP BAR ─── */}
+        <header className="sticky top-0 z-30 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-[#090d16]/80 backdrop-blur-md px-6 py-4 flex items-center justify-between shadow-sm gap-4">
+          
+          {/* Left: Hamburger + Search trigger */}
+          <div className="flex items-center gap-4 flex-1 max-w-md">
+            <button 
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="md:hidden p-2 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500"
+            >
+              <FaBars />
+            </button>
+
+            {/* Global Search Trigger Bar */}
+            <button
+              onClick={() => setShowGlobalSearch(true)}
+              className="flex items-center gap-3 w-full pl-4 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 hover:border-indigo-500/40 transition font-semibold text-xs text-slate-400 text-left"
+            >
+              <FaSearch className="text-slate-400" size={13} />
+              <span className="flex-1">Search anything… students, fees, courses, books</span>
+              <kbd className="px-2 py-0.5 rounded bg-slate-800 text-xxs font-mono text-slate-500">Ctrl+K</kbd>
+            </button>
+          </div>
+
+          {/* Right: Actions */}
+          <div className="flex items-center gap-3">
+            
+            {/* Role Switcher (Super Admin) / Role Badge */}
+            {isSuperAdmin ? (
+              <div className="flex items-center gap-2">
+                {isImpersonating && (
+                  <button
+                    onClick={handleReturnToSuperAdmin}
+                    className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-xs font-bold transition shadow-sm animate-pulse"
+                    title="Exit preview mode and return to Super Admin HQ"
+                  >
+                    <span>↩</span>
+                    <span className="hidden sm:inline">Return to Super Admin</span>
+                    <span className="sm:hidden">Exit</span>
+                  </button>
+                )}
+                <div className={`px-3 py-1.5 rounded-xl flex items-center gap-2 text-xxs font-sans transition ${isImpersonating ? 'bg-amber-500/10 border border-amber-500/30 text-amber-300' : 'bg-indigo-600/10 border border-indigo-500/20 text-indigo-400'}`}>
+                  <FaExchangeAlt className={isImpersonating ? 'text-amber-400' : 'text-indigo-400'} />
+                  <select 
+                    value={user.role} 
+                    onChange={handleRoleChange}
+                    className={`bg-transparent border-none font-bold focus:outline-none cursor-pointer text-xs ${isImpersonating ? 'text-amber-300' : 'text-indigo-400'}`}
+                  >
+                    <option value="SUPER_ADMIN" className="bg-[#111827] text-white">👑 Super Admin HQ</option>
+                    <option value="ADMIN" className="bg-[#111827] text-white">🏛️ Campus Administrator</option>
+                    <option value="CYBER_SECURITY_OFFICER" className="bg-[#111827] text-white">🛡️ Cyber Security Officer</option>
+                    <option value="FINANCE_OFFICER" className="bg-[#111827] text-white">💰 Finance Officer</option>
+                    <option value="HR_MANAGER" className="bg-[#111827] text-white">👥 HR Manager</option>
+                    <option value="PLACEMENT_OFFICER" className="bg-[#111827] text-white">💼 Placement Officer</option>
+                    <option value="TRANSPORT_MANAGER" className="bg-[#111827] text-white">🚌 Transport Manager</option>
+                    <option value="LIBRARIAN" className="bg-[#111827] text-white">📚 Librarian</option>
+                    <option value="RECEPTIONIST" className="bg-[#111827] text-white">🛎️ Receptionist</option>
+                    <option value="TEACHER" className="bg-[#111827] text-white">👨‍🏫 Faculty / Teacher</option>
+                    <option value="STUDENT" className="bg-[#111827] text-white">🎓 Student</option>
+                    <option value="PARENT" className="bg-[#111827] text-white">👨‍👧 Parent</option>
+                    <option value="EMPLOYEE" className="bg-[#111827] text-white">👔 Employee / Staff</option>
+                  </select>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-slate-800/60 border border-slate-700/50 px-3 py-1.5 rounded-xl flex items-center gap-2 text-xxs font-mono">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-slate-300 font-bold uppercase tracking-wider">{user.role?.replace(/_/g, ' ')}</span>
+              </div>
+            )}
+
+            {/* Multi-Language Selector */}
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-xs">
+              <FaGlobe className="text-slate-400 text-xs" />
+              <select
+                value={currentLang}
+                onChange={e => changeLanguage(e.target.value)}
+                className="bg-transparent border-none font-bold text-xs text-slate-300 focus:outline-none cursor-pointer"
+                title="Select ERP Interface Language"
+              >
+                {languages.map(l => (
+                  <option key={l.code} value={l.code} className="bg-[#111827] text-white">
+                    {l.flag} {l.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Accessibility Mode Toggle */}
+            <button
+              onClick={() => setShowA11yModal(true)}
+              className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition"
+              title="Accessibility Settings (High Contrast, Large Text)"
+            >
+              <FaUniversalAccess className={highContrast || largeText ? 'text-teal-400' : ''} />
+            </button>
+
+            {/* Voice ERP Trigger */}
+            <button 
+              onClick={() => navigate('/dashboard/voice-vision')}
+              className="p-2.5 rounded-xl border border-pink-500/30 bg-pink-500/10 hover:bg-pink-500/20 text-pink-400 transition"
+              title="Voice ERP Natural Assistant"
+            >
+              <FaMicrophone />
+            </button>
+
+            {/* Theme toggle */}
+            <button 
+              onClick={toggleTheme}
+              className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition"
+            >
+              {theme === 'dark' ? <FaSun className="text-yellow-400" /> : <FaMoon />}
+            </button>
+
+            {/* ─── NOTIFICATION CENTER ─── */}
+            <div className="relative">
+              <button 
+                onClick={() => { setShowNotifications(!showNotifications); setShowProfileMenu(false); }}
+                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 relative transition"
+              >
+                <FaBell />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white rounded-full text-xxs font-extrabold flex items-center justify-center animate-pulse">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+
+              <AnimatePresence>
+                {showNotifications && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute right-0 mt-3 w-96 max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-800 bg-[#111827] shadow-2xl p-0 z-50 flex flex-col overflow-hidden"
+                  >
+                    {/* Header */}
+                    <div className="px-5 py-4 border-b border-slate-800 flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <FaBell className="text-indigo-400" />
+                        <span className="font-bold text-white text-sm">Notification Center</span>
+                        {unreadCount > 0 && <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 text-xxs font-bold">{unreadCount} unread</span>}
+                      </div>
+                      <button onClick={markAllRead} className="text-xxs text-indigo-400 hover:underline font-bold">Mark all read</button>
+                    </div>
+
+                    {/* Category filter tabs */}
+                    <div className="flex items-center gap-1.5 px-4 py-3 border-b border-slate-800 overflow-x-auto scrollbar-none">
+                      {NOTIF_CATEGORIES.map(cat => (
+                        <button
+                          key={cat}
+                          onClick={() => setNotifFilter(cat)}
+                          className={`px-2.5 py-1 rounded-lg text-xxs font-bold whitespace-nowrap transition ${notifFilter === cat ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'}`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Notifications list */}
+                    <div className="max-h-80 overflow-y-auto">
+                      {filteredNotifs.length === 0 ? (
+                        <div className="flex flex-col items-center py-8 text-slate-500 gap-2">
+                          <FaInbox className="text-2xl" />
+                          <span className="text-xs">No {notifFilter !== 'All' ? notifFilter : ''} notifications</span>
+                        </div>
+                      ) : (
+                        filteredNotifs.map(n => (
+                          <div key={n.id} className={`px-4 py-3.5 border-b border-slate-800/50 flex gap-3 items-start group hover:bg-slate-800/30 transition ${!n.read ? 'bg-indigo-500/4' : ''}`}>
+                            <span className="text-base flex-shrink-0 mt-0.5">{n.icon}</span>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex justify-between items-start gap-2">
+                                <span className={`font-bold text-xs ${n.read ? 'text-slate-200' : 'text-white'}`}>{n.title}</span>
+                                <span className="text-xxs text-slate-500 flex-shrink-0">{n.time}</span>
+                              </div>
+                              <p className="text-xxs text-slate-400 mt-0.5 leading-relaxed">{n.body}</p>
+                              <span className={`text-xxs font-bold mt-1 block`}>{n.category}</span>
+                            </div>
+                            <button onClick={() => dismissNotif(n.id)} className="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-slate-300 transition flex-shrink-0">
+                              <FaTimes size={11} />
+                            </button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Profile dropdown */}
+            <div className="relative">
+              <button 
+                onClick={() => { setShowProfileMenu(!showProfileMenu); setShowNotifications(false); }}
+                className="flex items-center gap-2 hover:opacity-85 transition"
+              >
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center font-bold text-white shadow-md">
+                  {(user.firstName?.[0] || 'U')}{(user.lastName?.[0] || 'S')}
+                </div>
+              </button>
+
+              <AnimatePresence>
+                {showProfileMenu && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute right-0 mt-3 w-72 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827] shadow-xl p-4 z-50 flex flex-col gap-4 text-xs font-semibold"
+                  >
+                    <div className="pb-3 border-b border-slate-800">
+                      <span className="font-extrabold block text-sm">{user.firstName} {user.lastName}</span>
+                      <span className="text-slate-400 font-normal block truncate mt-0.5">{user.email}</span>
+                      <span className="text-xxs text-slate-350 block mt-1 font-semibold">{user.designation}</span>
+                      <span className="inline-block mt-2.5 px-2.5 py-0.5 rounded bg-indigo-500/20 text-indigo-400 font-bold uppercase tracking-wider text-xxs">
+                        🛡️ {user.roleName || user.role}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-2 font-mono text-xxs border-b border-slate-800 pb-3">
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Department:</span>
+                        <span className="text-slate-200 font-bold">{user.department}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Access Level:</span>
+                        <span className="text-emerald-400 font-bold">{user.accessLevel}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5 border-b border-slate-800 pb-3 max-h-36 overflow-y-auto">
+                      <span className="text-xxs text-slate-500 uppercase tracking-widest font-bold block mb-1">Assigned Permissions</span>
+                      {(user.permissions || []).map((perm, idx) => (
+                        <div key={idx} className="flex items-center gap-2 text-xxs font-normal">
+                          <FaCheck className="text-emerald-400 flex-shrink-0" />
+                          <span className="text-slate-300">{perm}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex flex-col gap-2 border-t border-slate-800 pt-3">
+                      <button 
+                        onClick={() => { setShowProfileMenu(false); navigate('/dashboard/profile'); }}
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-bold text-indigo-400 bg-indigo-500/10 hover:bg-indigo-500/20 rounded-xl transition border border-indigo-500/20"
+                      >
+                        <FaUser /> View Full Profile
+                      </button>
+                      <button 
+                        onClick={handleSignOut}
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-bold text-rose-500 hover:bg-rose-500/10 rounded-xl transition border border-transparent hover:border-rose-500/20"
+                      >
+                        <FaSignOutAlt /> Sign Out
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </header>
+
+        {/* ─── CONTENT ─── */}
+        <main className="flex-1 p-6 max-w-7xl mx-auto w-full overflow-x-hidden relative">
+          <Outlet />
+          <AIAssistantWidget />
+        </main>
+      </div>
+
+      {/* ─── GLOBAL SEARCH MODAL (Ctrl+K) ─── */}
+      <AnimatePresence>
+        {showGlobalSearch && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-start justify-center pt-24 px-4"
+            onClick={(e) => { if (e.target === e.currentTarget) setShowGlobalSearch(false); }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: -20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -20 }}
+              className="w-full max-w-2xl bg-[#111827] border border-slate-700 rounded-3xl shadow-2xl overflow-hidden flex flex-col"
+            >
+              {/* Search Input */}
+              <div className="flex items-center gap-3 p-5 border-b border-slate-800">
+                <FaSearch className="text-slate-400 flex-shrink-0" />
+                <input
+                  autoFocus
+                  type="text"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  placeholder="Search students, teachers, courses, fees, books, documents…"
+                  className="flex-1 bg-transparent text-white text-sm font-semibold focus:outline-none placeholder-slate-500"
+                />
+                <kbd className="px-2 py-1 rounded-lg bg-slate-800 text-xxs font-mono text-slate-500">ESC</kbd>
+              </div>
+
+              {/* Category filters */}
+              <div className="flex items-center gap-2 px-5 py-3 border-b border-slate-800 overflow-x-auto scrollbar-none">
+                {searchCategories.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setSearchCategory(cat)}
+                    className={`px-3 py-1 rounded-lg text-xxs font-bold whitespace-nowrap transition ${searchCategory === cat ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'}`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              {/* Results */}
+              <div className="max-h-96 overflow-y-auto p-3">
+                {!searchQuery && (
+                  <div className="flex flex-col gap-2 py-4">
+                    <span className="text-xxs uppercase font-bold text-slate-500 px-2 mb-2">Quick Navigate</span>
+                    {[
+                      { icon: '🎓', label: 'Students', path: '/dashboard/student' },
+                      { icon: '👨‍🏫', label: 'Teachers', path: '/dashboard/teacher' },
+                      { icon: '📚', label: 'Courses', path: '/dashboard/courses' },
+                      { icon: '💳', label: 'Fees', path: '/dashboard/finance' },
+                      { icon: '📖', label: 'Library', path: '/dashboard/library' }
+                    ].map((item, i) => (
+                      <button
+                        key={i}
+                        onClick={() => { navigate(item.path); setShowGlobalSearch(false); }}
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-left transition"
+                      >
+                        <span className="text-lg">{item.icon}</span>
+                        <span className="text-sm font-semibold text-slate-200">{item.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {searchQuery && searchResults.length === 0 && (
+                  <div className="flex flex-col items-center py-10 text-slate-500 gap-2">
+                    <FaInbox className="text-3xl" />
+                    <span className="text-sm font-semibold">No results for "{searchQuery}"</span>
+                  </div>
+                )}
+
+                {searchResults.length > 0 && (
+                  <div className="flex flex-col gap-1.5 py-2">
+                    <span className="text-xxs uppercase font-bold text-slate-500 px-2 mb-1">{searchResults.length} result{searchResults.length > 1 ? 's' : ''}</span>
+                    {searchResults.map((item, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => { navigate(item.link); setShowGlobalSearch(false); setSearchQuery(''); }}
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-indigo-500/10 hover:border-indigo-500/20 border border-transparent text-left transition"
+                      >
+                        <span className="text-xl flex-shrink-0">{item.icon}</span>
+                        <div className="flex-1 min-w-0">
+                          <span className="font-bold text-white text-xs block">{item.title}</span>
+                          <span className="text-xxs text-slate-400 truncate block">{item.desc}</span>
+                        </div>
+                        <span className="px-2 py-0.5 rounded bg-slate-800 text-xxs font-mono text-slate-400 font-bold flex-shrink-0">{item.type}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Accessibility Preferences Modal */}
+      <AnimatePresence>
+        {showA11yModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setShowA11yModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-[#111827] border border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+                <div className="flex items-center gap-2.5">
+                  <span className="p-2 rounded-xl bg-teal-500/10 text-teal-400 text-base">
+                    <FaUniversalAccess />
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-bold text-white">Accessibility Controls</h3>
+                    <p className="text-xxs text-slate-400">Tailor EduVerse ERP to your sensory preferences</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowA11yModal(false)} className="p-1 rounded-lg text-slate-500 hover:text-white">
+                  <FaTimes size={14} />
+                </button>
+              </div>
+
+              <div className="space-y-4 py-4">
+                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800">
+                  <div>
+                    <h4 className="text-xs font-bold text-white">High Contrast Mode</h4>
+                    <p className="text-xxs text-slate-400">Boost contrast ratios for text clarity</p>
+                  </div>
+                  <button onClick={toggleHighContrast} className="text-xl">
+                    {highContrast ? <span className="text-teal-400 font-bold text-xs px-2.5 py-1 rounded bg-teal-500/20">ON</span> : <span className="text-slate-500 text-xs px-2.5 py-1 rounded bg-slate-800">OFF</span>}
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800">
+                  <div>
+                    <h4 className="text-xs font-bold text-white">Large Text Scale</h4>
+                    <p className="text-xxs text-slate-400">Scale base font sizes +20% for readability</p>
+                  </div>
+                  <button onClick={toggleLargeText} className="text-xl">
+                    {largeText ? <span className="text-teal-400 font-bold text-xs px-2.5 py-1 rounded bg-teal-500/20">ON</span> : <span className="text-slate-500 text-xs px-2.5 py-1 rounded bg-slate-800">OFF</span>}
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800">
+                  <div>
+                    <h4 className="text-xs font-bold text-white">Reduced Motion</h4>
+                    <p className="text-xxs text-slate-400">Disable animations and decorative transitions</p>
+                  </div>
+                  <button onClick={toggleReducedMotion} className="text-xl">
+                    {reducedMotion ? <span className="text-teal-400 font-bold text-xs px-2.5 py-1 rounded bg-teal-500/20">ON</span> : <span className="text-slate-500 text-xs px-2.5 py-1 rounded bg-slate-800">OFF</span>}
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800">
+                  <div>
+                    <h4 className="text-xs font-bold text-white">Enhanced Focus Outlines</h4>
+                    <p className="text-xxs text-slate-400">Prominent keyboard navigation indicators</p>
+                  </div>
+                  <button onClick={toggleFocusIndicators} className="text-xl">
+                    {focusIndicators ? <span className="text-teal-400 font-bold text-xs px-2.5 py-1 rounded bg-teal-500/20">ON</span> : <span className="text-slate-500 text-xs px-2.5 py-1 rounded bg-slate-800">OFF</span>}
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-slate-800 flex justify-end">
+                <button
+                  onClick={() => setShowA11yModal(false)}
+                  className="px-4 py-2 rounded-xl bg-teal-500 text-black font-bold text-xs"
+                >
+                  Apply & Close
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
