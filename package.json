@@ -1,0 +1,18 @@
+{
+  "name": "eduverse-erp-monorepo",
+  "version": "1.0.0",
+  "description": "Root configuration for EduVerse AI ERP cloud deployments",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix backend install && npm --prefix backend run build",
+    "start": "node backend/dist/server.js || npx --yes tsx backend/src/server.ts",
+    "build:backend": "npm --prefix backend install && npm --prefix backend run build",
+    "build:frontend": "npm --prefix frontend install && npm --prefix frontend run build",
+    "start:backend": "npm --prefix backend start",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev"
+  },
+  "keywords": ["erp", "ai", "education"],
+  "author": "EduVerse Systems",
+  "license": "ISC"
+}

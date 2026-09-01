@@ -70,10 +70,18 @@ export default function DashboardLayout() {
   const location = useLocation();
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifFilter, setNotifFilter] = useState('All');
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showA11yModal, setShowA11yModal] = useState(false);
+
+  // Auto-close mobile drawer on route change
+  useEffect(() => {
+    setMobileDrawerOpen(false);
+    setShowNotifications(false);
+    setShowProfileMenu(false);
+  }, [location.pathname]);
 
   // Global Ctrl+K Search
   const [showGlobalSearch, setShowGlobalSearch] = useState(false);
@@ -355,7 +363,7 @@ export default function DashboardLayout() {
   return (
     <div className={`min-h-screen flex ${theme === 'dark' ? 'bg-[#090d16] text-slate-100' : 'bg-slate-50 text-slate-900'} transition-all duration-300`}>
 
-      {/* ─── SIDEBAR ─── */}
+      {/* ─── DESKTOP SIDEBAR ─── */}
       <motion.aside 
         animate={{ width: sidebarOpen ? 280 : 80 }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
@@ -420,86 +428,169 @@ export default function DashboardLayout() {
         )}
       </motion.aside>
 
+      {/* ─── MOBILE DRAWER SIDEBAR ─── */}
+      <AnimatePresence>
+        {mobileDrawerOpen && (
+          <div className="fixed inset-0 z-50 md:hidden flex">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileDrawerOpen(false)}
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+            />
+            {/* Drawer Panel */}
+            <motion.aside
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 220 }}
+              className="relative w-80 max-w-[85vw] h-full bg-[#111827] border-r border-slate-800 flex flex-col z-10 shadow-2xl overflow-y-auto"
+            >
+              <div className="p-4 flex items-center justify-between border-b border-slate-800">
+                <Link to="/" className="flex items-center gap-3">
+                  <div className="bg-indigo-600 p-2 rounded-xl text-white">
+                    <FaRobot className="text-base" />
+                  </div>
+                  <span className="font-extrabold text-base bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-transparent">
+                    EduVerse ERP
+                  </span>
+                </Link>
+                <button
+                  onClick={() => setMobileDrawerOpen(false)}
+                  className="p-2 rounded-xl text-slate-400 hover:text-white bg-slate-800/80"
+                >
+                  <FaTimes size={16} />
+                </button>
+              </div>
+
+              <div className="p-3 flex flex-col gap-1 flex-1">
+                <span className="text-xxs font-bold text-slate-500 uppercase tracking-wider px-2 py-1">
+                  Active Modules ({menuItems.length})
+                </span>
+                {menuItems.map((item) => {
+                  const isActive = activePath === item.path;
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setMobileDrawerOpen(false)}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-xs transition ${
+                        isActive
+                          ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                          : 'text-slate-300 hover:bg-slate-800/70'
+                      }`}
+                    >
+                      <span className="text-base">{item.icon}</span>
+                      <span className="truncate">{item.name}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              <div className="p-4 border-t border-slate-800">
+                <button
+                  onClick={() => { setMobileDrawerOpen(false); handleSignOut(); }}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs font-bold"
+                >
+                  <FaSignOutAlt /> Sign Out
+                </button>
+              </div>
+            </motion.aside>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* ─── MAIN CONTAINER ─── */}
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
         
         {/* ─── TOP BAR ─── */}
-        <header className="sticky top-0 z-30 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-[#090d16]/80 backdrop-blur-md px-6 py-4 flex items-center justify-between shadow-sm gap-4">
+        <header className="sticky top-0 z-30 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-[#090d16]/90 backdrop-blur-md px-3 sm:px-6 py-2.5 sm:py-3.5 flex items-center justify-between shadow-sm gap-2 sm:gap-4">
           
           {/* Left: Hamburger + Search trigger */}
-          <div className="flex items-center gap-4 flex-1 max-w-md">
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 max-w-md">
             <button 
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="md:hidden p-2 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500"
+              onClick={() => setMobileDrawerOpen(true)}
+              className="md:hidden p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 active:scale-95 transition"
+              aria-label="Open Navigation Menu"
             >
-              <FaBars />
+              <FaBars size={15} />
             </button>
 
-            {/* Global Search Trigger Bar */}
+            {/* Global Search Trigger Bar (Desktop: full bar, Mobile: icon button) */}
             <button
               onClick={() => setShowGlobalSearch(true)}
-              className="flex items-center gap-3 w-full pl-4 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 hover:border-indigo-500/40 transition font-semibold text-xs text-slate-400 text-left"
+              className="hidden sm:flex items-center gap-3 w-full pl-4 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 hover:border-indigo-500/40 transition font-semibold text-xs text-slate-400 text-left"
             >
               <FaSearch className="text-slate-400" size={13} />
-              <span className="flex-1">Search anything… students, fees, courses, books</span>
+              <span className="flex-1 truncate">Search anything… students, fees, courses</span>
               <kbd className="px-2 py-0.5 rounded bg-slate-800 text-xxs font-mono text-slate-500">Ctrl+K</kbd>
+            </button>
+
+            <button
+              onClick={() => setShowGlobalSearch(true)}
+              className="sm:hidden p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-900/50 text-slate-400 hover:text-white transition"
+              title="Search"
+            >
+              <FaSearch size={14} />
             </button>
           </div>
 
           {/* Right: Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2.5">
             
             {/* Role Switcher (Super Admin) / Role Badge */}
             {isSuperAdmin ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 {isImpersonating && (
                   <button
                     onClick={handleReturnToSuperAdmin}
-                    className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-xs font-bold transition shadow-sm animate-pulse"
+                    className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-2 sm:px-3 py-1.5 rounded-xl flex items-center gap-1 text-xxs sm:text-xs font-bold transition shadow-sm animate-pulse"
                     title="Exit preview mode and return to Super Admin HQ"
                   >
                     <span>↩</span>
-                    <span className="hidden sm:inline">Return to Super Admin</span>
-                    <span className="sm:hidden">Exit</span>
+                    <span className="hidden lg:inline">Return to Super Admin</span>
+                    <span className="lg:hidden text-xxs">Exit</span>
                   </button>
                 )}
-                <div className={`px-3 py-1.5 rounded-xl flex items-center gap-2 text-xxs font-sans transition ${isImpersonating ? 'bg-amber-500/10 border border-amber-500/30 text-amber-300' : 'bg-indigo-600/10 border border-indigo-500/20 text-indigo-400'}`}>
-                  <FaExchangeAlt className={isImpersonating ? 'text-amber-400' : 'text-indigo-400'} />
+                <div className={`px-2 sm:px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-xxs font-sans transition ${isImpersonating ? 'bg-amber-500/10 border border-amber-500/30 text-amber-300' : 'bg-indigo-600/10 border border-indigo-500/20 text-indigo-400'}`}>
+                  <FaExchangeAlt className={isImpersonating ? 'text-amber-400' : 'text-indigo-400'} size={11} />
                   <select 
                     value={user.role} 
                     onChange={handleRoleChange}
-                    className={`bg-transparent border-none font-bold focus:outline-none cursor-pointer text-xs ${isImpersonating ? 'text-amber-300' : 'text-indigo-400'}`}
+                    className={`bg-transparent border-none font-bold focus:outline-none cursor-pointer text-xxs sm:text-xs max-w-[110px] sm:max-w-none truncate ${isImpersonating ? 'text-amber-300' : 'text-indigo-400'}`}
                   >
-                    <option value="SUPER_ADMIN" className="bg-[#111827] text-white">👑 Super Admin HQ</option>
-                    <option value="ADMIN" className="bg-[#111827] text-white">🏛️ Campus Administrator</option>
-                    <option value="CYBER_SECURITY_OFFICER" className="bg-[#111827] text-white">🛡️ Cyber Security Officer</option>
-                    <option value="FINANCE_OFFICER" className="bg-[#111827] text-white">💰 Finance Officer</option>
-                    <option value="HR_MANAGER" className="bg-[#111827] text-white">👥 HR Manager</option>
-                    <option value="PLACEMENT_OFFICER" className="bg-[#111827] text-white">💼 Placement Officer</option>
-                    <option value="TRANSPORT_MANAGER" className="bg-[#111827] text-white">🚌 Transport Manager</option>
-                    <option value="LIBRARIAN" className="bg-[#111827] text-white">📚 Librarian</option>
-                    <option value="RECEPTIONIST" className="bg-[#111827] text-white">🛎️ Receptionist</option>
-                    <option value="TEACHER" className="bg-[#111827] text-white">👨‍🏫 Faculty / Teacher</option>
+                    <option value="SUPER_ADMIN" className="bg-[#111827] text-white">👑 Super Admin</option>
+                    <option value="ADMIN" className="bg-[#111827] text-white">🏛️ Admin</option>
+                    <option value="CYBER_SECURITY_OFFICER" className="bg-[#111827] text-white">🛡️ Cyber Sec</option>
+                    <option value="FINANCE_OFFICER" className="bg-[#111827] text-white">💰 Finance</option>
+                    <option value="HR_MANAGER" className="bg-[#111827] text-white">👥 HR</option>
+                    <option value="PLACEMENT_OFFICER" className="bg-[#111827] text-white">💼 Placement</option>
+                    <option value="TRANSPORT_MANAGER" className="bg-[#111827] text-white">🚌 Transport</option>
+                    <option value="LIBRARIAN" className="bg-[#111827] text-white">📚 Library</option>
+                    <option value="RECEPTIONIST" className="bg-[#111827] text-white">🛎️ Reception</option>
+                    <option value="TEACHER" className="bg-[#111827] text-white">👨‍🏫 Faculty</option>
                     <option value="STUDENT" className="bg-[#111827] text-white">🎓 Student</option>
                     <option value="PARENT" className="bg-[#111827] text-white">👨‍👧 Parent</option>
-                    <option value="EMPLOYEE" className="bg-[#111827] text-white">👔 Employee / Staff</option>
+                    <option value="EMPLOYEE" className="bg-[#111827] text-white">👔 Employee</option>
                   </select>
                 </div>
               </div>
             ) : (
-              <div className="bg-slate-800/60 border border-slate-700/50 px-3 py-1.5 rounded-xl flex items-center gap-2 text-xxs font-mono">
+              <div className="hidden sm:flex bg-slate-800/60 border border-slate-700/50 px-2.5 py-1.5 rounded-xl items-center gap-1.5 text-xxs font-mono">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 <span className="text-slate-300 font-bold uppercase tracking-wider">{user.role?.replace(/_/g, ' ')}</span>
               </div>
             )}
 
             {/* Multi-Language Selector */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-xs">
+            <div className="hidden sm:flex items-center gap-1 px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-xs">
               <FaGlobe className="text-slate-400 text-xs" />
               <select
                 value={currentLang}
                 onChange={e => changeLanguage(e.target.value)}
-                className="bg-transparent border-none font-bold text-xs text-slate-300 focus:outline-none cursor-pointer"
+                className="bg-transparent border-none font-bold text-xxs text-slate-300 focus:outline-none cursor-pointer"
                 title="Select ERP Interface Language"
               >
                 {languages.map(l => (
@@ -513,38 +604,38 @@ export default function DashboardLayout() {
             {/* Accessibility Mode Toggle */}
             <button
               onClick={() => setShowA11yModal(true)}
-              className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition"
+              className="p-2 sm:p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition"
               title="Accessibility Settings (High Contrast, Large Text)"
             >
-              <FaUniversalAccess className={highContrast || largeText ? 'text-teal-400' : ''} />
+              <FaUniversalAccess size={13} className={highContrast || largeText ? 'text-teal-400' : ''} />
             </button>
 
             {/* Voice ERP Trigger */}
             <button 
               onClick={() => navigate('/dashboard/voice-vision')}
-              className="p-2.5 rounded-xl border border-pink-500/30 bg-pink-500/10 hover:bg-pink-500/20 text-pink-400 transition"
+              className="p-2 sm:p-2.5 rounded-xl border border-pink-500/30 bg-pink-500/10 hover:bg-pink-500/20 text-pink-400 transition"
               title="Voice ERP Natural Assistant"
             >
-              <FaMicrophone />
+              <FaMicrophone size={13} />
             </button>
 
             {/* Theme toggle */}
             <button 
               onClick={toggleTheme}
-              className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition"
+              className="p-2 sm:p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition"
             >
-              {theme === 'dark' ? <FaSun className="text-yellow-400" /> : <FaMoon />}
+              {theme === 'dark' ? <FaSun size={13} className="text-yellow-400" /> : <FaMoon size={13} />}
             </button>
 
             {/* ─── NOTIFICATION CENTER ─── */}
             <div className="relative">
               <button 
                 onClick={() => { setShowNotifications(!showNotifications); setShowProfileMenu(false); }}
-                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 relative transition"
+                className="p-2 sm:p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 relative transition"
               >
-                <FaBell />
+                <FaBell size={13} />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white rounded-full text-xxs font-extrabold flex items-center justify-center animate-pulse">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white rounded-full text-xxs font-extrabold flex items-center justify-center animate-pulse">
                     {unreadCount}
                   </span>
                 )}
@@ -556,46 +647,72 @@ export default function DashboardLayout() {
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute right-0 mt-3 w-96 max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-800 bg-[#111827] shadow-2xl p-0 z-50 flex flex-col overflow-hidden"
+                    className="absolute right-0 mt-3 w-80 sm:w-96 max-w-[calc(100vw-1.5rem)] rounded-2xl border border-slate-800 bg-[#111827] shadow-2xl p-0 z-50 flex flex-col overflow-hidden"
                   >
                     {/* Header */}
-                    <div className="px-5 py-4 border-b border-slate-800 flex justify-between items-center">
+                    <div className="p-4 border-b border-slate-800 flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <FaBell className="text-indigo-400" />
-                        <span className="font-bold text-white text-sm">Notification Center</span>
-                        {unreadCount > 0 && <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 text-xxs font-bold">{unreadCount} unread</span>}
+                        <span className="font-bold text-sm">Notifications</span>
+                        {unreadCount > 0 && (
+                          <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 text-xxs font-bold">
+                            {unreadCount} new
+                          </span>
+                        )}
                       </div>
-                      <button onClick={markAllRead} className="text-xxs text-indigo-400 hover:underline font-bold">Mark all read</button>
+                      <div className="flex items-center gap-2">
+                        {unreadCount > 0 && (
+                          <button 
+                            onClick={markAllRead} 
+                            className="text-xxs text-indigo-400 hover:underline font-semibold"
+                          >
+                            Mark all read
+                          </button>
+                        )}
+                        <button onClick={() => setShowNotifications(false)} className="text-slate-500 hover:text-white p-1">
+                          <FaTimes size={11} />
+                        </button>
+                      </div>
                     </div>
 
-                    {/* Category filter tabs */}
-                    <div className="flex items-center gap-1.5 px-4 py-3 border-b border-slate-800 overflow-x-auto scrollbar-none">
+                    {/* Filter Tabs */}
+                    <div className="flex items-center gap-1 px-3 py-2 border-b border-slate-800 overflow-x-auto scrollbar-none">
                       {NOTIF_CATEGORIES.map(cat => (
                         <button
                           key={cat}
                           onClick={() => setNotifFilter(cat)}
-                          className={`px-2.5 py-1 rounded-lg text-xxs font-bold whitespace-nowrap transition ${notifFilter === cat ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'}`}
+                          className={`px-2.5 py-1 rounded-lg text-xxs font-semibold whitespace-nowrap transition ${
+                            notifFilter === cat 
+                              ? 'bg-indigo-600 text-white' 
+                              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                          }`}
                         >
                           {cat}
                         </button>
                       ))}
                     </div>
 
-                    {/* Notifications list */}
-                    <div className="max-h-80 overflow-y-auto">
+                    {/* List */}
+                    <div className="max-h-72 overflow-y-auto divide-y divide-slate-800/60 p-1">
                       {filteredNotifs.length === 0 ? (
-                        <div className="flex flex-col items-center py-8 text-slate-500 gap-2">
-                          <FaInbox className="text-2xl" />
-                          <span className="text-xs">No {notifFilter !== 'All' ? notifFilter : ''} notifications</span>
+                        <div className="flex flex-col items-center justify-center py-8 text-slate-500 gap-2">
+                          <FaInbox className="text-2xl opacity-40" />
+                          <span className="text-xs">No notifications</span>
                         </div>
                       ) : (
-                        filteredNotifs.map(n => (
-                          <div key={n.id} className={`px-4 py-3.5 border-b border-slate-800/50 flex gap-3 items-start group hover:bg-slate-800/30 transition ${!n.read ? 'bg-indigo-500/4' : ''}`}>
+                        filteredNotifs.map((n) => (
+                          <div 
+                            key={n.id} 
+                            className={`p-3 rounded-xl flex items-start gap-3 transition group ${
+                              n.read ? 'opacity-60 hover:opacity-90' : 'bg-slate-800/40 hover:bg-slate-800/70'
+                            }`}
+                          >
                             <span className="text-base flex-shrink-0 mt-0.5">{n.icon}</span>
                             <div className="flex-1 min-w-0">
-                              <div className="flex justify-between items-start gap-2">
-                                <span className={`font-bold text-xs ${n.read ? 'text-slate-200' : 'text-white'}`}>{n.title}</span>
-                                <span className="text-xxs text-slate-500 flex-shrink-0">{n.time}</span>
+                              <div className="flex items-center justify-between gap-1">
+                                <span className={`font-bold text-xs truncate ${n.read ? 'text-slate-300' : 'text-white'}`}>
+                                  {n.title}
+                                </span>
+                                <span className="text-xxs text-slate-500 font-mono flex-shrink-0">{n.time}</span>
                               </div>
                               <p className="text-xxs text-slate-400 mt-0.5 leading-relaxed">{n.body}</p>
                               <span className={`text-xxs font-bold mt-1 block`}>{n.category}</span>
@@ -616,9 +733,9 @@ export default function DashboardLayout() {
             <div className="relative">
               <button 
                 onClick={() => { setShowProfileMenu(!showProfileMenu); setShowNotifications(false); }}
-                className="flex items-center gap-2 hover:opacity-85 transition"
+                className="flex items-center gap-1.5 hover:opacity-85 transition"
               >
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center font-bold text-white shadow-md">
+                <div className="w-8 sm:w-9 h-8 sm:h-9 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center font-bold text-white text-xs shadow-md">
                   {(user.firstName?.[0] || 'U')}{(user.lastName?.[0] || 'S')}
                 </div>
               </button>
@@ -629,7 +746,7 @@ export default function DashboardLayout() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className="absolute right-0 mt-3 w-72 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827] shadow-xl p-4 z-50 flex flex-col gap-4 text-xs font-semibold"
+                    className="absolute right-0 mt-3 w-72 max-w-[calc(100vw-1.5rem)] rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827] shadow-xl p-4 z-50 flex flex-col gap-4 text-xs font-semibold"
                   >
                     <div className="pb-3 border-b border-slate-800">
                       <span className="font-extrabold block text-sm">{user.firstName} {user.lastName}</span>
@@ -683,10 +800,57 @@ export default function DashboardLayout() {
         </header>
 
         {/* ─── CONTENT ─── */}
-        <main className="flex-1 p-6 max-w-7xl mx-auto w-full overflow-x-hidden relative">
+        <main className="flex-1 p-3.5 sm:p-6 pb-24 md:pb-6 max-w-7xl mx-auto w-full overflow-x-hidden relative">
           <Outlet />
           <AIAssistantWidget />
         </main>
+
+        {/* ─── MOBILE BOTTOM NAVIGATION BAR ─── */}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#111827]/95 backdrop-blur-lg border-t border-slate-800/80 px-2 py-2 flex items-center justify-around shadow-2xl">
+          <Link
+            to={menuItems[0]?.path || '/dashboard'}
+            className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition ${
+              activePath === menuItems[0]?.path ? 'text-indigo-400 font-bold' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <span className="text-base">{menuItems[0]?.icon || <FaChartBar />}</span>
+            <span className="text-[10px]">Dashboard</span>
+          </Link>
+
+          <Link
+            to="/dashboard/chat"
+            className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition ${
+              activePath === '/dashboard/chat' ? 'text-indigo-400 font-bold' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <span className="text-base"><FaComments /></span>
+            <span className="text-[10px]">Chat</span>
+          </Link>
+
+          <button
+            onClick={() => setShowGlobalSearch(true)}
+            className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-slate-400 hover:text-white transition"
+          >
+            <span className="text-base"><FaSearch /></span>
+            <span className="text-[10px]">Search</span>
+          </button>
+
+          <button
+            onClick={() => navigate('/dashboard/voice-vision')}
+            className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-pink-400 hover:text-pink-300 transition"
+          >
+            <span className="text-base"><FaMicrophone /></span>
+            <span className="text-[10px]">Voice AI</span>
+          </button>
+
+          <button
+            onClick={() => setMobileDrawerOpen(true)}
+            className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-slate-400 hover:text-white transition"
+          >
+            <span className="text-base"><FaBars /></span>
+            <span className="text-[10px]">Menu</span>
+          </button>
+        </nav>
       </div>
 
       {/* ─── GLOBAL SEARCH MODAL (Ctrl+K) ─── */}
@@ -696,18 +860,18 @@ export default function DashboardLayout() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-start justify-center pt-24 px-4"
+            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-start justify-center pt-8 sm:pt-20 px-3 sm:px-4 pb-6 overflow-y-auto"
             onClick={(e) => { if (e.target === e.currentTarget) setShowGlobalSearch(false); }}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: -20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className="w-full max-w-2xl bg-[#111827] border border-slate-700 rounded-3xl shadow-2xl overflow-hidden flex flex-col"
+              className="w-full max-w-2xl bg-[#111827] border border-slate-700 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col"
             >
               {/* Search Input */}
-              <div className="flex items-center gap-3 p-5 border-b border-slate-800">
-                <FaSearch className="text-slate-400 flex-shrink-0" />
+              <div className="flex items-center gap-2.5 p-3.5 sm:p-5 border-b border-slate-800">
+                <FaSearch className="text-slate-400 flex-shrink-0" size={14} />
                 <input
                   autoFocus
                   type="text"

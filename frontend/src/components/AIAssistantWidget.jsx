@@ -46,7 +46,7 @@ export default function AIAssistantWidget() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 font-semibold text-xs">
+    <div className="fixed bottom-16 sm:bottom-6 right-3 sm:right-6 z-40 flex flex-col items-end gap-3 font-semibold text-xs">
       
       {/* Chat Window Panel */}
       <AnimatePresence>
@@ -55,7 +55,7 @@ export default function AIAssistantWidget() {
             initial={{ opacity: 0, y: 30, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.95 }}
-            className="w-80 h-[380px] bg-[#111827] border border-slate-850 rounded-3xl shadow-2xl flex flex-col justify-between overflow-hidden"
+            className="w-[calc(100vw-2rem)] sm:w-80 h-[380px] bg-[#111827] border border-slate-800 rounded-3xl shadow-2xl flex flex-col justify-between overflow-hidden"
           >
             {/* Window title bar */}
             <div className="px-5 py-4 border-b border-slate-850 bg-white/5 flex justify-between items-center text-white">

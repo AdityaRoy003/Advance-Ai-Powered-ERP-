@@ -47,7 +47,8 @@ export const SocketProvider = ({ children }) => {
     fetchLiveNotifications();
 
     // Connect to backend Socket.IO
-    socketRef.current = io('http://localhost:5000', {
+    const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+    socketRef.current = io(socketUrl, {
       transports: ['polling', 'websocket'],
       autoConnect: true,
       reconnectionAttempts: 5
