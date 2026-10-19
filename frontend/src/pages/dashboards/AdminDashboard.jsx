@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { UsersAPI, CybersecurityAPI } from '../../services/api';
 import { 
   FaUserCog, FaShieldAlt, FaServer, FaHistory, 
-  FaDownload, FaBan, FaCheck, FaExclamationTriangle, FaUsers 
+  FaDownload, FaBan, FaCheck, FaExclamationTriangle, FaUsers, FaArrowRight
 } from 'react-icons/fa';
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
   const [usersList, setUsersList] = useState([]);
   const [activeThreats, setActiveThreats] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,7 +55,7 @@ export default function AdminDashboard() {
     if (!targetUser) return;
     const newStatus = targetUser.status === 'active' ? 'suspended' : 'active';
     try {
-      await UsersAPI.update(id, { status: newStatus });
+      await UsersAPI.updateStatus(id, newStatus);
       setUsersList((prev) => 
         prev.map((u) => 
           u.id === id 
@@ -61,7 +63,11 @@ export default function AdminDashboard() {
             : u
         )
       );
-      toast.success(`User access status updated to ${newStatus}!`);
+      if (newStatus === 'suspended') {
+        toast.error(`User account ${targetUser.email} has been suspended!`);
+      } else {
+        toast.success(`User account ${targetUser.email} has been activated!`);
+      }
     } catch (err) {
       toast.error('Failed to update user status');
     }
@@ -127,12 +133,20 @@ export default function AdminDashboard() {
                 <h2 className="text-xl font-bold text-white">Manage Registered Accounts</h2>
                 <p className="text-slate-400 text-xxs mt-0.5">Real user records stored in MongoDB database.</p>
               </div>
-              <button 
-                onClick={handleExportCSV}
-                className="flex items-center gap-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-800 px-4 py-2 rounded-xl text-xs font-bold transition text-slate-300"
-              >
-                <FaDownload /> Export CSV
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => navigate('/dashboard/users')}
+                  className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-lg shadow-indigo-950/40"
+                >
+                  <FaUsers /> Full Users Directory <FaArrowRight size={10} />
+                </button>
+                <button 
+                  onClick={handleExportCSV}
+                  className="flex items-center gap-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-800 px-4 py-2 rounded-xl text-xs font-bold transition text-slate-300"
+                >
+                  <FaDownload /> Export CSV
+                </button>
+              </div>
             </div>
 
             {usersList.length === 0 ? (

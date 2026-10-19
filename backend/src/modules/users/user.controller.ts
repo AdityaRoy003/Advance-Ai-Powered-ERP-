@@ -6,7 +6,7 @@ import { sendSuccess, sendError } from '../../core/response/apiResponse.js';
 export const listUsers = async (req: Request, res: Response) => {
   try {
     const institutionId = (req as any).institutionId;
-    const { includeDeleted, role, department, search } = req.query;
+    const { includeDeleted, role, department, search, status } = req.query;
     const filter: any = {};
 
     if (!includeDeleted || includeDeleted !== 'true') {
@@ -16,17 +16,25 @@ export const listUsers = async (req: Request, res: Response) => {
     // Tenant scoping: non-super-admin users only see their institution's users
     if (institutionId) filter.institutionId = institutionId;
 
-    if (role) filter.role = String(role).toUpperCase();
-    if (department) filter.department = String(department);
+    if (role && role !== 'ALL') filter.role = String(role).toUpperCase();
+    if (department && department !== 'ALL') filter.department = String(department);
+    if (status && status !== 'ALL') filter.status = String(status).toLowerCase();
+
     if (search) {
       filter.$or = [
         { firstName: { $regex: String(search), $options: 'i' } },
         { lastName: { $regex: String(search), $options: 'i' } },
-        { email: { $regex: String(search), $options: 'i' } }
+        { email: { $regex: String(search), $options: 'i' } },
+        { phone: { $regex: String(search), $options: 'i' } }
       ];
     }
 
-    const users = await User.find(filter).select('-passwordHash').sort({ createdAt: -1 }).lean();
+    const users = await User.find(filter)
+      .populate('institutionId', 'name code')
+      .select('-passwordHash')
+      .sort({ createdAt: -1 })
+      .lean();
+
     return sendSuccess(res, 'Users fetched successfully', users, 200);
   } catch (err: any) {
     return sendError(res, err.message || 'Failed to list users', 500);
@@ -182,4 +190,91 @@ export const bulkImportUsers = async (req: Request, res: Response) => {
   }
 };
 
-export default { listUsers, getUser, createUser, updateUser, deleteUser, restoreUser, bulkImportUsers };
+export const updateUserStatus = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status || !['active', 'suspended', 'inactive'].includes(String(status).toLowerCase())) {
+      return sendError(res, "Status must be 'active', 'suspended', or 'inactive'", 400);
+    }
+
+    const normalizedStatus = String(status).toLowerCase();
+    const updateData: any = { status: normalizedStatus };
+
+    // If suspending, clear refresh tokens to immediately invalidate active sessions
+    if (normalizedStatus === 'suspended') {
+      updateData.refreshTokens = [];
+    }
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true }
+    ).select('-passwordHash');
+
+    if (!user) {
+      return sendError(res, 'User not found', 404);
+    }
+
+    return sendSuccess(
+      res,
+      `User account ${normalizedStatus === 'suspended' ? 'suspended' : 'activated'} successfully`,
+      user,
+      200
+    );
+  } catch (err: any) {
+    return sendError(res, err.message || 'Failed to update user status', 500);
+  }
+};
+
+export const resetUserPassword = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { password } = req.body;
+
+    if (!password || typeof password !== 'string' || password.length < 6) {
+      return sendError(res, 'New password is required and must be at least 6 characters', 400);
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          passwordHash,
+          refreshTokens: [], // Invalidate previous sessions
+          loginAttempts: 0
+        },
+        $unset: { lockUntil: 1 }
+      },
+      { new: true }
+    ).select('-passwordHash');
+
+    if (!user) {
+      return sendError(res, 'User not found', 404);
+    }
+
+    return sendSuccess(
+      res,
+      `Password for ${user.firstName} ${user.lastName} changed successfully`,
+      { id: user._id, email: user.email },
+      200
+    );
+  } catch (err: any) {
+    return sendError(res, err.message || 'Failed to reset user password', 500);
+  }
+};
+
+export default {
+  listUsers,
+  getUser,
+  createUser,
+  updateUser,
+  deleteUser,
+  restoreUser,
+  bulkImportUsers,
+  updateUserStatus,
+  resetUserPassword
+};

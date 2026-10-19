@@ -157,6 +157,7 @@ export default function DashboardLayout() {
           { name: 'Audit Timeline & Logs', path: '/dashboard/admin-audits', icon: <FaHistory /> },
           { name: 'Blockchain Notary Vault', path: '/dashboard/vault', icon: <FaLock /> },
           { name: 'Privacy Governance', path: '/dashboard/privacy', icon: <FaUserShield /> },
+          { name: 'Users Directory & Accounts', path: '/dashboard/users', icon: <FaUsers /> },
           { name: 'Policy Simulator & RBAC', path: '/dashboard/policy-simulator', icon: <FaFlask /> },
           { name: 'ERP Operations Hub (25)', path: '/dashboard/operations', icon: <FaClipboardCheck /> },
           { name: 'Global Analytics', path: '/dashboard/analytics', icon: <FaChartBar /> },
@@ -167,6 +168,7 @@ export default function DashboardLayout() {
       case 'ADMIN':
         return [
           { name: 'Admin Dashboard', path: '/dashboard/admin', icon: <FaChartBar /> },
+          { name: 'Users Directory & Accounts', path: '/dashboard/users', icon: <FaUsers /> },
           { name: 'Policy Simulator & RBAC', path: '/dashboard/policy-simulator', icon: <FaFlask /> },
           { name: 'ERP Operations Hub (25)', path: '/dashboard/operations', icon: <FaClipboardCheck /> },
           { name: 'Executive Command HQ', path: '/dashboard/executive', icon: <FaCrown /> },

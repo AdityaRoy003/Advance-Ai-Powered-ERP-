@@ -48,6 +48,11 @@ class AuthService {
       throw new AppError('Invalid email or password', 401);
     }
 
+    // Suspended Account check
+    if (user.status === 'suspended') {
+      throw new AppError('Your account has been suspended by an administrator. Please contact IT support.', 403);
+    }
+
     // Account Lockout check
     if (user.lockUntil && user.lockUntil > new Date()) {
       const remainingMins = Math.ceil((user.lockUntil.getTime() - Date.now()) / (60 * 1000));

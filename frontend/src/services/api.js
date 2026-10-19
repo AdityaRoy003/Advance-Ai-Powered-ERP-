@@ -56,6 +56,18 @@ export const UsersAPI = {
     const res = await apiClient.put(`/users/${id}`, userData);
     return res.data?.data || res.data;
   },
+  getById: async (id) => {
+    const res = await apiClient.get(`/users/${id}`);
+    return res.data?.data || res.data;
+  },
+  updateStatus: async (id, status) => {
+    const res = await apiClient.patch(`/users/${id}/status`, { status });
+    return res.data?.data || res.data;
+  },
+  resetPassword: async (id, password) => {
+    const res = await apiClient.patch(`/users/${id}/password`, { password });
+    return res.data?.data || res.data;
+  },
   delete: async (id) => {
     const res = await apiClient.delete(`/users/${id}`);
     return res.data;

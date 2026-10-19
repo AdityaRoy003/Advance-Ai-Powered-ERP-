@@ -79,6 +79,7 @@ const CampusSocialCommunity = lazy(() => import('./pages/modules/CampusSocialCom
 const StudentGamificationLeaderboard = lazy(() => import('./pages/modules/StudentGamificationLeaderboard'));
 const PolicySimulator = lazy(() => import('./pages/modules/PolicySimulator'));
 const ERPCompletenessHub = lazy(() => import('./pages/modules/ERPCompletenessHub'));
+const UserManagement = lazy(() => import('./pages/modules/UserManagement'));
 
 // Loading Fallback Component
 const PageLoader = () => (
@@ -243,6 +244,11 @@ function App() {
                   <Route path="institutions" element={
                     <RoleProtectedRoute allowedRoles={['SUPER_ADMIN']}>
                       <InstitutionManagement />
+                    </RoleProtectedRoute>
+                  } />
+                  <Route path="users" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
+                      <UserManagement />
                     </RoleProtectedRoute>
                   } />
                   <Route path="policy-simulator" element={
