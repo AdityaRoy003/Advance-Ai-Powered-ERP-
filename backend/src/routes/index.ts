@@ -60,40 +60,40 @@ router.get('/health', (req, res) => {
 });
 
 // Auth — no tenant scoping needed
-router.use('/v1/auth', authRoutes);
+router.use(['/v1/auth', '/auth'], authRoutes);
 
 // Institution management — Super Admin only
-router.use('/v1/institutions', authenticate, institutionRoutes);
+router.use(['/v1/institutions', '/institutions'], authenticate, institutionRoutes);
 
 // All tenant-scoped data routes
-router.use('/v1/users',         authenticate, tenantScope, userRoutes);
-router.use('/v1/students',      authenticate, tenantScope, studentRoutes);
-router.use('/v1/teachers',      authenticate, tenantScope, teacherRoutes);
-router.use('/v1/attendance',    authenticate, tenantScope, attendanceRoutes);
-router.use('/v1/finance',       authenticate, tenantScope, financeRoutes);
-router.use('/v1/library',       authenticate, tenantScope, libraryRoutes);
-router.use('/v1/exams',         authenticate, tenantScope, examRoutes);
-router.use('/v1/ai',            authenticate, tenantScope, aiRoutes);
-router.use('/v1/cybersecurity', authenticate, tenantScope, securityRoutes);
-router.use('/v1/hostel',        authenticate, tenantScope, hostelRoutes);
-router.use('/v1/transport',     authenticate, tenantScope, transportRoutes);
-router.use('/v1/courses',       authenticate, tenantScope, courseRoutes);
-router.use('/v1/timetable',     authenticate, tenantScope, timetableRoutes);
-router.use('/v1/placement',     authenticate, tenantScope, placementRoutes);
-router.use('/v1/departments',   authenticate, tenantScope, departmentRoutes);
-router.use('/v1/notifications', authenticate, tenantScope, notificationRoutes);
-router.use('/v1/lms',           authenticate, tenantScope, lmsRoutes);
-router.use('/v1/research',      authenticate, tenantScope, researchRoutes);
-router.use('/v1/innovation',    authenticate, tenantScope, innovationRoutes);
-router.use('/v1/accreditation', authenticate, tenantScope, accreditationRoutes);
-router.use('/v1/documents',     authenticate, tenantScope, documentRoutes);
-router.use('/v1/campus',        authenticate, tenantScope, campusRoutes);
-router.use('/v1/facilities',    authenticate, tenantScope, facilitiesRoutes);
-router.use('/v1/iot',           authenticate, tenantScope, iotRoutes);
-router.use('/v1/automation',    authenticate, tenantScope, automationRoutes);
-router.use('/v1/executive',     authenticate, tenantScope, executiveRoutes);
-router.use('/v1/system-ops',    authenticate, tenantScope, systemOpsRoutes);
-router.use('/v1/social',        authenticate, tenantScope, socialRoutes);
-router.use('/v1/operations',    authenticate, tenantScope, operationsRoutes);
+router.use(['/v1/users', '/users'],                 authenticate, tenantScope, userRoutes);
+router.use(['/v1/students', '/students'],           authenticate, tenantScope, studentRoutes);
+router.use(['/v1/teachers', '/teachers'],           authenticate, tenantScope, teacherRoutes);
+router.use(['/v1/attendance', '/attendance'],       authenticate, tenantScope, attendanceRoutes);
+router.use(['/v1/finance', '/finance'],             authenticate, tenantScope, financeRoutes);
+router.use(['/v1/library', '/library'],             authenticate, tenantScope, libraryRoutes);
+router.use(['/v1/exams', '/exams'],                 authenticate, tenantScope, examRoutes);
+router.use(['/v1/ai', '/ai'],                       authenticate, tenantScope, aiRoutes);
+router.use(['/v1/cybersecurity', '/cybersecurity'], authenticate, tenantScope, securityRoutes);
+router.use(['/v1/hostel', '/hostel'],               authenticate, tenantScope, hostelRoutes);
+router.use(['/v1/transport', '/transport'],         authenticate, tenantScope, transportRoutes);
+router.use(['/v1/courses', '/courses'],             authenticate, tenantScope, courseRoutes);
+router.use(['/v1/timetable', '/timetable'],         authenticate, tenantScope, timetableRoutes);
+router.use(['/v1/placement', '/placement'],         authenticate, tenantScope, placementRoutes);
+router.use(['/v1/departments', '/departments'],     authenticate, tenantScope, departmentRoutes);
+router.use(['/v1/notifications', '/notifications'], authenticate, tenantScope, notificationRoutes);
+router.use(['/v1/lms', '/lms'],                     authenticate, tenantScope, lmsRoutes);
+router.use(['/v1/research', '/research'],           authenticate, tenantScope, researchRoutes);
+router.use(['/v1/innovation', '/innovation'],       authenticate, tenantScope, innovationRoutes);
+router.use(['/v1/accreditation', '/accreditation'], authenticate, tenantScope, accreditationRoutes);
+router.use(['/v1/documents', '/documents'],         authenticate, tenantScope, documentRoutes);
+router.use(['/v1/campus', '/campus'],               authenticate, tenantScope, campusRoutes);
+router.use(['/v1/facilities', '/facilities'],       authenticate, tenantScope, facilitiesRoutes);
+router.use(['/v1/iot', '/iot'],                     authenticate, tenantScope, iotRoutes);
+router.use(['/v1/automation', '/automation'],       authenticate, tenantScope, automationRoutes);
+router.use(['/v1/executive', '/executive'],         authenticate, tenantScope, executiveRoutes);
+router.use(['/v1/system-ops', '/system-ops'],       authenticate, tenantScope, systemOpsRoutes);
+router.use(['/v1/social', '/social'],               authenticate, tenantScope, socialRoutes);
+router.use(['/v1/operations', '/operations'],       authenticate, tenantScope, operationsRoutes);
 
 export default router;
