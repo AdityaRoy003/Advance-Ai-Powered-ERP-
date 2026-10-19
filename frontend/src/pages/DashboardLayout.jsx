@@ -195,7 +195,7 @@ export default function DashboardLayout() {
       case 'CYBER_SECURITY':
       case 'CYBERSECURITY':
         return [
-          { name: 'Security Command HQ', path: '/dashboard/cybersecurity', icon: <FaShieldAlt /> },
+          { name: 'Security Command HQ', path: '/dashboard/cyber_security_officer', icon: <FaShieldAlt /> },
           { name: 'SIEM SOC Operations', path: '/dashboard/siem', icon: <FaLock /> },
           { name: 'AI Security Firewall', path: '/dashboard/ai-firewall', icon: <FaShieldAlt /> },
           { name: 'Privacy Governance', path: '/dashboard/privacy', icon: <FaUserShield /> },
@@ -217,8 +217,8 @@ export default function DashboardLayout() {
       case 'HR_MANAGER':
       case 'HR':
         return [
-          { name: 'HR Operations HQ', path: '/dashboard/hr', icon: <FaUserGraduate /> },
-          { name: 'Employee Directory', path: '/dashboard/hr', icon: <FaUser /> },
+          { name: 'HR Operations HQ', path: '/dashboard/hr_manager', icon: <FaUserGraduate /> },
+          { name: 'Employee Directory', path: '/dashboard/hr_manager', icon: <FaUser /> },
           { name: 'Staff Attendance', path: '/dashboard/attendance', icon: <FaCalendarCheck /> },
           { name: 'Leave Workflow', path: '/dashboard/approvals', icon: <FaFileSignature /> },
           { name: 'Live Chat', path: '/dashboard/chat', icon: <FaComments /> }
@@ -227,7 +227,7 @@ export default function DashboardLayout() {
       case 'PLACEMENT_OFFICER':
       case 'PLACEMENT':
         return [
-          { name: 'Placement Operations HQ', path: '/dashboard/placement', icon: <FaBriefcase /> },
+          { name: 'Placement Operations HQ', path: '/dashboard/placement_officer', icon: <FaBriefcase /> },
           { name: 'Career Intelligence AI', path: '/dashboard/career-ai', icon: <FaBriefcase /> },
           { name: 'Hackathon & Innovation Hub', path: '/dashboard/hackathons', icon: <FaTrophy /> },
           { name: 'Student Portfolios', path: '/dashboard/portfolio', icon: <FaAward /> },
@@ -348,10 +348,10 @@ export default function DashboardLayout() {
     const roleRoutes = {
       SUPER_ADMIN: '/dashboard/super_admin',
       ADMIN: '/dashboard/admin',
-      CYBER_SECURITY_OFFICER: '/dashboard/cybersecurity',
+      CYBER_SECURITY_OFFICER: '/dashboard/cyber_security_officer',
       FINANCE_OFFICER: '/dashboard/finance_officer',
-      HR_MANAGER: '/dashboard/hr',
-      PLACEMENT_OFFICER: '/dashboard/placement',
+      HR_MANAGER: '/dashboard/hr_manager',
+      PLACEMENT_OFFICER: '/dashboard/placement_officer',
       TRANSPORT_MANAGER: '/dashboard/transport_manager',
       LIBRARIAN: '/dashboard/librarian',
       RECEPTIONIST: '/dashboard/receptionist',

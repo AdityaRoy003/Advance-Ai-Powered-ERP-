@@ -121,7 +121,7 @@ const DynamicDashboardRedirect = () => {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
   const rolePath = user.role?.toLowerCase() || 'employee';
-  return <Navigate to={rolePath} replace />;
+  return <Navigate to={`/dashboard/${rolePath}`} replace />;
 };
 
 function App() {
@@ -174,6 +174,11 @@ function App() {
                       <HRManagerDashboard />
                     </RoleProtectedRoute>
                   } />
+                  <Route path="hr" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'HR_MANAGER']}>
+                      <HRManagerDashboard />
+                    </RoleProtectedRoute>
+                  } />
                   <Route path="teacher" element={
                     <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'TEACHER']}>
                       <TeacherDashboard />
@@ -199,6 +204,11 @@ function App() {
                       <CyberSecurityOfficerDashboard />
                     </RoleProtectedRoute>
                   } />
+                  <Route path="cybersecurity" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'CYBER_SECURITY_OFFICER']}>
+                      <CyberSecurityOfficerDashboard />
+                    </RoleProtectedRoute>
+                  } />
                   <Route path="finance_officer" element={
                     <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'FINANCE_OFFICER']}>
                       <FinanceOfficerDashboard />
@@ -215,6 +225,11 @@ function App() {
                     </RoleProtectedRoute>
                   } />
                   <Route path="placement_officer" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'PLACEMENT_OFFICER']}>
+                      <PlacementOfficerDashboard />
+                    </RoleProtectedRoute>
+                  } />
+                  <Route path="placement" element={
                     <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'PLACEMENT_OFFICER']}>
                       <PlacementOfficerDashboard />
                     </RoleProtectedRoute>
