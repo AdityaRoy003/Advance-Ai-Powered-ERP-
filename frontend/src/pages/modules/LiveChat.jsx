@@ -5,19 +5,28 @@ import { useAuth } from '../../context/AuthContext';
 import { FaHashtag, FaPaperPlane, FaBroadcastTower } from 'react-icons/fa';
 
 export default function LiveChat() {
-  const { chatRooms, sendChatMessage, socketConnected } = useSocket();
+  const socketContext = useSocket() || {};
+  const {
+    chatRooms = { general: [], teachers: [], parents: [] },
+    sendChatMessage = () => {},
+    socketConnected = false
+  } = socketContext;
   const { user } = useAuth();
   
   const [activeChannel, setActiveChannel] = useState('general');
   const [inputText, setInputText] = useState('');
 
-  const activeMessages = chatRooms[activeChannel] || [];
+  const activeMessages = (chatRooms && chatRooms[activeChannel]) || [];
 
   const handleSend = (e) => {
     e.preventDefault();
-    if (!inputText) return;
+    if (!inputText.trim()) return;
 
-    sendChatMessage(activeChannel, `${user.firstName} ${user.lastName}`, inputText);
+    const senderName = user
+      ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || 'User'
+      : 'User';
+
+    sendChatMessage(activeChannel, senderName, inputText.trim());
     setInputText('');
   };
 

@@ -3,7 +3,22 @@ import { io } from 'socket.io-client';
 import { toast } from 'react-hot-toast';
 import { NotificationsAPI } from '../services/api';
 
-const SocketContext = createContext();
+const defaultSocketState = {
+  socketConnected: false,
+  notifications: [],
+  chatRooms: {
+    general: [],
+    teachers: [],
+    parents: []
+  },
+  sendChatMessage: () => {},
+  markAllAsRead: () => {},
+  dismissNotification: () => {},
+  addNotification: () => {},
+  refreshNotifications: () => {}
+};
+
+const SocketContext = createContext(defaultSocketState);
 
 export const SocketProvider = ({ children }) => {
   const [socketConnected, setSocketConnected] = useState(false);
@@ -171,4 +186,7 @@ export const SocketProvider = ({ children }) => {
   );
 };
 
-export const useSocket = () => useContext(SocketContext);
+export const useSocket = () => {
+  const context = useContext(SocketContext);
+  return context || defaultSocketState;
+};
