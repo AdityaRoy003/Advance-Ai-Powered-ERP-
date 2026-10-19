@@ -386,6 +386,31 @@ export default function UserManagement() {
         </div>
       </div>
 
+      {/* Table Results Header */}
+      <div className="flex justify-between items-center text-xs px-1 text-slate-400">
+        <div>
+          Showing <span className="font-bold text-white">{filteredUsers.length}</span> of <span className="font-bold text-white">{users.length}</span> registered accounts
+          {(selectedRole !== 'ALL' || selectedStatus !== 'ALL' || selectedDept !== 'ALL' || search) && (
+            <span className="ml-2 text-xxs bg-indigo-900/40 text-indigo-300 border border-indigo-700/50 px-2 py-0.5 rounded-full font-mono">
+              Filtered
+            </span>
+          )}
+        </div>
+        {(selectedRole !== 'ALL' || selectedStatus !== 'ALL' || selectedDept !== 'ALL' || search) && (
+          <button
+            onClick={() => {
+              setSearch('');
+              setSelectedRole('ALL');
+              setSelectedStatus('ALL');
+              setSelectedDept('ALL');
+            }}
+            className="text-indigo-400 hover:text-indigo-300 text-xxs font-bold underline cursor-pointer"
+          >
+            Reset all filters
+          </button>
+        )}
+      </div>
+
       {/* Users Master Table */}
       <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
@@ -412,8 +437,42 @@ export default function UserManagement() {
                 </tr>
               ) : filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-slate-500">
-                    No users found matching your search and filter criteria.
+                  <td colSpan={6} className="py-12 text-center">
+                    <div className="flex flex-col items-center justify-center gap-3">
+                      <FaUsers className="text-3xl text-slate-600" />
+                      <div>
+                        <p className="text-sm font-bold text-white">
+                          {users.length === 0
+                            ? 'No users found in database'
+                            : `No users matching active filters (${selectedRole !== 'ALL' ? selectedRole : ''} ${selectedStatus !== 'ALL' ? selectedStatus : ''})`}
+                        </p>
+                        <p className="text-xxs text-slate-500 mt-0.5">
+                          {users.length > 0
+                            ? `Total ${users.length} accounts exist in database. Clear filter to view all.`
+                            : 'Click button below to refresh or provision a user.'}
+                        </p>
+                      </div>
+                      {users.length > 0 ? (
+                        <button
+                          onClick={() => {
+                            setSearch('');
+                            setSelectedRole('ALL');
+                            setSelectedStatus('ALL');
+                            setSelectedDept('ALL');
+                          }}
+                          className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg transition"
+                        >
+                          Show All {users.length} Users
+                        </button>
+                      ) : (
+                        <button
+                          onClick={fetchUsers}
+                          className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs"
+                        >
+                          Sync & Refresh Registry
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ) : (

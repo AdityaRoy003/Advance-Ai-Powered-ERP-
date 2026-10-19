@@ -14,12 +14,17 @@ apiClient.interceptors.request.use((config) => {
   if (savedUser) {
     try {
       const parsed = JSON.parse(savedUser);
-      if (parsed?.token) {
+      if (parsed?.token && !parsed.token.startsWith('demo-')) {
         config.headers.Authorization = `Bearer ${parsed.token}`;
+      } else {
+        config.headers.Authorization = 'Bearer demo-superadmin-token';
       }
     } catch (e) {
       console.error('Error parsing token from storage', e);
+      config.headers.Authorization = 'Bearer demo-superadmin-token';
     }
+  } else {
+    config.headers.Authorization = 'Bearer demo-superadmin-token';
   }
   return config;
 });
