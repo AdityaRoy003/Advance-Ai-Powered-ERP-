@@ -2,6 +2,13 @@ import type { Request, Response } from 'express';
 import { MLModelRecord, ITIncidentLog, PrivacyConsent } from './system_ops.model.js';
 import { sendSuccess, sendError } from '../../core/response/apiResponse.js';
 
+// ─── Helper: extract userId from JWT payload ─────────────────────────────────
+const getUserId = (req: Request): string | undefined => {
+  const user = (req as any).user;
+  // JWT payload uses 'sub' as the user id field
+  return user?.sub || user?._id || user?.id;
+};
+
 // ─── 1. MLOps Model Registry ───────────────────────────────────────────────
 
 export const getModelRegistry = async (req: Request, res: Response) => {
@@ -143,11 +150,17 @@ export const getUserPrivacyConsent = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
     const institutionId = (req as any).institutionId;
-    let consent = await PrivacyConsent.findOne({ userId: user?._id || user?.id });
+    const userId = getUserId(req);
+
+    if (!userId) {
+      return sendError(res, 'User ID not found in token. Please re-login.', null, 401);
+    }
+
+    let consent = await PrivacyConsent.findOne({ userId });
 
     if (!consent) {
       consent = await PrivacyConsent.create({
-        userId: user?._id || user?.id,
+        userId,
         userEmail: user?.email || 'user@eduverse.com',
         role: user?.role || 'STUDENT',
         consentAcademicAnalytics: true,
@@ -169,14 +182,36 @@ export const getUserPrivacyConsent = async (req: Request, res: Response) => {
 
 export const updatePrivacyConsent = async (req: Request, res: Response) => {
   try {
+    const userId = getUserId(req);
     const user = (req as any).user;
+    const institutionId = (req as any).institutionId;
     const updates = req.body;
 
+    if (!userId) {
+      return sendError(res, 'User ID not found in token', null, 401);
+    }
+
     const consent = await PrivacyConsent.findOneAndUpdate(
-      { userId: user?._id || user?.id },
+      { userId },
       { $set: updates },
-      { new: true, upsert: true }
+      {
+        new: true,
+        upsert: true,
+        setDefaultsOnInsert: true,
+        // Provide required fields for upsert case
+        ...(!await PrivacyConsent.exists({ userId }) && {
+          setDefaultsOnInsert: true
+        })
+      }
     );
+
+    // If upsert created a new document, ensure required fields are present
+    if (consent && !consent.userEmail) {
+      consent.userEmail = user?.email || 'user@eduverse.com';
+      consent.role = user?.role || 'STUDENT';
+      consent.institutionId = institutionId;
+      await consent.save();
+    }
 
     return sendSuccess(res, 'Privacy preferences updated', consent);
   } catch (error: any) {
@@ -187,26 +222,68 @@ export const updatePrivacyConsent = async (req: Request, res: Response) => {
 export const requestDataExport = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
+    const userId = getUserId(req);
+
     const exportBundle = {
       exportTimestamp: new Date().toISOString(),
       userInfo: {
-        id: user?._id || user?.id,
+        id: userId,
         email: user?.email,
         role: user?.role,
-        department: user?.department || 'Computer Science'
+        department: 'Computer Science'
       },
-      exportCategories: ['Profile Information', 'Attendance History', 'Exam Grades & Transcripts', 'Fee Payment Receipts', 'Audit Access Records'],
-      complianceStandard: 'Digital Personal Data Protection (DPDP) Act & GDPR Compliant',
-      downloadFormat: 'Encrypted JSON / PDF Export Archive'
+      exportCategories: [
+        'Profile Information',
+        'Attendance History',
+        'Exam Grades & Transcripts',
+        'Fee Payment Receipts',
+        'Audit Access Records',
+        'LMS Course Completion Data',
+        'Library Borrowing History'
+      ],
+      complianceStandard: 'Digital Personal Data Protection (DPDP) Act 2023 & GDPR Compliant',
+      downloadFormat: 'Encrypted JSON / PDF Export Archive',
+      estimatedSizeMB: '2.4',
+      retentionPolicy: 'Data retained for 7 years per UGC statutory norms',
+      dataController: 'EduVerse Main Campus – Data Protection Officer',
+      requestId: `EXP-${Date.now()}-${Math.floor(Math.random() * 1000)}`
     };
 
-    await PrivacyConsent.findOneAndUpdate(
-      { userId: user?._id || user?.id },
-      { $set: { dataExportRequested: true } }
-    );
+    if (userId) {
+      await PrivacyConsent.findOneAndUpdate(
+        { userId },
+        { $set: { dataExportRequested: true } },
+        { upsert: false }
+      );
+    }
 
     return sendSuccess(res, 'Data export bundle compiled successfully', exportBundle);
   } catch (error: any) {
     return sendError(res, error.message || 'Failed to generate data export', null, 500);
+  }
+};
+
+export const requestAccountDeletion = async (req: Request, res: Response) => {
+  try {
+    const userId = getUserId(req);
+
+    if (!userId) {
+      return sendError(res, 'User ID not found in token', null, 401);
+    }
+
+    await PrivacyConsent.findOneAndUpdate(
+      { userId },
+      { $set: { accountDeletionRequested: true } },
+      { upsert: false }
+    );
+
+    return sendSuccess(res, 'Account erasure request submitted to Data Protection Officer', {
+      requestId: `DEL-${Date.now()}`,
+      submittedAt: new Date().toISOString(),
+      expectedResolutionDays: 30,
+      retentionNotice: 'Academic audit records will be retained for 7 years per UGC statutory norms'
+    });
+  } catch (error: any) {
+    return sendError(res, error.message || 'Failed to submit deletion request', null, 500);
   }
 };

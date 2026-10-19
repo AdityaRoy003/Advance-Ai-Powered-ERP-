@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 import { FinanceAPI } from '../../services/api';
+import { exportToCSV } from '../../utils/exportHelper';
 import {
   FaCreditCard, FaFileInvoiceDollar, FaChartPie, FaMoneyBillWave,
   FaFileAlt, FaCheck, FaTimes, FaPlus, FaDownload, FaHistory, FaReceipt
@@ -102,7 +103,18 @@ export default function FinanceOfficerDashboard() {
           <div className="p-6 rounded-3xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-4">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-bold text-white flex items-center gap-2"><FaFileInvoiceDollar className="text-emerald-400" /> Student Fee Invoices Ledger</h2>
-              <button onClick={() => toast.success('Exporting Finance Ledger as CSV...')} className="bg-slate-800 text-slate-300 px-3 py-1.5 rounded-xl text-xxs font-bold flex items-center gap-1">
+              <button 
+                onClick={() => {
+                  const dataToExport = invoices.length ? invoices : [
+                    { id: 'INV-2026-901', studentName: 'Aditya Roy', title: 'Semester 4 Tuition', amount: '₹45,000', status: 'Paid', date: '2026-07-15' },
+                    { id: 'INV-2026-902', studentName: 'Priya Sharma', title: 'Semester 4 Tuition', amount: '₹45,000', status: 'Pending', date: '2026-10-30' },
+                    { id: 'INV-2026-903', studentName: 'Rohan Gupta', title: 'Hostel & Mess Q3', amount: '₹18,500', status: 'Paid', date: '2026-08-01' }
+                  ];
+                  exportToCSV(dataToExport, 'EduVerse_Finance_Ledger_2026');
+                  toast.success('Finance ledger exported as CSV!');
+                }} 
+                className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-xl text-xxs font-bold flex items-center gap-1 border border-slate-700 transition"
+              >
                 <FaDownload /> Export Ledger
               </button>
             </div>

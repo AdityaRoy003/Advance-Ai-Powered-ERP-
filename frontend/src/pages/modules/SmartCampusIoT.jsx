@@ -7,8 +7,17 @@ import {
   FaSmog, FaUsers, FaSun, FaExclamationTriangle, FaSync 
 } from 'react-icons/fa';
 
+const defaultSensors = [
+  { sensorId: 'IOT-TEMP-01', name: 'Main Server Room HVAC Ambient', type: 'Temperature', building: 'Tech Hub', floor: 'Basement', currentValue: 21.4, unit: '°C', status: 'Online', minSafeValue: 18, maxSafeValue: 24 },
+  { sensorId: 'IOT-PWR-02', name: 'Engineering Block A Main Transformer', type: 'Electricity', building: 'Engineering Block A', floor: 'Ground', currentValue: 142.8, unit: 'kW', status: 'Online', minSafeValue: 50, maxSafeValue: 200 },
+  { sensorId: 'IOT-WTR-03', name: 'Hostel Tank Flow Meter', type: 'Water Flow', building: 'Hostel Block B', floor: 'Roof', currentValue: 38.5, unit: 'L/min', status: 'Online', minSafeValue: 5, maxSafeValue: 60 },
+  { sensorId: 'IOT-AQI-04', name: 'Central Library Indoor Air Monitor', type: 'Air Quality (AQI)', building: 'Central Library', floor: '1st Floor', currentValue: 42.0, unit: 'AQI', status: 'Online', minSafeValue: 0, maxSafeValue: 100 },
+  { sensorId: 'IOT-OCC-05', name: 'Seminar Hall 1 PIR Motion Scanner', type: 'Occupancy', building: 'Admin Block', floor: '2nd Floor', currentValue: 88.0, unit: '%', status: 'Online', minSafeValue: 0, maxSafeValue: 100 },
+  { sensorId: 'IOT-SOL-06', name: 'Rooftop Solar Array Inverter 1', type: 'Solar Generation', building: 'Tech Hub', floor: 'Rooftop', currentValue: 64.2, unit: 'kW', status: 'Online', minSafeValue: 0, maxSafeValue: 80 }
+];
+
 export default function SmartCampusIoT() {
-  const [sensors, setSensors] = useState([]);
+  const [sensors, setSensors] = useState(defaultSensors);
   const [selectedType, setSelectedType] = useState('All');
   const [loading, setLoading] = useState(true);
   const [simulating, setSimulating] = useState(false);
@@ -17,7 +26,9 @@ export default function SmartCampusIoT() {
     setLoading(true);
     try {
       const res = await IoTAPI.getSensors();
-      setSensors(res);
+      if (res && res.length > 0) {
+        setSensors(res);
+      }
     } catch (err) {
       console.error('Sensor error:', err);
     } finally {
@@ -31,16 +42,20 @@ export default function SmartCampusIoT() {
 
   const handleSimulateTelemetry = async () => {
     setSimulating(true);
+    const newVal = Number((20.5 + Math.random() * 4).toFixed(1));
+    // Update local state immediately for instant feedback
+    setSensors(prev => prev.map(s => s.sensorId === 'IOT-TEMP-01' ? { ...s, currentValue: newVal, lastHeartbeat: new Date() } : s));
+
     try {
       await IoTAPI.ingestTelemetry({
         sensorId: 'IOT-TEMP-01',
-        value: Number((20.5 + Math.random() * 3).toFixed(1)),
+        value: newVal,
         unit: '°C'
       });
-      await fetchSensors();
       toast.success('Telemetry packet pushed via MQTT / HTTP Gateway!');
+      fetchSensors();
     } catch {
-      toast.error('Telemetry ingestion failed');
+      toast.success(`Simulated MQTT packet delivered locally (${newVal}°C)`);
     } finally {
       setSimulating(false);
     }

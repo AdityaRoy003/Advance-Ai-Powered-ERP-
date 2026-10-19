@@ -28,7 +28,7 @@ const StudentClubSchema = new Schema<IStudentClub>({
 }, { timestamps: true });
 
 export interface ICampusPost extends Document {
-  authorId: mongoose.Types.ObjectId;
+  authorId?: mongoose.Types.ObjectId;
   authorName: string;
   authorRole: string;
   clubCategory?: string;
@@ -41,10 +41,10 @@ export interface ICampusPost extends Document {
 }
 
 const CampusPostSchema = new Schema<ICampusPost>({
-  authorId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  authorName: { type: String, required: true },
+  authorId: { type: Schema.Types.ObjectId, ref: 'User' },
+  authorName: { type: String, default: 'Campus Member' },
   authorRole: { type: String, default: 'STUDENT' },
-  clubCategory: { type: String },
+  clubCategory: { type: String, default: 'General' },
   content: { type: String, required: true },
   likesCount: { type: Number, default: 0 },
   commentsCount: { type: Number, default: 0 },
@@ -55,7 +55,7 @@ const CampusPostSchema = new Schema<ICampusPost>({
 
 // ─── 2. Gamification, Badges & Leaderboard ─────────────────────────────────
 export interface IGamificationProfile extends Document {
-  studentId: mongoose.Types.ObjectId;
+  studentId?: mongoose.Types.ObjectId;
   studentName: string;
   department: string;
   totalXp: number;

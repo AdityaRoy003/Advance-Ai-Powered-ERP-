@@ -15,7 +15,7 @@ import {
   FaShieldAlt, FaCog, FaExclamationTriangle, FaCheckCircle,
   FaInfoCircle, FaStream, FaWifi, FaBriefcase, FaPhone, FaKey,
   FaMicrophone, FaCubes, FaBookOpen, FaHeartbeat, FaFlask, FaTrophy, FaUserFriends, FaAward,
-  FaUtensils, FaLeaf, FaWrench, FaBoxes, FaCogs, FaPuzzlePiece, FaCode, FaCrown, FaLaptopCode, FaUserShield, FaGlobe, FaUniversalAccess
+  FaUtensils, FaLeaf, FaWrench, FaBoxes, FaCogs, FaPuzzlePiece, FaCode, FaCrown, FaLaptopCode, FaUserShield, FaGlobe, FaUniversalAccess, FaClipboardCheck
 } from 'react-icons/fa';
 import { useLanguage } from '../context/LanguageContext';
 import { useAccessibility } from '../context/AccessibilityContext';
@@ -157,6 +157,8 @@ export default function DashboardLayout() {
           { name: 'Audit Timeline & Logs', path: '/dashboard/admin-audits', icon: <FaHistory /> },
           { name: 'Blockchain Notary Vault', path: '/dashboard/vault', icon: <FaLock /> },
           { name: 'Privacy Governance', path: '/dashboard/privacy', icon: <FaUserShield /> },
+          { name: 'Policy Simulator & RBAC', path: '/dashboard/policy-simulator', icon: <FaFlask /> },
+          { name: 'ERP Operations Hub (25)', path: '/dashboard/operations', icon: <FaClipboardCheck /> },
           { name: 'Global Analytics', path: '/dashboard/analytics', icon: <FaChartBar /> },
           { name: 'Voice & AI Gateway', path: '/dashboard/ai', icon: <FaRobot /> },
           { name: 'Live Chat', path: '/dashboard/chat', icon: <FaComments /> }
@@ -165,6 +167,8 @@ export default function DashboardLayout() {
       case 'ADMIN':
         return [
           { name: 'Admin Dashboard', path: '/dashboard/admin', icon: <FaChartBar /> },
+          { name: 'Policy Simulator & RBAC', path: '/dashboard/policy-simulator', icon: <FaFlask /> },
+          { name: 'ERP Operations Hub (25)', path: '/dashboard/operations', icon: <FaClipboardCheck /> },
           { name: 'Executive Command HQ', path: '/dashboard/executive', icon: <FaCrown /> },
           { name: '3D Digital Twin Map', path: '/dashboard/digital-twin', icon: <FaCubes /> },
           { name: 'Smart Campus IoT', path: '/dashboard/iot', icon: <FaWifi /> },

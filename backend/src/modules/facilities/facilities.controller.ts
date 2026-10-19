@@ -126,7 +126,7 @@ export const getMaintenanceTickets = async (req: Request, res: Response) => {
           priority: 'MEDIUM',
           status: 'Assigned',
           reportedBy: user?._id || user?.id,
-          reportedByName: 'Aditya Roy',
+          reportedByName: 'Campus Student',
           assignedTechnician: 'Amit Sen (Network Admin)',
           technicianContact: '+91 98112 34502',
           responseSlaMins: 60,
@@ -164,13 +164,15 @@ export const createMaintenanceTicket = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
     const institutionId = (req as any).institutionId;
-    const { category, location, description, priority } = req.body;
+    const { category, location, description, priority, reportedByName } = req.body;
 
     const count = await MaintenanceTicket.countDocuments();
-    const ticketNumber = `TKT-2026-${String(8820 + count)}`;
+    const ticketNumber = `TKT-2026-${String(8820 + count + Math.floor(Math.random() * 900))}`;
 
     const responseSla = priority === 'CRITICAL' ? 15 : priority === 'HIGH' ? 30 : priority === 'MEDIUM' ? 60 : 120;
     const resolutionSla = priority === 'CRITICAL' ? 2 : priority === 'HIGH' ? 4 : priority === 'MEDIUM' ? 8 : 24;
+
+    const finalReportedByName = reportedByName || (user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email : 'Campus User');
 
     const ticket = await MaintenanceTicket.create({
       ticketNumber,
@@ -179,12 +181,12 @@ export const createMaintenanceTicket = async (req: Request, res: Response) => {
       description: description || 'Routine maintenance required',
       priority: priority || 'MEDIUM',
       status: 'Reported',
-      reportedBy: user?._id || user?.id,
-      reportedByName: user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email : 'Staff',
+      reportedBy: (user?._id || user?.id) && String(user?._id || user?.id).match(/^[0-9a-fA-F]{24}$/) ? (user._id || user.id) : undefined,
+      reportedByName: finalReportedByName,
       assignedTechnician: 'Automated Facility Dispatcher',
       responseSlaMins: responseSla,
       resolutionSlaHours: resolutionSla,
-      institutionId
+      institutionId: institutionId && String(institutionId).match(/^[0-9a-fA-F]{24}$/) ? institutionId : undefined
     });
 
     return sendSuccess(res, 'Maintenance ticket created successfully', ticket, 201);
@@ -195,6 +197,11 @@ export const createMaintenanceTicket = async (req: Request, res: Response) => {
 
 export const updateTicketStatus = async (req: Request, res: Response) => {
   try {
+    const userRole = (req as any).user?.role;
+    if (userRole === 'STUDENT') {
+      return sendError(res, 'Access denied: Students can only generate tickets and view status', null, 403);
+    }
+
     const { id } = req.params;
     const { status, assignedTechnician, feedbackRating } = req.body;
     const update: any = { status };

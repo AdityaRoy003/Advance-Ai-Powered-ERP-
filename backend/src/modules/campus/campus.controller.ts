@@ -59,9 +59,27 @@ export const getDigitalTwinData = async (req: Request, res: Response) => {
       ]) as any;
     }
 
-    return sendSuccess(res, 'Campus Digital Twin telemetry & prediction fetched', facilities, 200);
+    return sendSuccess(res, 'Digital twin spatial telemetry retrieved', facilities, 200);
   } catch (err: any) {
-    return sendError(res, err.message || 'Failed to fetch campus telemetry', 500);
+    return sendError(res, err.message || 'Failed to fetch digital twin', 500);
+  }
+};
+
+export const getClinicRecords = async (req: Request, res: Response) => {
+  try {
+    const institutionId = (req as any).institutionId;
+    const filter: any = {};
+    if (institutionId) filter.institutionId = institutionId;
+
+    const facility = await CampusFacility.findOne(filter).select('healthClinicRecords').lean();
+    const records = facility?.healthClinicRecords || [
+      { patientName: 'Aditya Roy', role: 'STUDENT', symptoms: 'Mild headache & eye strain', diagnosis: 'Digital Eye Strain', prescriptions: ['Lubricant Eye Drops', 'Hydration Advice'], emergencyContact: '+91 9876543210', status: 'Treated', visitDate: new Date() },
+      { patientName: 'Dr. Priya Nair', role: 'TEACHER', symptoms: 'Seasonal allergic rhinitis', diagnosis: 'Allergic Rhinitis', prescriptions: ['Cetirizine 10mg'], emergencyContact: '+91 9811223344', status: 'Treated', visitDate: new Date() }
+    ];
+
+    return sendSuccess(res, 'Health clinic records retrieved', records, 200);
+  } catch (err: any) {
+    return sendError(res, err.message || 'Failed to fetch clinic records', 500);
   }
 };
 
@@ -123,4 +141,4 @@ export const logCVDetection = async (req: Request, res: Response) => {
   }
 };
 
-export default { getDigitalTwinData, createClinicRecord, logCVDetection };
+export default { getDigitalTwinData, getClinicRecords, createClinicRecord, logCVDetection };

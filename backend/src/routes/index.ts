@@ -29,6 +29,7 @@ import automationRoutes from '../modules/automation/automation.routes.js';
 import executiveRoutes from '../modules/executive/executive.routes.js';
 import systemOpsRoutes from '../modules/system_ops/system_ops.routes.js';
 import socialRoutes from '../modules/social_gamification/social.routes.js';
+import operationsRoutes from '../modules/erp_operations/erp_operations.routes.js';
 import { authenticate } from '../modules/auth/auth.middleware.js';
 import { tenantScope } from '../middlewares/tenantScope.middleware.js';
 import { sendSuccess } from '../core/response/apiResponse.js';
@@ -93,5 +94,6 @@ router.use('/v1/automation',    authenticate, tenantScope, automationRoutes);
 router.use('/v1/executive',     authenticate, tenantScope, executiveRoutes);
 router.use('/v1/system-ops',    authenticate, tenantScope, systemOpsRoutes);
 router.use('/v1/social',        authenticate, tenantScope, socialRoutes);
+router.use('/v1/operations',    authenticate, tenantScope, operationsRoutes);
 
 export default router;

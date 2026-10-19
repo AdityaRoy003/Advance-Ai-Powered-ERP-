@@ -1,7 +1,8 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IFinance extends Document {
-  studentId: mongoose.Types.ObjectId;
+  studentId?: mongoose.Types.ObjectId;
+  studentName?: string;
   title: string;
   amountDue: number;
   amountPaid: number;
@@ -18,7 +19,8 @@ export interface IFinance extends Document {
 
 const financeSchema = new Schema<IFinance>(
   {
-    studentId: { type: Schema.Types.ObjectId, ref: 'Student', required: true },
+    studentId: { type: Schema.Types.ObjectId, ref: 'Student' },
+    studentName: { type: String, default: 'Aditya Roy' },
     title: { type: String, required: true },
     amountDue: { type: Number, required: true },
     amountPaid: { type: Number, default: 0 },

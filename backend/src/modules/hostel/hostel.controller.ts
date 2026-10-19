@@ -4,7 +4,16 @@ import { sendSuccess, sendError } from '../../core/response/apiResponse.js';
 
 export const getHostelRooms = async (req: Request, res: Response) => {
   try {
-    const rooms = await HostelRoom.find().lean();
+    let rooms = await HostelRoom.find().lean();
+    if (!rooms || rooms.length === 0) {
+      await HostelRoom.insertMany([
+        { roomNumber: '101', block: 'Block A', capacity: 2, occupied: 2, status: 'Full', floor: '1st Floor' },
+        { roomNumber: '102', block: 'Block A', capacity: 2, occupied: 1, status: 'Available', floor: '1st Floor' },
+        { roomNumber: '201', block: 'Block B', capacity: 3, occupied: 2, status: 'Available', floor: '2nd Floor' },
+        { roomNumber: '304', block: 'Block B', capacity: 2, occupied: 1, status: 'Available', floor: '3rd Floor' }
+      ]);
+      rooms = await HostelRoom.find().lean();
+    }
     return sendSuccess(res, 'Hostel rooms retrieved', rooms);
   } catch (err: any) {
     return sendError(res, err.message || 'Failed to fetch hostel rooms', 500);

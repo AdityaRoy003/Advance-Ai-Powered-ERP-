@@ -33,9 +33,26 @@ export const ingestTelemetry = async (req: Request, res: Response) => {
     const institutionId = (req as any).institutionId;
     const { sensorId, value, unit, metadata } = req.body;
 
-    const sensor = await IoTSensor.findOne({ sensorId });
+    if (!sensorId) {
+      return sendError(res, 'sensorId is required', null, 400);
+    }
+
+    let sensor = await IoTSensor.findOne({ sensorId });
     if (!sensor) {
-      return sendError(res, `Sensor ${sensorId} not registered`, null, 404);
+      // Auto register sensor if not present
+      sensor = await IoTSensor.create({
+        sensorId,
+        name: `${sensorId} Live Node`,
+        type: sensorId.includes('TEMP') ? 'Temperature' : sensorId.includes('PWR') ? 'Electricity' : sensorId.includes('WTR') ? 'Water Flow' : sensorId.includes('AQI') ? 'Air Quality (AQI)' : 'Occupancy',
+        building: 'Tech Hub Main',
+        floor: 'Ground',
+        currentValue: value || 22.0,
+        unit: unit || '°C',
+        status: 'Online',
+        minSafeValue: 10,
+        maxSafeValue: 50,
+        institutionId: institutionId && String(institutionId).match(/^[0-9a-fA-F]{24}$/) ? institutionId : undefined
+      });
     }
 
     // Update sensor state
@@ -54,8 +71,8 @@ export const ingestTelemetry = async (req: Request, res: Response) => {
       sensorType: sensor.type,
       value,
       unit: unit || sensor.unit,
-      metadata,
-      institutionId
+      metadata: metadata || { gateway: 'MQTT-TLS-Bridge-v2' },
+      institutionId: institutionId && String(institutionId).match(/^[0-9a-fA-F]{24}$/) ? institutionId : undefined
     });
 
     return sendSuccess(res, 'Telemetry data point ingested', { sensor, log }, 201);

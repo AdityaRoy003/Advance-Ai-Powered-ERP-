@@ -268,7 +268,7 @@ export default function UserProfile() {
 
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-2xl font-black text-white">{user?.firstName || 'Aditya'} {user?.lastName || 'Roy'}</h1>
+                <h1 className="text-2xl font-black text-white">{user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : (user?.email?.split('@')[0] || 'User Profile')}</h1>
                 <span className="px-2.5 py-0.5 rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 text-xxs font-extrabold uppercase tracking-wider flex items-center gap-1">
                   <FaUserShield /> {user?.roleName || user?.role || 'SUPER_ADMIN'}
                 </span>

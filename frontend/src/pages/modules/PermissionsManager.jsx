@@ -4,8 +4,9 @@ import { toast } from 'react-hot-toast';
 import { 
   FaUserShield, FaCheck, FaTimes, FaPlus, FaEdit, FaSave, 
   FaTrash, FaLock, FaUnlock, FaFilter, FaBuilding, FaUsers, 
-  FaTree, FaLayerGroup, FaBan, FaGlobe
+  FaTree, FaLayerGroup, FaBan, FaGlobe, FaFlask
 } from 'react-icons/fa';
+import PolicySimulator from './PolicySimulator';
 
 // ─── SYSTEM MODULES (RBAC Matrix rows) ───
 const SYSTEM_MODULES = [
@@ -147,6 +148,7 @@ export default function PermissionsManager() {
       <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800">
         {[
           { id: 'rbac_matrix', label: 'RBAC Module Matrix', icon: <FaLayerGroup /> },
+          { id: 'policy_simulator', label: 'Policy Simulator & Impact Analyzer', icon: <FaFlask /> },
           { id: 'user_specific', label: 'User-Specific Overrides', icon: <FaUsers /> },
           { id: 'data_scope', label: 'Data-Level Access Control', icon: <FaTree /> },
           { id: 'dept_restrictions', label: 'Department & Institution Restrictions', icon: <FaBuilding /> }
@@ -229,6 +231,13 @@ export default function PermissionsManager() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* ─── POLICY SIMULATOR & IMPACT ANALYZER ─── */}
+      {activeSection === 'policy_simulator' && (
+        <div className="pt-2">
+          <PolicySimulator />
         </div>
       )}
 

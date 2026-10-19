@@ -77,6 +77,8 @@ const ITAssistantMLOps = lazy(() => import('./pages/modules/ITAssistantMLOps'));
 const PrivacyComplianceCenter = lazy(() => import('./pages/modules/PrivacyComplianceCenter'));
 const CampusSocialCommunity = lazy(() => import('./pages/modules/CampusSocialCommunity'));
 const StudentGamificationLeaderboard = lazy(() => import('./pages/modules/StudentGamificationLeaderboard'));
+const PolicySimulator = lazy(() => import('./pages/modules/PolicySimulator'));
+const ERPCompletenessHub = lazy(() => import('./pages/modules/ERPCompletenessHub'));
 
 // Loading Fallback Component
 const PageLoader = () => (
@@ -243,6 +245,12 @@ function App() {
                       <InstitutionManagement />
                     </RoleProtectedRoute>
                   } />
+                  <Route path="policy-simulator" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
+                      <PolicySimulator />
+                    </RoleProtectedRoute>
+                  } />
+                  <Route path="operations" element={<ERPCompletenessHub />} />
                   
                   {/* General ERP Modules */}
                   <Route path="approvals" element={<ApprovalsWorkflow />} />
@@ -283,6 +291,8 @@ function App() {
                   <Route path="privacy" element={<PrivacyComplianceCenter />} />
                   <Route path="community" element={<CampusSocialCommunity />} />
                   <Route path="gamification" element={<StudentGamificationLeaderboard />} />
+                  <Route path="portfolio" element={<StudentPublicPortfolio />} />
+                  <Route path="health" element={<CampusHealthWellness />} />
 
                   {/* Catch-all dashboard redirect */}
                   <Route path="*" element={<DynamicDashboardRedirect />} />

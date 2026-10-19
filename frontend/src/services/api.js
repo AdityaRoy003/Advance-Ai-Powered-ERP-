@@ -146,11 +146,46 @@ export const DepartmentsAPI = {
   }
 };
 
+export const StudentsAPI = {
+  getAll: async () => {
+    try {
+      const res = await apiClient.get('/students');
+      return res.data?.data?.students || res.data?.data || [];
+    } catch {
+      return [];
+    }
+  },
+  getMyProfile: async () => {
+    try {
+      const res = await apiClient.get('/students/me');
+      return res.data?.data || res.data;
+    } catch {
+      return null;
+    }
+  },
+  getById: async (id) => {
+    try {
+      const res = await apiClient.get(`/students/${id}`);
+      return res.data?.data || res.data;
+    } catch {
+      return null;
+    }
+  }
+};
+
 export const ExamsAPI = {
   getAll: async () => {
     try {
       const res = await apiClient.get('/exams');
-      return res.data?.data || res.data || [];
+      return res.data?.data?.exams || res.data?.data || res.data || [];
+    } catch (err) {
+      return [];
+    }
+  },
+  getResults: async (studentId) => {
+    try {
+      const res = await apiClient.get(`/exams/results/${studentId}`);
+      return res.data?.data?.grades || res.data?.data || res.data || [];
     } catch (err) {
       return [];
     }
@@ -181,6 +216,14 @@ export const FinanceAPI = {
 
 export const LibraryAPI = {
   getBooks: async () => {
+    try {
+      const res = await apiClient.get('/library');
+      return res.data?.data || res.data || [];
+    } catch (err) {
+      return [];
+    }
+  },
+  getAll: async () => {
     try {
       const res = await apiClient.get('/library');
       return res.data?.data || res.data || [];
@@ -417,6 +460,14 @@ export const CampusAPI = {
       return [];
     }
   },
+  getClinicRecords: async () => {
+    try {
+      const res = await apiClient.get('/campus/health/clinic-records');
+      return res.data?.data || res.data || [];
+    } catch (err) {
+      return [];
+    }
+  },
   createClinicRecord: async (data) => {
     const res = await apiClient.post('/campus/health/clinic-record', data);
     return res.data?.data || res.data;
@@ -639,6 +690,195 @@ export const SocialGamificationAPI = {
       const res = await apiClient.get('/social/gamification/profile');
       return res.data?.data || res.data || { profile: null, leaderboard: [] };
     } catch { return { profile: null, leaderboard: [] }; }
+  }
+};
+
+export const PolicySimulatorAPI = {
+  simulate: async (data) => {
+    const res = await apiClient.post('/operations/policy/simulate', data);
+    return res.data?.data || res.data;
+  },
+  getVersions: async () => {
+    try {
+      const res = await apiClient.get('/operations/policy/versions');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  saveVersion: async (data) => {
+    const res = await apiClient.post('/operations/policy/versions', data);
+    return res.data?.data || res.data;
+  },
+  rollback: async (versionId) => {
+    const res = await apiClient.post(`/operations/policy/rollback/${versionId}`);
+    return res.data?.data || res.data;
+  }
+};
+
+export const OperationsAPI = {
+  // Student & Academic
+  getLifecycle: async () => {
+    try {
+      const res = await apiClient.get('/operations/lifecycle');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  createLifecycle: async (data) => {
+    const res = await apiClient.post('/operations/lifecycle', data);
+    return res.data?.data || res.data;
+  },
+  getTransfers: async () => {
+    try {
+      const res = await apiClient.get('/operations/transfers');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  requestTransfer: async (data) => {
+    const res = await apiClient.post('/operations/transfers', data);
+    return res.data?.data || res.data;
+  },
+  getEmergencyContacts: async () => {
+    try {
+      const res = await apiClient.get('/operations/emergency-contacts');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  getDocuments: async () => {
+    try {
+      const res = await apiClient.get('/operations/documents');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  getCalendar: async () => {
+    try {
+      const res = await apiClient.get('/operations/calendar');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  getCertificates: async () => {
+    try {
+      const res = await apiClient.get('/operations/certificates');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  generateCertificate: async (data) => {
+    const res = await apiClient.post('/operations/certificates', data);
+    return res.data?.data || res.data;
+  },
+
+  // Finance & Admin
+  getAdjustments: async () => {
+    try {
+      const res = await apiClient.get('/operations/finance/adjustments');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  createAdjustment: async (data) => {
+    const res = await apiClient.post('/operations/finance/adjustments', data);
+    return res.data?.data || res.data;
+  },
+  getReceipts: async () => {
+    try {
+      const res = await apiClient.get('/operations/finance/receipts');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  createReceipt: async (data) => {
+    const res = await apiClient.post('/operations/finance/receipts', data);
+    return res.data?.data || res.data;
+  },
+  getVendorBills: async () => {
+    try {
+      const res = await apiClient.get('/operations/finance/bills');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  getCashbook: async () => {
+    try {
+      const res = await apiClient.get('/operations/finance/cashbook');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  getNoDues: async () => {
+    try {
+      const res = await apiClient.get('/operations/no-dues');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+
+  // Faculty & Staff
+  getSubstitutes: async () => {
+    try {
+      const res = await apiClient.get('/operations/faculty/substitutes');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  assignSubstitute: async (data) => {
+    const res = await apiClient.post('/operations/faculty/substitutes', data);
+    return res.data?.data || res.data;
+  },
+  getFacultyWorkload: async () => {
+    try {
+      const res = await apiClient.get('/operations/faculty/workload');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  getStaffLifecycle: async () => {
+    try {
+      const res = await apiClient.get('/operations/staff/lifecycle');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+
+  // Communication
+  sendAnnouncement: async (data) => {
+    const res = await apiClient.post('/operations/communication/announcements', data);
+    return res.data?.data || res.data;
+  },
+  getDispatchLogs: async () => {
+    try {
+      const res = await apiClient.get('/operations/communication/dispatch-logs');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  retryDispatch: async (messageId) => {
+    const res = await apiClient.post(`/operations/communication/retry/${messageId}`);
+    return res.data?.data || res.data;
+  },
+  getEventRegistrations: async () => {
+    try {
+      const res = await apiClient.get('/operations/events/registrations');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+
+  // Data & System Consistency
+  validateImport: async (data) => {
+    const res = await apiClient.post('/operations/data/validate-import', data);
+    return res.data?.data || res.data;
+  },
+  getDuplicates: async () => {
+    try {
+      const res = await apiClient.get('/operations/data/duplicates');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  resolveDuplicate: async (duplicateId, resolutionAction) => {
+    const res = await apiClient.patch(`/operations/data/duplicates/${duplicateId}`, { resolutionAction });
+    return res.data?.data || res.data;
+  },
+  getRecycleBin: async () => {
+    try {
+      const res = await apiClient.get('/operations/data/recycle-bin');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  restoreRecord: async (id) => {
+    const res = await apiClient.post(`/operations/data/restore/${id}`);
+    return res.data?.data || res.data;
+  },
+  runTenantIsolationTest: async () => {
+    const res = await apiClient.get('/operations/data/tenant-isolation-test');
+    return res.data?.data || res.data;
   }
 };
 

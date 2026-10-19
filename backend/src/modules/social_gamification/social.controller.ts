@@ -70,15 +70,25 @@ export const createPost = async (req: Request, res: Response) => {
     const institutionId = (req as any).institutionId;
     const { content, clubCategory, isAnnouncement } = req.body;
 
+    if (!content || !content.trim()) {
+      return sendError(res, 'Post content cannot be empty', null, 400);
+    }
+
+    const authorId = (user?._id || user?.id) && String(user?._id || user?.id).match(/^[0-9a-fA-F]{24}$/) ? (user._id || user.id) : undefined;
+    const authorName = user ? (`${user.firstName || ''} ${user.lastName || ''}`.trim() || user.name || user.email || 'Aditya Roy') : 'Aditya Roy';
+    const authorRole = user?.role || 'STUDENT';
+
     const post = await CampusPost.create({
-      authorId: user?._id || user?.id,
-      authorName: user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email : 'Campus Member',
-      authorRole: user?.role || 'STUDENT',
+      authorId,
+      authorName,
+      authorRole,
       clubCategory: clubCategory || 'General',
-      content,
-      isAnnouncement: isAnnouncement || false,
+      content: content.trim(),
+      likesCount: 0,
+      commentsCount: 0,
+      isAnnouncement: Boolean(isAnnouncement),
       moderationStatus: 'APPROVED',
-      institutionId
+      institutionId: institutionId && String(institutionId).match(/^[0-9a-fA-F]{24}$/) ? institutionId : undefined
     });
 
     return sendSuccess(res, 'Post published to campus community', post, 201);
