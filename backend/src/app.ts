@@ -7,6 +7,7 @@ import morgan from 'morgan';
 
 import env from './config/env.js';
 import routes from './routes/index.js';
+import noCacheSensitiveEndpoints from './middlewares/cacheControl.middleware.js';
 import errorMiddleware from './core/middleware/errorMiddleware.js';
 import notFound from './core/middleware/notFound.js';
 
@@ -26,7 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
 
-app.use(env.API_PREFIX, routes);
+app.use(env.API_PREFIX, noCacheSensitiveEndpoints, routes);
 
 app.use(notFound);
 app.use(errorMiddleware);

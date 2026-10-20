@@ -224,9 +224,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await axios.post(`${API_URL}/auth/logout`, {}, { withCredentials: true });
+    } catch {
+      // ignore
+    }
     setUser(null);
     localStorage.removeItem('eduverse_user');
+    sessionStorage.clear();
   };
 
   // Switch role for active session (preserves original admin role for easy return)

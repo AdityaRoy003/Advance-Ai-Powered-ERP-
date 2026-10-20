@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import type { Request, Response } from 'express';
 import authService from './auth.service.js';
 import { sendSuccess, sendError } from '../../core/response/apiResponse.js';
@@ -16,6 +17,24 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   try {
     const result = await authService.login(req.body);
+
+    const isProd = process.env.NODE_ENV === 'production';
+    if (result?.tokens?.accessToken) {
+      res.cookie('eduverse_session', result.tokens.accessToken, {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: 'lax',
+        maxAge: 24 * 60 * 60 * 1000
+      });
+
+      const csrfToken = crypto.randomUUID();
+      res.cookie('XSRF-TOKEN', csrfToken, {
+        secure: isProd,
+        sameSite: 'lax',
+        maxAge: 24 * 60 * 60 * 1000
+      });
+    }
+
     return sendSuccess(res, 'Login successful', result, 200);
   } catch (error) {
     const err = error instanceof AppError ? error : new AppError('Login failed', 500);
@@ -24,6 +43,8 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const logout = (req: Request, res: Response) => {
+  res.clearCookie('eduverse_session', { httpOnly: true, sameSite: 'lax' });
+  res.clearCookie('XSRF-TOKEN', { sameSite: 'lax' });
   return sendSuccess(res, 'Logout successful', null, 200);
 };
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useCookieConsent } from '../../context/CookieConsentContext';
 import { toast } from 'react-hot-toast';
 import { AuthAPI } from '../../services/api';
 import { 
@@ -23,6 +24,7 @@ const FaSliders = FaSlidersH;
 export default function UserProfile() {
   const { user } = useAuth();
   const { theme } = useTheme();
+  const { consent, openModal: openCookieConsentModal, withdrawConsent, policyVersion } = useCookieConsent();
 
   // Active section tab state (Default: 'overview')
   const [activeTab, setActiveTab] = useState('overview');
@@ -698,6 +700,96 @@ export default function UserProfile() {
                     </button>
                   </div>
                 ))}
+              </div>
+
+              {/* Cookie Consent & Local Storage Governance */}
+              <div className="p-5 rounded-2xl border border-indigo-500/20 bg-gradient-to-br from-slate-900/90 to-indigo-950/20 flex flex-col gap-4 shadow-xl">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-extrabold text-white text-sm">Cookie & Privacy Preferences</span>
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xxs font-mono font-bold">
+                        Policy {policyVersion || 'v2.4-2026'}
+                      </span>
+                    </div>
+                    <span className="text-xxs text-slate-400">
+                      Manage your cookie consents, local storage permissions, and statutory DPDP / GDPR tracking preferences.
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => openCookieConsentModal()}
+                      className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition shadow-lg shadow-indigo-600/20 flex items-center gap-1.5"
+                    >
+                      <FaSlidersH /> Manage Cookies
+                    </button>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        await withdrawConsent();
+                        toast.success('Optional cookie consents withdrawn.');
+                      }}
+                      className="px-3.5 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-xs font-bold transition"
+                    >
+                      Withdraw Optional
+                    </button>
+                  </div>
+                </div>
+
+                {/* Consent Categories Status Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                  <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-white text-xs">Essential</span>
+                        <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">Always Active</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-1 leading-snug">Authentication tokens, CSRF protection, and session security.</p>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-white text-xs">Functional</span>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${consent?.functional ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-500 bg-slate-800'}`}>
+                          {consent?.functional ? 'Granted' : 'Disabled'}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-1 leading-snug">Language preference, dark theme state, and UI customization.</p>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-white text-xs">Analytics</span>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${consent?.analytics ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-500 bg-slate-800'}`}>
+                          {consent?.analytics ? 'Granted' : 'Disabled'}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-1 leading-snug">Telemetry on page load performance, route transit times, and crash reports.</p>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-white text-xs">Marketing</span>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${consent?.marketing ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-500 bg-slate-800'}`}>
+                          {consent?.marketing ? 'Granted' : 'Disabled'}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-1 leading-snug">Institutional webinars, event invitations, and non-student campaigns.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-xxs text-slate-400 pt-1">
+                  <span>Last Updated: <strong className="text-slate-300 font-mono">{consent?.timestamp ? new Date(consent.timestamp).toLocaleString() : 'Pending consent'}</strong></span>
+                  <a href="/privacy" className="text-indigo-400 hover:underline font-bold">Open Full Privacy & Consent Center →</a>
+                </div>
               </div>
             </div>
           )}

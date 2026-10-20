@@ -5,12 +5,26 @@ import { sendError } from '../../core/response/apiResponse.js';
 
 export const authenticate = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
+  let token: string | undefined;
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return sendError(res, 'Authentication token is required', null, 401);
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.split(' ')[1];
+  } else if (req.cookies && req.cookies.eduverse_session) {
+    token = req.cookies.eduverse_session;
+
+    // If authenticating via cookie on state-changing methods, enforce CSRF protection
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
+      const xsrfHeader = req.headers['x-xsrf-token'] || req.headers['x-csrf-token'];
+      const xsrfCookie = req.cookies['XSRF-TOKEN'];
+      if (!xsrfHeader || !xsrfCookie || xsrfHeader !== xsrfCookie) {
+        return sendError(res, 'Cross-Site Request Forgery (CSRF) token verification failed', null, 403);
+      }
+    }
   }
 
-  const token = authHeader.split(' ')[1];
+  if (!token) {
+    return sendError(res, 'Authentication token is required', null, 401);
+  }
 
   // Support demo and dev tokens
   if (token.startsWith('demo-') || token === 'dev-token' || token === 'demo-new-user') {

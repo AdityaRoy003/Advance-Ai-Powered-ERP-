@@ -10,10 +10,17 @@ const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json'
-  }
+  },
+  withCredentials: true
 });
 
 apiClient.interceptors.request.use((config) => {
+  // Attach CSRF token if cookie is present
+  const match = document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]*)/);
+  if (match && match[1]) {
+    config.headers['X-XSRF-TOKEN'] = decodeURIComponent(match[1]);
+  }
+
   const savedUser = localStorage.getItem('eduverse_user');
   if (savedUser) {
     try {
@@ -685,6 +692,39 @@ export const SystemOpsAPI = {
   },
   requestDataExport: async () => {
     const res = await apiClient.post('/system-ops/privacy/export');
+    return res.data?.data || res.data;
+  }
+};
+
+export const PrivacyAPI = {
+  recordConsent: async (payload) => {
+    const res = await apiClient.post('/privacy/cookie-consent', payload);
+    return res.data?.data || res.data;
+  },
+  getConsent: async (visitorId) => {
+    try {
+      const res = await apiClient.get('/privacy/cookie-consent', { params: { visitorId } });
+      return res.data?.data || res.data;
+    } catch { return null; }
+  },
+  getConsentStats: async (institutionId) => {
+    try {
+      const res = await apiClient.get('/privacy/consent-stats', { params: institutionId ? { institutionId } : {} });
+      return res.data?.data || res.data;
+    } catch { return null; }
+  },
+  getPolicy: async () => {
+    try {
+      const res = await apiClient.get('/privacy/policy');
+      return res.data?.data || res.data;
+    } catch { return null; }
+  },
+  requestDataExport: async () => {
+    const res = await apiClient.post('/privacy/export');
+    return res.data?.data || res.data;
+  },
+  requestAccountDeletion: async () => {
+    const res = await apiClient.post('/privacy/delete-request');
     return res.data?.data || res.data;
   }
 };

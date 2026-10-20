@@ -8,6 +8,12 @@ import { ThemeProvider } from './context/ThemeContext';
 import { SocketProvider } from './context/SocketContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { AccessibilityProvider } from './context/AccessibilityContext';
+import { CookieConsentProvider } from './context/CookieConsentContext';
+
+// Privacy & Consent Components
+import CookieConsentBanner from './components/privacy/CookieConsentBanner';
+import CookieConsentModal from './components/privacy/CookieConsentModal';
+import PrivacyPolicyModal from './components/privacy/PrivacyPolicyModal';
 
 // Layout
 import DashboardLayout from './pages/DashboardLayout';
@@ -130,13 +136,17 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <SocketProvider>
-          <LanguageProvider>
-            <AccessibilityProvider>
-              <BrowserRouter>
-            <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
+        <CookieConsentProvider>
+          <SocketProvider>
+            <LanguageProvider>
+              <AccessibilityProvider>
+                <BrowserRouter>
+                  <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+                  <CookieConsentBanner />
+                  <CookieConsentModal />
+                  <PrivacyPolicyModal />
+                  <Suspense fallback={<PageLoader />}>
+                    <Routes>
                 {/* Marketing / Landing */}
                 <Route path="/" element={<LandingPage />} />
 
@@ -394,9 +404,10 @@ function App() {
               </Routes>
             </Suspense>
           </BrowserRouter>
-            </AccessibilityProvider>
-          </LanguageProvider>
-        </SocketProvider>
+              </AccessibilityProvider>
+            </LanguageProvider>
+          </SocketProvider>
+        </CookieConsentProvider>
       </AuthProvider>
     </ThemeProvider>
   );

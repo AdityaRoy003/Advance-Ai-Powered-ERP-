@@ -20,6 +20,7 @@ import {
 } from 'react-icons/fa';
 import { useLanguage } from '../context/LanguageContext';
 import { useAccessibility } from '../context/AccessibilityContext';
+import { useCookieConsent } from '../context/CookieConsentContext';
 import AIAssistantWidget from '../components/AIAssistantWidget';
 
 // ─── NOTIFICATION CATEGORIES ───
@@ -66,6 +67,7 @@ export default function DashboardLayout() {
     reducedMotion, toggleReducedMotion, 
     focusIndicators, toggleFocusIndicators 
   } = useAccessibility();
+  const { openModal: openCookieConsentModal } = useCookieConsent();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -440,9 +442,9 @@ export default function DashboardLayout() {
           })}
         </div>
 
-        {/* Ctrl+K hint in sidebar */}
+        {/* Ctrl+K hint & Privacy in sidebar */}
         {sidebarOpen && (
-          <div className="p-4 border-t border-slate-800">
+          <div className="p-4 border-t border-slate-800 flex flex-col gap-2">
             <button 
               onClick={() => setShowGlobalSearch(true)}
               className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 text-xs font-semibold hover:border-indigo-500/40 transition"
@@ -450,6 +452,13 @@ export default function DashboardLayout() {
               <FaSearch size={11} />
               <span className="flex-1 text-left">Global Search…</span>
               <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-xxs font-mono text-slate-500">⌘K</kbd>
+            </button>
+            <button
+              onClick={() => openCookieConsentModal()}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800/80 text-slate-400 hover:text-slate-200 text-xxs font-bold transition"
+            >
+              <span className="flex items-center gap-2"><FaShieldAlt className="text-indigo-400" /> Privacy & Cookies</span>
+              <span className="text-[10px] text-indigo-400">Manage</span>
             </button>
           </div>
         )}
@@ -563,6 +572,15 @@ export default function DashboardLayout() {
                   >
                     {theme === 'dark' ? <FaSun className="text-yellow-400" /> : <FaMoon className="text-indigo-400" />}
                     <span className="truncate">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+                  </button>
+
+                  {/* Privacy & Cookie Preferences */}
+                  <button
+                    onClick={() => { setMobileDrawerOpen(false); openCookieConsentModal(); }}
+                    className="flex items-center gap-1.5 px-2.5 py-2 rounded-xl bg-slate-800/80 border border-slate-700/60 text-slate-200 hover:text-white col-span-2 justify-center"
+                  >
+                    <FaShieldAlt className="text-indigo-400 shrink-0" />
+                    <span className="truncate">Privacy & Cookie Preferences</span>
                   </button>
                 </div>
               </div>
@@ -860,6 +878,12 @@ export default function DashboardLayout() {
                     </div>
 
                     <div className="flex flex-col gap-2 border-t border-slate-800 pt-3">
+                      <button 
+                        onClick={() => { setShowProfileMenu(false); openCookieConsentModal(); }}
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-bold text-slate-300 bg-slate-800/60 hover:bg-slate-800 rounded-xl transition border border-slate-700/60"
+                      >
+                        <FaShieldAlt className="text-indigo-400" /> Cookie & Privacy Preferences
+                      </button>
                       <button 
                         onClick={() => { setShowProfileMenu(false); navigate('/dashboard/profile'); }}
                         className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-bold text-indigo-400 bg-indigo-500/10 hover:bg-indigo-500/20 rounded-xl transition border border-indigo-500/20"
