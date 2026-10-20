@@ -31,6 +31,8 @@ const LibrarianDashboard = lazy(() => import('./pages/dashboards/LibrarianDashbo
 const TransportManagerDashboard = lazy(() => import('./pages/dashboards/TransportManagerDashboard'));
 const PlacementOfficerDashboard = lazy(() => import('./pages/dashboards/PlacementOfficerDashboard'));
 const ReceptionistDashboard = lazy(() => import('./pages/dashboards/ReceptionistDashboard'));
+const AcademicControllerDashboard = lazy(() => import('./pages/dashboards/AcademicControllerDashboard'));
+const HallTicketVerification = lazy(() => import('./pages/HallTicketVerification'));
 
 const PermissionsManager = lazy(() => import('./pages/modules/PermissionsManager'));
 const AuditLogs = lazy(() => import('./pages/modules/AuditLogs'));
@@ -141,6 +143,9 @@ function App() {
                 {/* Public Recruiter Portfolio */}
                 <Route path="/student/:id" element={<StudentPublicPortfolio />} />
 
+                {/* Public QR Hall Ticket Verification */}
+                <Route path="/verify/hall-ticket/:id" element={<HallTicketVerification />} />
+
                 {/* Auth */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
@@ -237,6 +242,71 @@ function App() {
                   <Route path="receptionist" element={
                     <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'RECEPTIONIST']}>
                       <ReceptionistDashboard />
+                    </RoleProtectedRoute>
+                  } />
+                  <Route path="academic_controller" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ACADEMIC_CONTROLLER', 'ADMIN']}>
+                      <AcademicControllerDashboard />
+                    </RoleProtectedRoute>
+                  } />
+                  <Route path="academic-calendar" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ACADEMIC_CONTROLLER', 'ADMIN']}>
+                      <AcademicControllerDashboard initialTab="calendar" />
+                    </RoleProtectedRoute>
+                  } />
+                  <Route path="timetable-mgmt" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ACADEMIC_CONTROLLER', 'ADMIN']}>
+                      <AcademicControllerDashboard initialTab="timetable" />
+                    </RoleProtectedRoute>
+                  } />
+                  <Route path="exam-mgmt" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ACADEMIC_CONTROLLER', 'ADMIN']}>
+                      <AcademicControllerDashboard initialTab="exams" />
+                    </RoleProtectedRoute>
+                  } />
+                  <Route path="exam-duty" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ACADEMIC_CONTROLLER', 'ADMIN']}>
+                      <AcademicControllerDashboard initialTab="duties" />
+                    </RoleProtectedRoute>
+                  } />
+                  <Route path="hall-tickets" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ACADEMIC_CONTROLLER', 'ADMIN']}>
+                      <AcademicControllerDashboard initialTab="halltickets" />
+                    </RoleProtectedRoute>
+                  } />
+                  <Route path="result-center" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ACADEMIC_CONTROLLER', 'ADMIN']}>
+                      <AcademicControllerDashboard initialTab="results" />
+                    </RoleProtectedRoute>
+                  } />
+                  <Route path="grade-moderation" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ACADEMIC_CONTROLLER', 'ADMIN']}>
+                      <AcademicControllerDashboard initialTab="moderation" />
+                    </RoleProtectedRoute>
+                  } />
+                  <Route path="course-mapping" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ACADEMIC_CONTROLLER', 'ADMIN']}>
+                      <AcademicControllerDashboard initialTab="overview" />
+                    </RoleProtectedRoute>
+                  } />
+                  <Route path="faculty-workload" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ACADEMIC_CONTROLLER', 'ADMIN']}>
+                      <AcademicControllerDashboard initialTab="workload" />
+                    </RoleProtectedRoute>
+                  } />
+                  <Route path="classroom-allocation" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ACADEMIC_CONTROLLER', 'ADMIN']}>
+                      <AcademicControllerDashboard initialTab="classrooms" />
+                    </RoleProtectedRoute>
+                  } />
+                  <Route path="academic-reports" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ACADEMIC_CONTROLLER', 'ADMIN']}>
+                      <AcademicControllerDashboard initialTab="reports" />
+                    </RoleProtectedRoute>
+                  } />
+                  <Route path="ai-academic-assistant" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ACADEMIC_CONTROLLER', 'ADMIN']}>
+                      <AcademicControllerDashboard initialTab="ai-assistant" />
                     </RoleProtectedRoute>
                   } />
 

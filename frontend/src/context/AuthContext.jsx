@@ -94,6 +94,27 @@ const demoAccounts = {
     accessLevel: 'Guardian Access',
     avatarColor: 'from-teal-500 to-emerald-500',
     permissions: ['View Ward Grades', 'View Ward Attendance', 'Fee Payments', 'Chat with Teachers']
+  },
+  'academic@eduverse.com': {
+    firstName: 'Dr. Vikram',
+    lastName: 'Sengupta',
+    role: 'ACADEMIC_CONTROLLER',
+    roleName: 'Academic Controller',
+    designation: 'Chief Controller of Examinations & Academic Dean',
+    department: 'Academic Operations & Examination Wing',
+    accessLevel: 'Institution Controller Access',
+    avatarColor: 'from-amber-600 to-rose-600',
+    permissions: [
+      'Academic Calendar Management',
+      'AI Timetable Generation',
+      'Examination Scheduling',
+      'Hall Ticket Generation',
+      'Result Publishing & Moderation',
+      'Faculty Exam Duty Allocation',
+      'Classroom Inventory & Allocation',
+      'Faculty Workload Management',
+      'Reports Generation'
+    ]
   }
 };
 

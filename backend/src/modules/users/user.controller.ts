@@ -72,6 +72,7 @@ export const createUser = async (req: Request, res: Response) => {
       'TRANSPORT_MANAGER',
       'PLACEMENT_OFFICER',
       'RECEPTIONIST',
+      'ACADEMIC_CONTROLLER',
       'TEACHER',
       'STUDENT',
       'PARENT',

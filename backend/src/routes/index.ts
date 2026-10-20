@@ -30,6 +30,7 @@ import executiveRoutes from '../modules/executive/executive.routes.js';
 import systemOpsRoutes from '../modules/system_ops/system_ops.routes.js';
 import socialRoutes from '../modules/social_gamification/social.routes.js';
 import operationsRoutes from '../modules/erp_operations/erp_operations.routes.js';
+import academicRoutes from '../modules/academic_controller/academic.routes.js';
 import { authenticate } from '../modules/auth/auth.middleware.js';
 import { tenantScope } from '../middlewares/tenantScope.middleware.js';
 import { sendSuccess } from '../core/response/apiResponse.js';
@@ -95,5 +96,8 @@ router.use(['/v1/executive', '/executive'],         authenticate, tenantScope, e
 router.use(['/v1/system-ops', '/system-ops'],       authenticate, tenantScope, systemOpsRoutes);
 router.use(['/v1/social', '/social'],               authenticate, tenantScope, socialRoutes);
 router.use(['/v1/operations', '/operations'],       authenticate, tenantScope, operationsRoutes);
+// Public QR verification endpoint bypasses auth for mobile scanners
+router.get(['/v1/academic/hall-tickets/verify/:id', '/academic/hall-tickets/verify/:id'], academicRoutes);
+router.use(['/v1/academic', '/academic'],           authenticate, tenantScope, academicRoutes);
 
 export default router;

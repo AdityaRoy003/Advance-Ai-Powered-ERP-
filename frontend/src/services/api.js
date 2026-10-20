@@ -903,6 +903,123 @@ export const OperationsAPI = {
   }
 };
 
+export const AcademicAPI = {
+  getSummary: async () => {
+    try {
+      const res = await apiClient.get('/academic/summary');
+      return res.data?.data || res.data;
+    } catch { return null; }
+  },
+  getCalendar: async () => {
+    try {
+      const res = await apiClient.get('/academic/calendar');
+      return res.data?.data || res.data;
+    } catch { return null; }
+  },
+  addCalendarEvent: async (eventData) => {
+    const res = await apiClient.post('/academic/calendar/events', eventData);
+    return res.data?.data || res.data;
+  },
+  toggleFreezeCalendar: async () => {
+    const res = await apiClient.post('/academic/calendar/freeze');
+    return res.data?.data || res.data;
+  },
+  publishCalendar: async () => {
+    const res = await apiClient.post('/academic/calendar/publish');
+    return res.data?.data || res.data;
+  },
+  getTimetable: async (params) => {
+    try {
+      const res = await apiClient.get('/academic/timetable', { params });
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  runAITimetableSolver: async (config) => {
+    const res = await apiClient.post('/academic/timetable/ai-solve', config || {});
+    return res.data?.data || res.data;
+  },
+  getClassrooms: async () => {
+    try {
+      const res = await apiClient.get('/academic/classrooms');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  getRoomSuggestions: async (params) => {
+    try {
+      const res = await apiClient.get('/academic/classrooms/suggestions', { params });
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  getExams: async () => {
+    try {
+      const res = await apiClient.get('/academic/exams');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  createExam: async (examData) => {
+    const res = await apiClient.post('/academic/exams', examData);
+    return res.data?.data || res.data;
+  },
+  updateExamWorkflow: async (id, statusData) => {
+    const res = await apiClient.patch(`/academic/exams/${id}/workflow`, statusData);
+    return res.data?.data || res.data;
+  },
+  generateSeatingPlan: async (id) => {
+    const res = await apiClient.post(`/academic/exams/${id}/seating-plan`);
+    return res.data?.data || res.data;
+  },
+  getFacultyDuties: async () => {
+    try {
+      const res = await apiClient.get('/academic/duties');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  runAIFacultyDutyAllocation: async () => {
+    const res = await apiClient.post('/academic/duties/ai-allocate');
+    return res.data?.data || res.data;
+  },
+  getHallTickets: async () => {
+    try {
+      const res = await apiClient.get('/academic/hall-tickets');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  generateHallTickets: async (criteria) => {
+    const res = await apiClient.post('/academic/hall-tickets/generate', criteria || {});
+    return res.data?.data || res.data;
+  },
+  verifyHallTicket: async (id) => {
+    const res = await apiClient.get(`/academic/hall-tickets/verify/${id}`);
+    return res.data?.data || res.data;
+  },
+  getResults: async () => {
+    try {
+      const res = await apiClient.get('/academic/results');
+      return res.data?.data || res.data || [];
+    } catch { return []; }
+  },
+  applyGradeModeration: async (moderationData) => {
+    const res = await apiClient.post('/academic/results/moderation', moderationData);
+    return res.data?.data || res.data;
+  },
+  getFacultyWorkload: async () => {
+    try {
+      const res = await apiClient.get('/academic/workload');
+      return res.data?.data || res.data;
+    } catch { return null; }
+  },
+  getReports: async () => {
+    try {
+      const res = await apiClient.get('/academic/reports');
+      return res.data?.data || res.data;
+    } catch { return null; }
+  },
+  queryAIAssistant: async (payload) => {
+    const res = await apiClient.post('/academic/ai-assistant', payload);
+    return res.data?.data || res.data;
+  }
+};
+
 export default apiClient;
 
 

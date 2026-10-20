@@ -15,7 +15,8 @@ import {
   FaShieldAlt, FaCog, FaExclamationTriangle, FaCheckCircle,
   FaInfoCircle, FaStream, FaWifi, FaBriefcase, FaPhone, FaKey,
   FaMicrophone, FaCubes, FaBookOpen, FaHeartbeat, FaFlask, FaTrophy, FaUserFriends, FaAward,
-  FaUtensils, FaLeaf, FaWrench, FaBoxes, FaCogs, FaPuzzlePiece, FaCode, FaCrown, FaLaptopCode, FaUserShield, FaGlobe, FaUniversalAccess, FaClipboardCheck, FaUsers
+  FaUtensils, FaLeaf, FaWrench, FaBoxes, FaCogs, FaPuzzlePiece, FaCode, FaCrown, FaLaptopCode, FaUserShield, FaGlobe, FaUniversalAccess, FaClipboardCheck, FaUsers,
+  FaCalendarAlt, FaUserTie, FaBalanceScale, FaTasks
 } from 'react-icons/fa';
 import { useLanguage } from '../context/LanguageContext';
 import { useAccessibility } from '../context/AccessibilityContext';
@@ -259,6 +260,25 @@ export default function DashboardLayout() {
           { name: 'Live Chat', path: '/dashboard/chat', icon: <FaComments /> }
         ];
 
+      case 'ACADEMIC_CONTROLLER':
+      case 'ACADEMIC':
+        return [
+          { name: 'Academic Dashboard', path: '/dashboard/academic_controller', icon: <FaChartBar /> },
+          { name: 'Academic Calendar', path: '/dashboard/academic-calendar', icon: <FaCalendarAlt /> },
+          { name: 'Timetable Management', path: '/dashboard/timetable-mgmt', icon: <FaCalendarCheck /> },
+          { name: 'Exam Management', path: '/dashboard/exam-mgmt', icon: <FaFileAlt /> },
+          { name: 'Exam Duty Allocation', path: '/dashboard/exam-duty', icon: <FaUserTie /> },
+          { name: 'Hall Ticket Center', path: '/dashboard/hall-tickets', icon: <FaIdCard /> },
+          { name: 'Result Center', path: '/dashboard/result-center', icon: <FaAward /> },
+          { name: 'Grade Moderation', path: '/dashboard/grade-moderation', icon: <FaBalanceScale /> },
+          { name: 'Course & Subject Mapping', path: '/dashboard/course-mapping', icon: <FaBookOpen /> },
+          { name: 'Faculty Workload', path: '/dashboard/faculty-workload', icon: <FaTasks /> },
+          { name: 'Classroom Allocation', path: '/dashboard/classroom-allocation', icon: <FaBuilding /> },
+          { name: 'Reports', path: '/dashboard/academic-reports', icon: <FaClipboardCheck /> },
+          { name: 'AI Academic Assistant', path: '/dashboard/ai-academic-assistant', icon: <FaRobot /> },
+          { name: 'Live Chat & Queries', path: '/dashboard/chat', icon: <FaComments /> }
+        ];
+
       case 'TEACHER':
       case 'FACULTY':
         return [
@@ -352,6 +372,7 @@ export default function DashboardLayout() {
       FINANCE_OFFICER: '/dashboard/finance_officer',
       HR_MANAGER: '/dashboard/hr_manager',
       PLACEMENT_OFFICER: '/dashboard/placement_officer',
+      ACADEMIC_CONTROLLER: '/dashboard/academic_controller',
       TRANSPORT_MANAGER: '/dashboard/transport_manager',
       LIBRARIAN: '/dashboard/librarian',
       RECEPTIONIST: '/dashboard/receptionist',
@@ -569,6 +590,7 @@ export default function DashboardLayout() {
                   >
                     <option value="SUPER_ADMIN" className="bg-[#111827] text-white">👑 Super Admin</option>
                     <option value="ADMIN" className="bg-[#111827] text-white">🏛️ Admin</option>
+                    <option value="ACADEMIC_CONTROLLER" className="bg-[#111827] text-white">📊 Academic Controller</option>
                     <option value="CYBER_SECURITY_OFFICER" className="bg-[#111827] text-white">🛡️ Cyber Sec</option>
                     <option value="FINANCE_OFFICER" className="bg-[#111827] text-white">💰 Finance</option>
                     <option value="HR_MANAGER" className="bg-[#111827] text-white">👥 HR</option>
