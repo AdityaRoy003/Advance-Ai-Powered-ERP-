@@ -69,6 +69,15 @@ export const CookieConsentProvider = ({ children }) => {
   useEffect(() => {
     const syncConsentWithServer = async () => {
       try {
+        const localRecord = localStorage.getItem(STORAGE_KEY);
+        // CRITICAL GUARD: If this device/browser has not yet made an explicit choice,
+        // strictly keep the banner visible and NEVER auto-allow optional cookies!
+        if (!localRecord) {
+          setHasDecided(false);
+          setShowBanner(true);
+          return;
+        }
+
         const serverConsent = await PrivacyAPI.getConsent(visitorId);
         if (serverConsent && serverConsent.hasConsented && serverConsent.categories) {
           const merged = {
@@ -199,8 +208,14 @@ export const CookieConsentProvider = ({ children }) => {
     setShowPolicyDrawer(false);
   };
 
+  const dismissBanner = async () => {
+    // Closing or dismissing without explicit acceptance defaults to rejecting optional trackers
+    await rejectOptional();
+  };
+
   const isAllowed = (category) => {
     if (category === 'essential') return true;
+    if (!hasDecided) return false;
     return Boolean(consent[category]);
   };
 
@@ -219,6 +234,7 @@ export const CookieConsentProvider = ({ children }) => {
         rejectOptional,
         saveCustomPreferences,
         withdrawConsent,
+        dismissBanner,
         openPreferences,
         closePreferences,
         openPolicyDrawer,

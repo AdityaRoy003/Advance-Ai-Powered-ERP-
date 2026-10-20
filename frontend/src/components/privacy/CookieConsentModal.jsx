@@ -137,14 +137,16 @@ export default function CookieConsentModal() {
                 <button
                   type="button"
                   onClick={() => handleToggle('functional')}
-                  className="text-2xl transition shrink-0"
+                  className={`w-11 h-6 rounded-full transition-colors relative flex items-center p-0.5 shrink-0 ${
+                    localChoices.functional ? 'bg-indigo-600' : 'bg-slate-700'
+                  }`}
                   aria-label="Toggle Functional cookies"
                 >
-                  {localChoices.functional ? (
-                    <FaToggleOn className="text-indigo-400" />
-                  ) : (
-                    <FaToggleOff className="text-slate-600" />
-                  )}
+                  <span
+                    className={`w-5 h-5 rounded-full bg-white shadow-md transform transition-transform ${
+                      localChoices.functional ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
                 </button>
               </div>
               <p className="text-slate-400 text-xxs leading-relaxed">
@@ -165,14 +167,16 @@ export default function CookieConsentModal() {
                 <button
                   type="button"
                   onClick={() => handleToggle('analytics')}
-                  className="text-2xl transition shrink-0"
+                  className={`w-11 h-6 rounded-full transition-colors relative flex items-center p-0.5 shrink-0 ${
+                    localChoices.analytics ? 'bg-teal-600' : 'bg-slate-700'
+                  }`}
                   aria-label="Toggle Analytics cookies"
                 >
-                  {localChoices.analytics ? (
-                    <FaToggleOn className="text-teal-400" />
-                  ) : (
-                    <FaToggleOff className="text-slate-600" />
-                  )}
+                  <span
+                    className={`w-5 h-5 rounded-full bg-white shadow-md transform transition-transform ${
+                      localChoices.analytics ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
                 </button>
               </div>
               <p className="text-slate-400 text-xxs leading-relaxed">
@@ -193,14 +197,16 @@ export default function CookieConsentModal() {
                 <button
                   type="button"
                   onClick={() => handleToggle('marketing')}
-                  className="text-2xl transition shrink-0"
+                  className={`w-11 h-6 rounded-full transition-colors relative flex items-center p-0.5 shrink-0 ${
+                    localChoices.marketing ? 'bg-pink-600' : 'bg-slate-700'
+                  }`}
                   aria-label="Toggle Marketing cookies"
                 >
-                  {localChoices.marketing ? (
-                    <FaToggleOn className="text-pink-400" />
-                  ) : (
-                    <FaToggleOff className="text-slate-600" />
-                  )}
+                  <span
+                    className={`w-5 h-5 rounded-full bg-white shadow-md transform transition-transform ${
+                      localChoices.marketing ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
                 </button>
               </div>
               <p className="text-slate-400 text-xxs leading-relaxed">
@@ -285,26 +291,26 @@ export default function CookieConsentModal() {
               )}
             </div>
 
-            {/* Buttons: Reject, Accept, Save */}
-            <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap justify-end">
+            {/* Buttons: Reject, Save, Accept */}
+            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap justify-end">
               <button
                 type="button"
                 onClick={rejectOptional}
-                className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs border border-slate-700 transition"
+                className="flex-1 sm:flex-initial px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 hover:text-white font-semibold text-xs border border-slate-700 transition"
               >
                 Reject Optional
               </button>
               <button
                 type="button"
                 onClick={handleSave}
-                className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-600/25 transition"
+                className="flex-1 sm:flex-initial px-4 py-2 rounded-xl bg-slate-700/80 hover:bg-slate-700 text-white font-semibold text-xs border border-slate-600 transition"
               >
-                Save My Preferences
+                Save Preferences
               </button>
               <button
                 type="button"
                 onClick={acceptAll}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-lg shadow-emerald-600/25 transition"
+                className="w-full sm:w-auto px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-semibold text-xs shadow-md shadow-indigo-600/25 transition"
               >
                 Accept All
               </button>
