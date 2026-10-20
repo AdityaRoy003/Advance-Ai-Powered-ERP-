@@ -24,7 +24,7 @@ const FaSliders = FaSlidersH;
 export default function UserProfile() {
   const { user } = useAuth();
   const { theme } = useTheme();
-  const { consent, openModal: openCookieConsentModal, withdrawConsent, policyVersion } = useCookieConsent();
+  const { consent, openModal: openCookieConsentModal, openPreferences, withdrawConsent, policyVersion } = useCookieConsent();
 
   // Active section tab state (Default: 'overview')
   const [activeTab, setActiveTab] = useState('overview');
@@ -719,8 +719,11 @@ export default function UserProfile() {
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => openCookieConsentModal()}
-                      className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition shadow-lg shadow-indigo-600/20 flex items-center gap-1.5"
+                      onClick={() => {
+                        const fn = openCookieConsentModal || openPreferences;
+                        if (typeof fn === 'function') fn();
+                      }}
+                      className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition shadow-lg shadow-indigo-600/20 flex items-center gap-1.5 cursor-pointer"
                     >
                       <FaSlidersH /> Manage Cookies
                     </button>

@@ -237,6 +237,8 @@ export const CookieConsentProvider = ({ children }) => {
         dismissBanner,
         openPreferences,
         closePreferences,
+        openModal: openPreferences,
+        closeModal: closePreferences,
         openPolicyDrawer,
         closePolicyDrawer,
         isAllowed

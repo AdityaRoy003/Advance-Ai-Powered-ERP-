@@ -43,7 +43,7 @@ export default function CookieConsentModal() {
     }
   }, [showModal, consent]);
 
-  if (!showModal && !showPolicyDrawer) return null;
+  if (!showModal) return null;
 
   const handleToggle = (cat) => {
     setLocalChoices(prev => ({
@@ -62,8 +62,12 @@ export default function CookieConsentModal() {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-[10000] flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+      <div 
+        onClick={(e) => { if (e.target === e.currentTarget) closePreferences(); }}
+        className="fixed inset-0 bg-black/75 backdrop-blur-md z-[10000] flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
+      >
         <motion.div
+          onClick={(e) => e.stopPropagation()}
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
