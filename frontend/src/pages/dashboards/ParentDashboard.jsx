@@ -128,10 +128,10 @@ export default function ParentDashboard() {
     <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-8 text-xs font-semibold pb-16">
 
       {/* ─── BANNER ─── */}
-      <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 rounded-3xl p-8 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6 relative overflow-hidden">
         <div className="z-10">
           <span className="text-white/75 font-bold uppercase tracking-widest text-xxs">Parent Guardian Portal</span>
-          <h1 className="text-3xl font-black tracking-tight mt-1">Welcome, {parentName}</h1>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight mt-1">Welcome, {parentName}</h1>
           <p className="text-white/80 text-xs mt-1">{students.length} Ward{students.length === 1 ? '' : 's'} Linked • Academic Oversight Dashboard</p>
         </div>
         <div className="z-10 flex items-center gap-3">
@@ -142,7 +142,7 @@ export default function ParentDashboard() {
       </div>
 
       {students.length === 0 ? (
-        <div className="p-16 text-center border border-dashed border-slate-800 rounded-3xl flex flex-col items-center gap-3 bg-[#111827]/40 text-slate-400">
+        <div className="p-10 sm:p-16 text-center border border-dashed border-slate-800 rounded-3xl flex flex-col items-center gap-3 bg-[#111827]/40 text-slate-400">
           <FaUserGraduate className="text-4xl text-emerald-400 mb-1" />
           <span className="font-bold text-base text-slate-200">No Student Accounts Registered Yet</span>
           <p className="text-xs text-slate-400 max-w-md">
@@ -160,7 +160,7 @@ export default function ParentDashboard() {
                   key={child.id}
                   whileHover={{ scale: 1.02 }}
                   onClick={() => setSelectedChildId(child.id)}
-                  className={`p-5 rounded-2xl border cursor-pointer transition flex flex-col gap-3 ${
+                  className={`p-4 sm:p-5 rounded-2xl border cursor-pointer transition flex flex-col gap-3 ${
                     selectedChildId === child.id
                       ? 'border-emerald-500 bg-emerald-500/10 shadow-lg shadow-emerald-500/20'
                       : 'border-slate-800 bg-[#111827]/60 hover:border-slate-700'
@@ -194,7 +194,7 @@ export default function ParentDashboard() {
           </div>
 
           {/* ─── TAB NAVIGATION ─── */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800 scrollbar-none -mx-1 px-1">
             {[
               { id: 'my_children', label: 'Overview', icon: <FaUsers /> },
               { id: 'attendance', label: 'Attendance', icon: <FaUserClock /> },
@@ -223,8 +223,8 @@ export default function ParentDashboard() {
           {activeTab === 'my_children' && selectedChild && (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               <div className="lg:col-span-8 flex flex-col gap-6">
-                <div className="p-6 rounded-2xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-5">
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-5">
+                  <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
                     <FaGraduationCap className="text-emerald-400" /> {selectedChild.name} — Academic Record
                   </h2>
 
@@ -235,19 +235,19 @@ export default function ParentDashboard() {
                       { label: 'Fee Status', val: selectedChild.feeStatus === 'cleared' ? 'Cleared ✓' : `Due: ${selectedChild.feeDue}`, color: 'text-emerald-400' },
                       { label: 'Department', val: selectedChild.department, color: 'text-purple-400' }
                     ].map((s, i) => (
-                      <div key={i} className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center flex flex-col gap-1">
-                        <span className="text-xxs text-slate-400 font-sans">{s.label}</span>
-                        <span className={`font-black text-sm ${s.color}`}>{s.val}</span>
+                      <div key={i} className="p-3 sm:p-4 rounded-xl bg-slate-900 border border-slate-800 text-center flex flex-col gap-1 min-w-0">
+                        <span className="text-[10px] sm:text-xxs text-slate-400 font-sans truncate">{s.label}</span>
+                        <span className={`font-black text-xs sm:text-sm ${s.color} truncate`}>{s.val}</span>
                       </div>
                     ))}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 text-xs">
-                    <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 min-w-0">
                       <span className="text-xxs text-slate-400 block font-sans">Student Email ID</span>
-                      <span className="font-bold text-white font-mono mt-1 block">{selectedChild.rollNumber}</span>
+                      <span className="font-bold text-white font-mono mt-1 block break-all">{selectedChild.rollNumber}</span>
                     </div>
-                    <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
+                    <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 min-w-0">
                       <span className="text-xxs text-slate-400 block font-sans">Class Faculty</span>
                       <span className="font-bold text-white mt-1 block">{selectedChild.classTeacher}</span>
                     </div>

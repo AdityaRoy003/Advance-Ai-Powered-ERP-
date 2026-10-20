@@ -539,8 +539,8 @@ export default function InstitutionManagement() {
       </div>
 
       {/* Table */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-slate-900/60 border border-slate-800 rounded-xl overflow-x-auto scrollbar-thin">
+        <table className="w-full min-w-[560px] text-sm">
           <thead>
             <tr className="border-b border-slate-800 text-slate-400 text-xs uppercase">
               <th className="px-4 py-3 text-left font-bold">Institution</th>

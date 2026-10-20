@@ -185,18 +185,19 @@ export default function PermissionsManager() {
           </div>
 
           {/* Matrix Table */}
-          <div className="p-4 rounded-3xl border border-slate-800 bg-[#111827]/60 overflow-x-auto shadow-xl">
-            <div className="flex justify-between items-center mb-5">
+          <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-800 bg-[#111827]/60 shadow-xl flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
               <div>
-                <h2 className="text-lg font-bold text-white">Module Permissions — <span className={`font-black ${getRoleColor(selectedRole)}`}>{selectedRole.replace(/_/g, ' ')}</span></h2>
+                <h2 className="text-base sm:text-lg font-bold text-white">Module Permissions — <span className={`font-black ${getRoleColor(selectedRole)}`}>{selectedRole.replace(/_/g, ' ')}</span></h2>
                 <p className="text-xxs text-slate-400 mt-0.5">Toggle cells to grant or revoke access per action type.</p>
               </div>
-              <button onClick={handleSavePermissions} className="bg-violet-600 hover:bg-violet-700 text-white px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 shadow-lg">
+              <button onClick={handleSavePermissions} className="self-start sm:self-auto bg-violet-600 hover:bg-violet-700 text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 shadow-lg transition">
                 <FaSave /> Save Permissions
               </button>
             </div>
 
-            <table className="w-full border-collapse text-xxs">
+            <div className="w-full overflow-x-auto scrollbar-thin pb-2">
+              <table className="w-full min-w-[520px] border-collapse text-xxs">
               <thead>
                 <tr className="border-b border-slate-800">
                   <th className="text-left pb-3 pr-4 font-bold text-slate-400 uppercase tracking-wider w-40">Module</th>
@@ -230,6 +231,7 @@ export default function PermissionsManager() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}

@@ -141,19 +141,19 @@ export default function CyberSecurityOfficerDashboard() {
     <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-8 text-xs font-semibold pb-16">
       
       {/* ─── BANNER ─── */}
-      <div className="bg-gradient-to-r from-red-950 via-slate-900 to-indigo-950 rounded-3xl p-8 text-white border border-red-900/40 shadow-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-red-950 via-slate-900 to-indigo-950 rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-white border border-red-900/40 shadow-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6 relative overflow-hidden">
         <div className="z-10 flex flex-col gap-1">
           <span className="text-red-400 font-bold uppercase tracking-widest text-xxs flex items-center gap-2">
             <FaShieldAlt /> Cyber Defense & SIEM Operations Center
           </span>
-          <h1 className="text-3xl font-black tracking-tight text-white mt-1">Hello, {name}</h1>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white mt-1">Hello, {name}</h1>
           <p className="text-slate-400 text-xs">Real-Time Threat Telemetry • Audit Trails & Perimeter Defense</p>
         </div>
 
         <div className="z-10 flex items-center gap-3">
           <button 
             onClick={handleTriggerPerimeterScan}
-            className="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-2xl text-xs shadow-lg shadow-red-600/30 transition flex items-center gap-2"
+            className="bg-red-600 hover:bg-red-700 text-white font-bold px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-xs shadow-lg shadow-red-600/30 transition flex items-center gap-2"
           >
             <FaBug /> Run Perimeter Scan
           </button>
@@ -161,23 +161,23 @@ export default function CyberSecurityOfficerDashboard() {
       </div>
 
       {/* ─── METRICS ROW ─── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 font-mono">
         {[
           { label: 'Blacklisted IPs', val: String(blockedIps.length), color: 'text-red-400', desc: 'Perimeter dropped' },
           { label: 'Active Sessions', val: String(activeSessions.length), color: 'text-emerald-400', desc: 'Live Database Accounts' },
           { label: 'Login History Entries', val: String(loginHistory.length), color: 'text-amber-400', desc: 'Recorded Attempts' },
           { label: 'Audit Trail Records', val: String(auditLogs.length), color: 'text-indigo-400', desc: 'MongoDB Logs' }
         ].map((s, i) => (
-          <div key={i} className="p-5 rounded-2xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-1">
-            <span className="text-xxs uppercase tracking-wider text-slate-400 font-sans font-bold">{s.label}</span>
-            <span className={`text-2xl font-black ${s.color}`}>{s.val}</span>
-            <span className="text-xxs text-slate-500 font-sans">{s.desc}</span>
+          <div key={i} className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-1 min-w-0">
+            <span className="text-[10px] sm:text-xxs uppercase tracking-wider text-slate-400 font-sans font-bold truncate">{s.label}</span>
+            <span className={`text-xl sm:text-2xl font-black ${s.color} truncate`}>{s.val}</span>
+            <span className="text-[10px] sm:text-xxs text-slate-500 font-sans truncate">{s.desc}</span>
           </div>
         ))}
       </div>
 
       {/* ─── 10 SECURITY MODULES TAB NAVIGATION ─── */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800 scrollbar-none">
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800 scrollbar-none -mx-1 px-1">
         {[
           { id: 'audit_timeline', label: '28. Audit Timeline', icon: <FaHistory /> },
           { id: 'login_history', label: 'Login History', icon: <FaKey /> },
@@ -299,8 +299,8 @@ export default function CyberSecurityOfficerDashboard() {
               No login records in the database.
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
+            <div className="w-full overflow-x-auto scrollbar-thin pb-2">
+              <table className="w-full min-w-[620px] text-left border-collapse text-xs">
                 <thead>
                   <tr className="border-b border-slate-800 text-slate-400 uppercase text-xxs">
                     <th className="pb-3">Account Email</th>
@@ -335,10 +335,10 @@ export default function CyberSecurityOfficerDashboard() {
 
       {/* ─── MODULE 3: FAILED LOGIN DETECTION ─── */}
       {activeTab === 'failed_logins' && (
-        <div className="p-6 rounded-3xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-5">
-          <div className="flex justify-between items-center">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2"><FaUserSlash className="text-red-400" /> Account Lockout & Brute-Force Monitoring</h2>
-            <span className="text-xxs font-mono bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full font-bold border border-emerald-500/20">Active Policy: 5 Consecutive Failed Attempts = 15m Lock</span>
+        <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-5">
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+            <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2"><FaUserSlash className="text-red-400" /> Account Lockout & Brute-Force Monitoring</h2>
+            <span className="text-xxs font-mono bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full font-bold border border-emerald-500/20 self-start sm:self-auto">Active Policy: 5 Consecutive Failed Attempts = 15m Lock</span>
           </div>
 
           <div className="p-8 text-center border border-dashed border-slate-800 rounded-2xl flex flex-col items-center gap-2 bg-slate-900/40">
@@ -353,8 +353,8 @@ export default function CyberSecurityOfficerDashboard() {
       {activeTab === 'ip_monitoring' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8 flex flex-col gap-4">
-            <div className="p-6 rounded-3xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-4">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2"><FaNetworkWired className="text-red-400" /> Perimeter Firewall Blacklist</h2>
+            <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-4">
+              <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2"><FaNetworkWired className="text-red-400" /> Perimeter Firewall Blacklist</h2>
               {blockedIps.length === 0 ? (
                 <div className="p-10 text-center border border-dashed border-slate-800 rounded-2xl text-slate-500">
                   No IP addresses currently blacklisted. Use the form to ban malicious IPs.
@@ -362,12 +362,12 @@ export default function CyberSecurityOfficerDashboard() {
               ) : (
                 <div className="flex flex-col gap-3">
                   {blockedIps.map((b, idx) => (
-                    <div key={idx} className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex justify-between items-center">
+                    <div key={idx} className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
                       <div>
                         <span className="font-mono font-bold text-red-400 text-sm block">{b.ip}</span>
                         <span className="text-xxs text-slate-400">{b.reason} • Blocked: {b.blockedAt}</span>
                       </div>
-                      <button onClick={() => handleUnblockIp(b.ip)} className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-xl text-xxs font-bold">
+                      <button onClick={() => handleUnblockIp(b.ip)} className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-xl text-xxs font-bold self-start sm:self-auto">
                         Unblock
                       </button>
                     </div>

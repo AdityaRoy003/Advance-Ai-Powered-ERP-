@@ -294,16 +294,16 @@ export default function TeacherDashboard() {
   return (
     <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-8 text-xs font-semibold">
       {/* Top Banner */}
-      <div className="bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-600 rounded-3xl p-8 text-white shadow-xl flex flex-col justify-between items-start gap-4">
+      <div className="bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-600 rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-white shadow-xl flex flex-col justify-between items-start gap-4">
         <div>
           <span className="text-white/80 font-bold uppercase tracking-widest text-xxs">Faculty Academic Workspace</span>
-          <h1 className="text-3xl font-extrabold tracking-tight mt-1">Hello, {name}</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1">Hello, {name}</h1>
           <p className="opacity-90 text-sm mt-1">{dept} • Active Semester Lecturing</p>
         </div>
       </div>
 
       {/* Nav Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800">
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800 scrollbar-none -mx-1 px-1">
         {[
           { id: 'academic_classes', label: 'Classes & Roster', icon: <FaChalkboardTeacher /> },
           { id: 'attendance', label: 'Attendance Sheet', icon: <FaUserCheck /> },
@@ -318,7 +318,7 @@ export default function TeacherDashboard() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold whitespace-nowrap transition text-xs ${
+            className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl font-bold whitespace-nowrap transition text-xs ${
               activeTab === tab.id 
                 ? 'bg-indigo-600 text-white shadow-md' 
                 : 'bg-slate-900/60 text-slate-400 hover:text-white border border-slate-800'
@@ -333,14 +333,14 @@ export default function TeacherDashboard() {
       {/* ─── TAB 1: ACADEMIC CLASSES ─── */}
       {activeTab === 'academic_classes' && (
         <div className="flex flex-col gap-6">
-          <div className="p-6 rounded-2xl border border-slate-800 bg-[#111827]/40 shadow-sm flex flex-col gap-4">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2"><FaBookOpen className="text-indigo-400" /> Active Course Catalog & Sections</h2>
+          <div className="p-4 sm:p-6 rounded-2xl border border-slate-800 bg-[#111827]/40 shadow-sm flex flex-col gap-4">
+            <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2"><FaBookOpen className="text-indigo-400" /> Active Course Catalog & Sections</h2>
             {courses.length === 0 ? (
               <div className="p-8 text-center border border-dashed border-slate-800 rounded-xl text-slate-400">
                 No courses assigned yet. Courses provisioned by academic admin will appear here.
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 {courses.map(c => (
                   <div key={c._id || c.id || c.code} className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col gap-2">
                     <span className="text-xxs font-mono text-indigo-400 font-bold">{c.code}</span>
@@ -356,9 +356,9 @@ export default function TeacherDashboard() {
 
       {/* ─── TAB 2: ATTENDANCE SHEET ─── */}
       {activeTab === 'attendance' && (
-        <div className="p-6 rounded-2xl border border-slate-800 bg-[#111827]/40 shadow-sm flex flex-col gap-6">
+        <div className="p-4 sm:p-6 rounded-2xl border border-slate-800 bg-[#111827]/40 shadow-sm flex flex-col gap-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2"><FaUserCheck className="text-emerald-400" /> Live Classroom Attendance</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2"><FaUserCheck className="text-emerald-400" /> Live Classroom Attendance</h2>
             <span className="text-xxs font-mono bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full font-bold">Live Session</span>
           </div>
 
@@ -369,14 +369,14 @@ export default function TeacherDashboard() {
           ) : (
             <div className="flex flex-col gap-3">
               {studentsList.map(s => (
-                <div key={s.id} className="flex justify-between items-center p-3.5 bg-slate-900 rounded-xl border border-slate-800">
+                <div key={s.id} className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 p-3 sm:p-3.5 bg-slate-900 rounded-xl border border-slate-800">
                   <div>
                     <span className="font-bold text-white block">{s.name}</span>
                     <span className="text-xxs font-mono text-slate-400">{s.rollNumber}</span>
                   </div>
                   <button 
                     onClick={() => toggleAttendance(s.id)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition border ${
+                    className={`self-start sm:self-auto flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition border ${
                       s.attendance === 'present' ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' : 'bg-rose-500/15 text-rose-400 border-rose-500/30'
                     }`}
                   >
@@ -598,7 +598,7 @@ export default function TeacherDashboard() {
             </div>
 
             {/* The 7 AI Action Buttons */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 sm:gap-3">
               {[
                 { id: 'question_paper', label: 'Generate Question Paper', icon: '📄', color: 'from-indigo-600 to-blue-600' },
                 { id: 'assignment', label: 'Generate Assignment', icon: '📝', color: 'from-purple-600 to-indigo-600' },
@@ -615,10 +615,10 @@ export default function TeacherDashboard() {
                     handleExecuteAITool(tool.id);
                   }}
                   disabled={generating}
-                  className={`p-4 rounded-2xl bg-gradient-to-br ${tool.color} text-white flex flex-col items-center justify-center text-center gap-2 shadow-lg hover:scale-105 active:scale-95 transition disabled:opacity-50`}
+                  className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-br ${tool.color} text-white flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2 shadow-lg hover:scale-105 active:scale-95 transition disabled:opacity-50 min-h-[90px]`}
                 >
-                  <span className="text-2xl">{tool.icon}</span>
-                  <span className="font-extrabold text-xxs uppercase tracking-wider">{tool.label}</span>
+                  <span className="text-xl sm:text-2xl">{tool.icon}</span>
+                  <span className="font-extrabold text-[10px] sm:text-xxs uppercase tracking-wider leading-tight">{tool.label}</span>
                 </button>
               ))}
             </div>

@@ -193,12 +193,12 @@ export default function Finance() {
       {/* Stripe Payment Overlay Simulator */}
       <AnimatePresence>
         {showCheckout && activeInvoice && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-6">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md bg-[#111827] border border-slate-850 p-8 rounded-3xl shadow-2xl flex flex-col gap-6"
+              className="w-full max-w-md bg-[#111827] border border-slate-850 p-5 sm:p-8 rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col gap-5 sm:gap-6 max-h-[90vh] overflow-y-auto"
             >
               <div className="text-center">
                 <span className="text-indigo-400 font-bold text-xxs uppercase tracking-widest">EduVerse Safe Pay</span>

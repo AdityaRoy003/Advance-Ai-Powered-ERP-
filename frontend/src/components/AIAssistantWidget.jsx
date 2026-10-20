@@ -46,7 +46,7 @@ export default function AIAssistantWidget() {
   };
 
   return (
-    <div className="fixed bottom-16 sm:bottom-6 right-3 sm:right-6 z-40 flex flex-col items-end gap-3 font-semibold text-xs">
+    <div className="fixed bottom-20 sm:bottom-6 right-3 sm:right-6 z-40 flex flex-col items-end gap-3 font-semibold text-xs">
       
       {/* Chat Window Panel */}
       <AnimatePresence>
@@ -55,7 +55,7 @@ export default function AIAssistantWidget() {
             initial={{ opacity: 0, y: 30, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.95 }}
-            className="w-[calc(100vw-2rem)] sm:w-80 h-[380px] bg-[#111827] border border-slate-800 rounded-3xl shadow-2xl flex flex-col justify-between overflow-hidden"
+            className="w-[calc(100vw-1.5rem)] sm:w-80 max-h-[calc(100dvh-130px)] h-[380px] bg-[#111827] border border-slate-800 rounded-3xl shadow-2xl flex flex-col justify-between overflow-hidden"
           >
             {/* Window title bar */}
             <div className="px-5 py-4 border-b border-slate-850 bg-white/5 flex justify-between items-center text-white">
@@ -126,10 +126,10 @@ export default function AIAssistantWidget() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-full flex items-center justify-center shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/50 transition cursor-pointer"
+        className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-full flex items-center justify-center shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/50 transition cursor-pointer"
         title="Ask ERP AI Copilot"
       >
-        <FaRobot size={22} className="animate-pulse" />
+        <FaRobot size={18} className="sm:text-[22px] animate-pulse" />
       </motion.button>
 
     </div>

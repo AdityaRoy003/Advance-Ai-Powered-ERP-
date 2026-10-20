@@ -290,18 +290,18 @@ export default function AcademicControllerDashboard({ initialTab = 'overview' })
     <div className="flex flex-col gap-6 text-xs font-sans pb-16 selection:bg-purple-500/30">
       
       {/* ─── REAL-TIME LOGGED-IN PROFILE HEADER ─── */}
-      <div className="bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 rounded-3xl p-6 sm:p-8 border border-purple-800/40 text-white shadow-2xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-purple-800/40 text-white shadow-2xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 sm:gap-6 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10">
           <div className="flex flex-wrap items-center gap-2 mb-2">
-            <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-mono text-xxs font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <span className="px-2.5 sm:px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-mono text-[10px] sm:text-xxs font-bold uppercase tracking-wider flex items-center gap-1.5">
               <FaShieldAlt /> {controllerDesignation}
             </span>
-            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono text-xxs font-bold">
+            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono text-[10px] sm:text-xxs font-bold">
               ● Live Database Connected
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-white">
             Hello, {controllerName}
           </h1>
           <p className="text-slate-300 text-xs mt-1 max-w-2xl">
@@ -310,29 +310,29 @@ export default function AcademicControllerDashboard({ initialTab = 'overview' })
         </div>
 
         {/* Quick Action Buttons */}
-        <div className="flex flex-wrap items-center gap-2 relative z-10">
+        <div className="flex flex-wrap items-center gap-2 relative z-10 w-full sm:w-auto">
           <button 
             onClick={() => { setActiveTab('timetable'); handleRunTimetableSolver(); }}
-            className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-lg shadow-purple-600/30 transition flex items-center gap-1.5"
+            className="flex-1 sm:flex-initial px-3 sm:px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-1.5"
           >
-            <FaRobot /> Generate Timetable
+            <FaRobot /> <span className="truncate">Generate Timetable</span>
           </button>
           <button 
             onClick={() => { setActiveTab('exams'); setNewExamModal(true); }}
-            className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs transition flex items-center gap-1.5"
+            className="flex-1 sm:flex-initial px-3 sm:px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs transition flex items-center justify-center gap-1.5"
           >
-            <FaCalendarCheck /> Schedule Exam
+            <FaCalendarCheck /> <span className="truncate">Schedule Exam</span>
           </button>
           <button 
             onClick={() => { setActiveTab('halltickets'); handleGenerateHallTickets(); }}
-            className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition flex items-center gap-1.5"
+            className="flex-1 sm:flex-initial px-3 sm:px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-1.5"
           >
-            <FaIdCard /> Issue Hall Tickets
+            <FaIdCard /> <span className="truncate">Issue Hall Tickets</span>
           </button>
           <button 
             onClick={loadData}
             title="Refresh Live Data"
-            className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
+            className="p-2 sm:p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
           >
             <FaSyncAlt className={loading ? 'animate-spin' : ''} />
           </button>
@@ -340,29 +340,29 @@ export default function AcademicControllerDashboard({ initialTab = 'overview' })
       </div>
 
       {/* ─── 8 REAL-TIME KPI CARDS (NO HARDCODED VALUES) ─── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 font-mono">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 sm:gap-3 font-mono">
         {[
           { label: 'Total Students', val: summary?.totalStudents ?? 0, icon: <FaUserGraduate />, color: 'text-indigo-400', border: 'border-indigo-500/20' },
           { label: 'Active Courses', val: summary?.activeCourses ?? 0, icon: <FaAward />, color: 'text-sky-400', border: 'border-sky-500/20' },
           { label: 'Upcoming Exams', val: summary?.upcomingExams ?? exams.length, icon: <FaFileAlt />, color: 'text-purple-400', border: 'border-purple-500/20' },
-          { label: 'Clash Status', val: summary?.timetableConflicts ? `${summary.timetableConflicts} Conflicts` : '0 Clashes', icon: <FaCheckCircle />, color: summary?.timetableConflicts ? 'text-rose-400' : 'text-emerald-400', border: 'border-emerald-500/20' },
+          { label: 'Clash Status', val: summary?.timetableConflicts ? `${summary.timetableConflicts} Clashes` : '0 Clashes', icon: <FaCheckCircle />, color: summary?.timetableConflicts ? 'text-rose-400' : 'text-emerald-400', border: 'border-emerald-500/20' },
           { label: 'Results Pending', val: summary?.resultsPending ?? 0, icon: <FaBalanceScale />, color: 'text-amber-400', border: 'border-amber-500/20' },
           { label: 'Exam Duties', val: summary?.facultyExamDuties ?? duties.length, icon: <FaUserTie />, color: 'text-rose-400', border: 'border-rose-500/20' },
           { label: 'Hall Tickets', val: summary?.hallTicketsPublished ?? hallTickets.length, icon: <FaIdCard />, color: 'text-teal-400', border: 'border-teal-500/20' },
           { label: 'Classrooms', val: summary?.classroomsAllocated ?? classrooms.length, icon: <FaBuilding />, color: 'text-violet-400', border: 'border-violet-500/20' }
         ].map((k, i) => (
-          <div key={i} className={`p-3.5 rounded-2xl bg-[#0f172a]/70 border ${k.border} flex flex-col gap-1 backdrop-blur-sm shadow-sm hover:border-purple-500/40 transition`}>
-            <div className="flex items-center justify-between text-slate-400">
-              <span className="text-xxs uppercase tracking-wider font-sans font-bold">{k.label}</span>
-              <span className="text-xs">{k.icon}</span>
+          <div key={i} className={`p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-[#0f172a]/70 border ${k.border} flex flex-col gap-1 backdrop-blur-sm shadow-sm hover:border-purple-500/40 transition min-w-0`}>
+            <div className="flex items-center justify-between text-slate-400 gap-1">
+              <span className="text-[10px] sm:text-xxs uppercase tracking-wider font-sans font-bold truncate">{k.label}</span>
+              <span className="text-xs shrink-0">{k.icon}</span>
             </div>
-            <span className={`text-xl font-black ${k.color}`}>{k.val}</span>
+            <span className={`text-base sm:text-xl font-black ${k.color} truncate`}>{k.val}</span>
           </div>
         ))}
       </div>
 
       {/* ─── MODULE TAB SELECTOR ─── */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-slate-800 scrollbar-none font-bold">
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-slate-800 scrollbar-none font-bold -mx-1 px-1">
         {[
           { id: 'overview', name: 'Executive Overview', icon: <FaChartBar /> },
           { id: 'calendar', name: 'Academic Calendar', icon: <FaCalendarAlt /> },
@@ -398,7 +398,7 @@ export default function AcademicControllerDashboard({ initialTab = 'overview' })
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             {/* Exam Schedule Timeline */}
-            <div className="lg:col-span-6 p-6 rounded-3xl bg-[#0f172a]/70 border border-slate-800 flex flex-col gap-4">
+            <div className="lg:col-span-6 p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-[#0f172a]/70 border border-slate-800 flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-base font-bold text-white flex items-center gap-2">
                   <FaCalendarAlt className="text-purple-400" /> Upcoming Exam Schedule Timeline
@@ -408,17 +408,17 @@ export default function AcademicControllerDashboard({ initialTab = 'overview' })
               <div className="flex flex-col gap-2.5">
                 {(summary?.examTimeline && summary.examTimeline.length > 0) ? (
                   summary.examTimeline.map((ex, i) => (
-                    <div key={i} className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800/80 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="px-2.5 py-1.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-300 font-mono font-bold text-center">
+                    <div key={i} className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-slate-900/80 border border-slate-800/80 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                        <div className="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-300 font-mono font-bold text-center shrink-0">
                           <span className="text-xxs block uppercase">{ex.date}</span>
                         </div>
-                        <div>
-                          <span className="font-bold text-white text-xs block">{ex.title}</span>
-                          <span className="text-xxs text-slate-400 font-mono">Room: {ex.room} • {ex.candidates} Candidates</span>
+                        <div className="min-w-0">
+                          <span className="font-bold text-white text-xs block truncate">{ex.title}</span>
+                          <span className="text-xxs text-slate-400 font-mono truncate block">Room: {ex.room} • {ex.candidates} Candidates</span>
                         </div>
                       </div>
-                      <span className="px-2.5 py-1 rounded-lg bg-indigo-500/10 text-indigo-300 font-mono text-xxs font-bold">
+                      <span className="px-2 sm:px-2.5 py-1 rounded-lg bg-indigo-500/10 text-indigo-300 font-mono text-xxs font-bold shrink-0">
                         {ex.type}
                       </span>
                     </div>
@@ -433,7 +433,7 @@ export default function AcademicControllerDashboard({ initialTab = 'overview' })
             </div>
 
             {/* Timetable Conflict Heatmap */}
-            <div className="lg:col-span-6 p-6 rounded-3xl bg-[#0f172a]/70 border border-slate-800 flex flex-col gap-4">
+            <div className="lg:col-span-6 p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-[#0f172a]/70 border border-slate-800 flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-base font-bold text-white flex items-center gap-2">
                   <FaCalendarCheck className="text-emerald-400" /> Timetable Conflict Heatmap
@@ -442,31 +442,33 @@ export default function AcademicControllerDashboard({ initialTab = 'overview' })
                   <FaCheckCircle /> {summary?.timetableConflicts ? `${summary.timetableConflicts} Active Clashes` : '0 Clashes'}
                 </span>
               </div>
-              <div className="grid grid-cols-6 gap-2 font-mono text-center">
-                {['Slot', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map((h, i) => (
-                  <span key={i} className="text-xxs text-slate-400 font-bold">{h}</span>
-                ))}
-                {['09:00', '10:15', '11:30', '14:00', '15:15'].map((time, idx) => (
-                  <React.Fragment key={idx}>
-                    <span className="text-xxs text-slate-500 py-2">{time}</span>
-                    {['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map(day => {
-                      const entry = summary?.conflictHeatmap?.find(h => h.day === day && h.slot === time);
-                      const isConflict = entry && entry.conflicts > 0;
-                      return (
-                        <div 
-                          key={day} 
-                          className={`py-2 rounded-xl border font-bold text-xxs flex items-center justify-center transition cursor-pointer ${
-                            isConflict
-                              ? 'bg-rose-500/10 border-rose-500/30 text-rose-400'
-                              : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
-                          }`}
-                        >
-                          {isConflict ? '! Clash' : '✓ Clean'}
-                        </div>
-                      );
-                    })}
-                  </React.Fragment>
-                ))}
+              <div className="w-full overflow-x-auto scrollbar-thin pb-2">
+                <div className="min-w-[420px] grid grid-cols-6 gap-2 font-mono text-center">
+                  {['Slot', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map((h, i) => (
+                    <span key={i} className="text-xxs text-slate-400 font-bold">{h}</span>
+                  ))}
+                  {['09:00', '10:15', '11:30', '14:00', '15:15'].map((time, idx) => (
+                    <React.Fragment key={idx}>
+                      <span className="text-xxs text-slate-500 py-2">{time}</span>
+                      {['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map(day => {
+                        const entry = summary?.conflictHeatmap?.find(h => h.day === day && h.slot === time);
+                        const isConflict = entry && entry.conflicts > 0;
+                        return (
+                          <div 
+                            key={day} 
+                            className={`py-2 rounded-xl border font-bold text-xxs flex items-center justify-center transition cursor-pointer ${
+                              isConflict
+                                ? 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+                                : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+                            }`}
+                          >
+                            {isConflict ? '! Clash' : '✓ Clean'}
+                          </div>
+                        );
+                      })}
+                    </React.Fragment>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -776,24 +778,26 @@ export default function AcademicControllerDashboard({ initialTab = 'overview' })
 
             {/* Generated Seating Plan Preview */}
             {selectedSeatingPlan && (
-              <div className="p-5 rounded-2xl bg-slate-950/80 border border-emerald-500/30 flex flex-col gap-3 font-mono">
-                <div className="flex justify-between items-center">
+              <div className="p-4 sm:p-5 rounded-2xl bg-slate-950/80 border border-emerald-500/30 flex flex-col gap-3 font-mono">
+                <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                   <span className="text-xs font-bold text-emerald-300">Alternate Anti-Cheating Seating Allocation ({selectedSeatingPlan.length} Candidates)</span>
                   <button 
                     onClick={() => exportToCSV(selectedSeatingPlan, 'seating_allocation.csv')}
-                    className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xxs flex items-center gap-1"
+                    className="self-start sm:self-auto px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xxs flex items-center gap-1"
                   >
                     <FaDownload /> Download Slip
                   </button>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2 text-xxs">
-                  {selectedSeatingPlan.map((seat, i) => (
-                    <div key={i} className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center">
-                      <span className="font-bold text-amber-400 block">{seat.seatNumber}</span>
-                      <span className="text-slate-300 font-bold block truncate">{seat.studentName}</span>
-                      <span className="text-slate-500 text-xxs">{seat.rollNumber} • {seat.department}</span>
-                    </div>
-                  ))}
+                <div className="w-full overflow-x-auto scrollbar-thin pb-2">
+                  <div className="min-w-[420px] grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 text-xxs">
+                    {selectedSeatingPlan.map((seat, i) => (
+                      <div key={i} className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center">
+                        <span className="font-bold text-amber-400 block">{seat.seatNumber}</span>
+                        <span className="text-slate-300 font-bold block truncate">{seat.studentName}</span>
+                        <span className="text-slate-500 text-[10px] block truncate">{seat.rollNumber} • {seat.department}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
@@ -1218,11 +1222,11 @@ export default function AcademicControllerDashboard({ initialTab = 'overview' })
       {/* ─── ADD CALENDAR EVENT MODAL ─── */}
       <AnimatePresence>
         {newEventModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl flex flex-col gap-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm overflow-y-auto">
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center border-b border-slate-800 pb-3">
                 <h3 className="text-base font-bold text-white">Add Academic Calendar Event</h3>
-                <button onClick={() => setNewEventModal(false)} className="text-slate-400 hover:text-white"><FaTimes /></button>
+                <button onClick={() => setNewEventModal(false)} className="text-slate-400 hover:text-white p-1"><FaTimes /></button>
               </div>
               <form onSubmit={handleAddCalendarEvent} className="flex flex-col gap-3">
                 <div>
@@ -1239,7 +1243,7 @@ export default function AcademicControllerDashboard({ initialTab = 'overview' })
                     <option value="registration">Registration Window</option>
                   </select>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
                     <label className="text-xxs uppercase font-bold text-slate-400">Start Date</label>
                     <input type="date" value={eventStartDate} onChange={e => setEventStartDate(e.target.value)} className="w-full mt-1 p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white" required />
@@ -1266,18 +1270,18 @@ export default function AcademicControllerDashboard({ initialTab = 'overview' })
       {/* ─── CREATE EXAM SESSION MODAL ─── */}
       <AnimatePresence>
         {newExamModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl flex flex-col gap-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm overflow-y-auto">
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center border-b border-slate-800 pb-3">
                 <h3 className="text-base font-bold text-white">Schedule New Examination</h3>
-                <button onClick={() => setNewExamModal(false)} className="text-slate-400 hover:text-white"><FaTimes /></button>
+                <button onClick={() => setNewExamModal(false)} className="text-slate-400 hover:text-white p-1"><FaTimes /></button>
               </div>
               <form onSubmit={handleCreateExam} className="flex flex-col gap-3">
                 <div>
                   <label className="text-xxs uppercase font-bold text-slate-400">Exam Title</label>
                   <input type="text" value={newExamTitle} onChange={e => setNewExamTitle(e.target.value)} placeholder="e.g. Design & Analysis of Algorithms End-Term" className="w-full mt-1 p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white" required />
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
                     <label className="text-xxs uppercase font-bold text-slate-400">Subject</label>
                     <input type="text" value={newExamSubject} onChange={e => setNewExamSubject(e.target.value)} placeholder="Algorithms" className="w-full mt-1 p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white" required />
@@ -1287,7 +1291,7 @@ export default function AcademicControllerDashboard({ initialTab = 'overview' })
                     <input type="text" value={newExamCode} onChange={e => setNewExamCode(e.target.value)} placeholder="CS401" className="w-full mt-1 p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white" />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
                     <label className="text-xxs uppercase font-bold text-slate-400">Date</label>
                     <input type="date" value={newExamDate} onChange={e => setNewExamDate(e.target.value)} className="w-full mt-1 p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white" required />

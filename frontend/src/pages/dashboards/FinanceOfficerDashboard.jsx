@@ -74,35 +74,35 @@ export default function FinanceOfficerDashboard() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-8 text-xs font-semibold pb-16">
-      <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 rounded-3xl p-8 border border-emerald-900/40 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-emerald-900/40 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <span className="text-emerald-400 font-bold uppercase tracking-widest text-xxs flex items-center gap-2">
             <FaMoneyBillWave /> Finance & Accounts Control Desk
           </span>
-          <h1 className="text-3xl font-black tracking-tight text-white mt-1">Hello, {name}</h1>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white mt-1">Hello, {name}</h1>
           <p className="text-slate-400 text-xs">Manage fee ledgers, disburse payroll, audit institutional invoices, and process expense claims.</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 font-mono">
         {[
           { label: 'Total Collections (MTD)', val: financeOverview.totalRevenue, color: 'text-emerald-400' },
           { label: 'Pending Dues', val: financeOverview.pendingFees, color: 'text-amber-400' },
           { label: 'Dispatched Salaries', val: financeOverview.dispatchedSalaries, color: 'text-indigo-400' },
           { label: 'Invoices Recorded', val: String(invoices.length), color: 'text-teal-400' }
         ].map((s, i) => (
-          <div key={i} className="p-5 rounded-2xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-1">
-            <span className="text-xxs uppercase tracking-wider text-slate-400 font-sans font-bold">{s.label}</span>
-            <span className={`text-2xl font-black ${s.color}`}>{s.val}</span>
+          <div key={i} className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-1 min-w-0">
+            <span className="text-[10px] sm:text-xxs uppercase tracking-wider text-slate-400 font-sans font-bold truncate">{s.label}</span>
+            <span className={`text-lg sm:text-2xl font-black ${s.color} truncate`}>{s.val}</span>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
         <div className="lg:col-span-8 flex flex-col gap-4">
-          <div className="p-6 rounded-3xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2"><FaFileInvoiceDollar className="text-emerald-400" /> Student Fee Invoices Ledger</h2>
+          <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+              <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2"><FaFileInvoiceDollar className="text-emerald-400" /> Student Fee Invoices Ledger</h2>
               <button 
                 onClick={() => {
                   const dataToExport = invoices.length ? invoices : [
@@ -113,7 +113,7 @@ export default function FinanceOfficerDashboard() {
                   exportToCSV(dataToExport, 'EduVerse_Finance_Ledger_2026');
                   toast.success('Finance ledger exported as CSV!');
                 }} 
-                className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-xl text-xxs font-bold flex items-center gap-1 border border-slate-700 transition"
+                className="self-start sm:self-auto bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-xl text-xxs font-bold flex items-center gap-1 border border-slate-700 transition"
               >
                 <FaDownload /> Export Ledger
               </button>
@@ -161,7 +161,7 @@ export default function FinanceOfficerDashboard() {
         </div>
 
         <div className="lg:col-span-4 flex flex-col gap-4">
-          <div className="p-6 rounded-3xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-4">
+          <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-4">
             <h2 className="text-base font-bold text-white flex items-center gap-2"><FaPlus className="text-emerald-400" /> Issue Fee Invoice</h2>
             <form onSubmit={handleCreateInvoice} className="flex flex-col gap-3">
               <div>

@@ -65,34 +65,34 @@ export default function LibrarianDashboard() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-8 text-xs font-semibold pb-16">
-      <div className="bg-gradient-to-r from-amber-950 via-slate-900 to-indigo-950 rounded-3xl p-8 border border-amber-900/40 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="bg-gradient-to-r from-amber-950 via-slate-900 to-indigo-950 rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-amber-900/40 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <span className="text-amber-400 font-bold uppercase tracking-widest text-xxs flex items-center gap-2">
             <FaBook /> Central Library Catalog & Circulation Desk
           </span>
-          <h1 className="text-3xl font-black tracking-tight text-white mt-1">Hello, {name}</h1>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white mt-1">Hello, {name}</h1>
           <p className="text-slate-400 text-xs">Catalog new accessions, manage barcode checkouts, issue return reminders, and audit inventory.</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 font-mono">
         {[
           { label: 'Cataloged Volumes', val: `${books.length} Titles`, color: 'text-amber-400' },
           { label: 'Total Copies Available', val: `${books.reduce((acc, b) => acc + (b.available || 0), 0)} Copies`, color: 'text-indigo-400' },
           { label: 'Circulation Status', val: 'Operational', color: 'text-emerald-400' },
           { label: 'Digital Catalog', val: 'Connected', color: 'text-teal-400' }
         ].map((s, i) => (
-          <div key={i} className="p-5 rounded-2xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-1">
-            <span className="text-xxs uppercase tracking-wider text-slate-400 font-sans font-bold">{s.label}</span>
-            <span className={`text-2xl font-black ${s.color}`}>{s.val}</span>
+          <div key={i} className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-1 min-w-0">
+            <span className="text-[10px] sm:text-xxs uppercase tracking-wider text-slate-400 font-sans font-bold truncate">{s.label}</span>
+            <span className={`text-lg sm:text-2xl font-black ${s.color} truncate`}>{s.val}</span>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
         <div className="lg:col-span-8 flex flex-col gap-4">
-          <div className="p-6 rounded-3xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-4">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2"><FaBook className="text-amber-400" /> Book Inventory & Circulation</h2>
+          <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-4">
+            <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2"><FaBook className="text-amber-400" /> Book Inventory & Circulation</h2>
             {books.length === 0 ? (
               <div className="p-12 text-center border border-dashed border-slate-800 rounded-2xl flex flex-col items-center gap-2 text-slate-400">
                 <FaBook className="text-3xl text-slate-600 mb-1" />
@@ -133,7 +133,7 @@ export default function LibrarianDashboard() {
         </div>
 
         <div className="lg:col-span-4 flex flex-col gap-4">
-          <div className="p-6 rounded-3xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-4">
+          <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-4">
             <h2 className="text-base font-bold text-white flex items-center gap-2"><FaPlus className="text-amber-400" /> Add Book to Catalog</h2>
             <form onSubmit={handleAddBook} className="flex flex-col gap-3">
               <div>

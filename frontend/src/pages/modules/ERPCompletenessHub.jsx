@@ -241,35 +241,35 @@ export default function ERPCompletenessHub() {
   return (
     <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-8 pb-12">
       {/* Top Banner with 25/25 Completion Indicator */}
-      <div className="bg-gradient-to-r from-emerald-950 via-teal-950 to-slate-900 rounded-3xl p-8 border border-emerald-800/40 shadow-2xl relative overflow-hidden">
+      <div className="bg-gradient-to-r from-emerald-950 via-teal-950 to-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-emerald-800/40 shadow-2xl relative overflow-hidden">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10">
           <div>
             <div className="flex items-center gap-2 text-emerald-400 text-xs font-black uppercase tracking-wider">
               <FaCheckCircle /> Enterprise Standards Verified
             </div>
-            <h1 className="text-3xl font-black text-white tracking-tight mt-1">
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-1">
               ERP Completeness & Operations Hub
             </h1>
-            <p className="text-slate-300 text-sm mt-1 max-w-2xl">
+            <p className="text-slate-300 text-xs sm:text-sm mt-1 max-w-2xl">
               All 25 mission-critical academic, financial, faculty, communication, and data consistency workflows are fully operational and compliance-verified.
             </p>
           </div>
-          <div className="bg-emerald-900/40 border border-emerald-600/40 rounded-2xl p-4 flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-emerald-400 text-lg font-black">
+          <div className="bg-emerald-900/40 border border-emerald-600/40 rounded-2xl p-3.5 sm:p-4 flex items-center gap-3 sm:gap-4">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-emerald-400 text-base sm:text-lg font-black">
               25/25
             </div>
             <div>
               <span className="text-xxs text-emerald-300 font-bold uppercase tracking-wider">Status</span>
-              <h4 className="text-white text-base font-black">100% Complete</h4>
+              <h4 className="text-white text-sm sm:text-base font-black">100% Complete</h4>
               <span className="text-xxs text-emerald-400">All Modules Active</span>
             </div>
           </div>
         </div>
 
         {/* 25 Checklist Compact Badges */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mt-6 pt-6 border-t border-emerald-900/40 text-xxs">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mt-5 sm:mt-6 pt-5 sm:pt-6 border-t border-emerald-900/40 text-xxs">
           {CHECKLIST_SECTIONS.map(sec => (
-            <div key={sec.id} className="bg-slate-900/60 rounded-xl p-2.5 border border-slate-800 flex items-center justify-between">
+            <div key={sec.id} className="bg-slate-900/60 rounded-xl p-2.5 border border-slate-800 flex items-center justify-between min-w-0">
               <span className="text-slate-300 font-bold truncate">{sec.name.split(' ')[0]}</span>
               <span className="text-emerald-400 font-mono font-bold">{sec.count}/{sec.count} ✓</span>
             </div>
@@ -278,12 +278,12 @@ export default function ERPCompletenessHub() {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-1 border-b border-slate-800">
+      <div className="flex gap-2 overflow-x-auto pb-2 border-b border-slate-800 scrollbar-none -mx-1 px-1">
         {CHECKLIST_SECTIONS.map(s => (
           <button
             key={s.id}
             onClick={() => setActiveTab(s.id)}
-            className={`flex items-center gap-2.5 px-5 py-3 rounded-2xl font-bold text-xs whitespace-nowrap transition border ${
+            className={`flex items-center gap-2 px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-bold text-xs whitespace-nowrap transition border ${
               activeTab === s.id
                 ? 'bg-emerald-600 text-white border-emerald-500 shadow-lg shadow-emerald-950/40'
                 : 'bg-slate-900/70 text-slate-400 border-slate-800 hover:text-white'
@@ -393,8 +393,8 @@ export default function ERPCompletenessHub() {
                 </button>
               </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-xxs">
+              <div className="w-full overflow-x-auto scrollbar-thin pb-2">
+                <table className="w-full min-w-[500px] text-xxs">
                   <thead>
                     <tr className="border-b border-slate-800 text-slate-400">
                       <th className="text-left pb-3 font-bold">Cert #</th>
@@ -551,8 +551,8 @@ export default function ERPCompletenessHub() {
                 </button>
               </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-xxs">
+              <div className="w-full overflow-x-auto scrollbar-thin pb-2">
+                <table className="w-full min-w-[500px] text-xxs">
                   <thead>
                     <tr className="border-b border-slate-800 text-slate-400">
                       <th className="text-left pb-3 font-bold">Receipt #</th>

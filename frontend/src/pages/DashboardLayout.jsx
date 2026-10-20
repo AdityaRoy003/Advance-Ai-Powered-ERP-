@@ -516,6 +516,57 @@ export default function DashboardLayout() {
                 })}
               </div>
 
+              {/* ─── MOBILE DRAWER QUICK TOOLS & CONTROLS ─── */}
+              <div className="p-3 border-t border-slate-800 flex flex-col gap-2 bg-slate-900/60">
+                <span className="text-xxs font-bold text-slate-400 uppercase tracking-wider px-1">
+                  Quick Tools
+                </span>
+                <div className="grid grid-cols-2 gap-2 text-xxs font-bold">
+                  {/* Language Selector */}
+                  <div className="flex items-center gap-1.5 px-2.5 py-2 rounded-xl bg-slate-800/80 border border-slate-700/60 text-slate-200">
+                    <FaGlobe className="text-slate-400 shrink-0" />
+                    <select
+                      value={currentLang}
+                      onChange={e => changeLanguage(e.target.value)}
+                      className="bg-transparent border-none text-xxs font-bold text-slate-200 focus:outline-none w-full cursor-pointer truncate"
+                    >
+                      {languages.map(l => (
+                        <option key={l.code} value={l.code} className="bg-[#111827] text-white">
+                          {l.flag} {l.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Accessibility Toggle */}
+                  <button
+                    onClick={() => { setMobileDrawerOpen(false); setShowA11yModal(true); }}
+                    className="flex items-center gap-1.5 px-2.5 py-2 rounded-xl bg-slate-800/80 border border-slate-700/60 text-slate-200 hover:text-white"
+                  >
+                    <FaUniversalAccess className={highContrast || largeText ? 'text-teal-400' : 'text-slate-400'} />
+                    <span className="truncate">Accessibility</span>
+                  </button>
+
+                  {/* Voice ERP Assistant */}
+                  <button
+                    onClick={() => { setMobileDrawerOpen(false); navigate('/dashboard/voice-vision'); }}
+                    className="flex items-center gap-1.5 px-2.5 py-2 rounded-xl bg-pink-500/10 border border-pink-500/30 text-pink-300"
+                  >
+                    <FaMicrophone className="text-pink-400 shrink-0" />
+                    <span className="truncate">Voice ERP</span>
+                  </button>
+
+                  {/* Theme Switcher */}
+                  <button
+                    onClick={toggleTheme}
+                    className="flex items-center gap-1.5 px-2.5 py-2 rounded-xl bg-slate-800/80 border border-slate-700/60 text-slate-200 hover:text-white"
+                  >
+                    {theme === 'dark' ? <FaSun className="text-yellow-400" /> : <FaMoon className="text-indigo-400" />}
+                    <span className="truncate">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+                  </button>
+                </div>
+              </div>
+
               <div className="p-4 border-t border-slate-800">
                 <button
                   onClick={() => { setMobileDrawerOpen(false); handleSignOut(); }}
@@ -533,13 +584,13 @@ export default function DashboardLayout() {
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
         
         {/* ─── TOP BAR ─── */}
-        <header className="sticky top-0 z-30 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-[#090d16]/90 backdrop-blur-md px-3 sm:px-6 py-2.5 sm:py-3.5 flex items-center justify-between shadow-sm gap-2 sm:gap-4">
+        <header className="sticky top-0 z-30 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-[#090d16]/90 backdrop-blur-md px-2.5 sm:px-6 py-2 sm:py-3.5 flex items-center justify-between shadow-sm gap-1.5 sm:gap-4">
           
           {/* Left: Hamburger + Search trigger */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-1 max-w-md">
+          <div className="flex items-center gap-1.5 sm:gap-3 flex-1 max-w-md min-w-0">
             <button 
               onClick={() => setMobileDrawerOpen(true)}
-              className="md:hidden p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 active:scale-95 transition"
+              className="md:hidden p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 active:scale-95 transition shrink-0"
               aria-label="Open Navigation Menu"
             >
               <FaBars size={15} />
@@ -557,36 +608,36 @@ export default function DashboardLayout() {
 
             <button
               onClick={() => setShowGlobalSearch(true)}
-              className="sm:hidden p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-900/50 text-slate-400 hover:text-white transition"
+              className="sm:hidden p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-900/50 text-slate-400 hover:text-white transition shrink-0"
               title="Search"
             >
-              <FaSearch size={14} />
+              <FaSearch size={13} />
             </button>
           </div>
 
           {/* Right: Actions */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5">
+          <div className="flex items-center gap-1 sm:gap-2.5 shrink-0">
             
             {/* Role Switcher (Super Admin) / Role Badge */}
             {isSuperAdmin ? (
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                 {isImpersonating && (
                   <button
                     onClick={handleReturnToSuperAdmin}
-                    className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-2 sm:px-3 py-1.5 rounded-xl flex items-center gap-1 text-xxs sm:text-xs font-bold transition shadow-sm animate-pulse"
+                    className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-1.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl flex items-center gap-1 text-[10px] sm:text-xs font-bold transition shadow-sm animate-pulse"
                     title="Exit preview mode and return to Super Admin HQ"
                   >
                     <span>↩</span>
                     <span className="hidden lg:inline">Return to Super Admin</span>
-                    <span className="lg:hidden text-xxs">Exit</span>
+                    <span className="lg:hidden">Exit</span>
                   </button>
                 )}
-                <div className={`px-2 sm:px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-xxs font-sans transition ${isImpersonating ? 'bg-amber-500/10 border border-amber-500/30 text-amber-300' : 'bg-indigo-600/10 border border-indigo-500/20 text-indigo-400'}`}>
-                  <FaExchangeAlt className={isImpersonating ? 'text-amber-400' : 'text-indigo-400'} size={11} />
+                <div className={`px-1.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl flex items-center gap-1 sm:gap-1.5 text-xxs font-sans transition ${isImpersonating ? 'bg-amber-500/10 border border-amber-500/30 text-amber-300' : 'bg-indigo-600/10 border border-indigo-500/20 text-indigo-400'}`}>
+                  <FaExchangeAlt className={`${isImpersonating ? 'text-amber-400' : 'text-indigo-400'} shrink-0`} size={10} />
                   <select 
                     value={user.role} 
                     onChange={handleRoleChange}
-                    className={`bg-transparent border-none font-bold focus:outline-none cursor-pointer text-xxs sm:text-xs max-w-[110px] sm:max-w-none truncate ${isImpersonating ? 'text-amber-300' : 'text-indigo-400'}`}
+                    className={`bg-transparent border-none font-bold focus:outline-none cursor-pointer text-xxs sm:text-xs max-w-[72px] xs:max-w-[88px] sm:max-w-none truncate ${isImpersonating ? 'text-amber-300' : 'text-indigo-400'}`}
                   >
                     <option value="SUPER_ADMIN" className="bg-[#111827] text-white">👑 Super Admin</option>
                     <option value="ADMIN" className="bg-[#111827] text-white">🏛️ Admin</option>
@@ -612,7 +663,7 @@ export default function DashboardLayout() {
               </div>
             )}
 
-            {/* Multi-Language Selector */}
+            {/* Multi-Language Selector (Desktop - mobile in drawer) */}
             <div className="hidden sm:flex items-center gap-1 px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-xs">
               <FaGlobe className="text-slate-400 text-xs" />
               <select
@@ -629,19 +680,19 @@ export default function DashboardLayout() {
               </select>
             </div>
 
-            {/* Accessibility Mode Toggle */}
+            {/* Accessibility Mode Toggle (Desktop - mobile in drawer) */}
             <button
               onClick={() => setShowA11yModal(true)}
-              className="p-2 sm:p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition"
+              className="hidden sm:flex p-2 sm:p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition"
               title="Accessibility Settings (High Contrast, Large Text)"
             >
               <FaUniversalAccess size={13} className={highContrast || largeText ? 'text-teal-400' : ''} />
             </button>
 
-            {/* Voice ERP Trigger */}
+            {/* Voice ERP Trigger (Desktop - mobile in drawer & bottom nav) */}
             <button 
               onClick={() => navigate('/dashboard/voice-vision')}
-              className="p-2 sm:p-2.5 rounded-xl border border-pink-500/30 bg-pink-500/10 hover:bg-pink-500/20 text-pink-400 transition"
+              className="hidden sm:flex p-2 sm:p-2.5 rounded-xl border border-pink-500/30 bg-pink-500/10 hover:bg-pink-500/20 text-pink-400 transition"
               title="Voice ERP Natural Assistant"
             >
               <FaMicrophone size={13} />
@@ -650,20 +701,22 @@ export default function DashboardLayout() {
             {/* Theme toggle */}
             <button 
               onClick={toggleTheme}
-              className="p-2 sm:p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition"
+              className="p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition"
+              title="Toggle Theme"
             >
-              {theme === 'dark' ? <FaSun size={13} className="text-yellow-400" /> : <FaMoon size={13} />}
+              {theme === 'dark' ? <FaSun size={12} className="text-yellow-400" /> : <FaMoon size={12} />}
             </button>
 
             {/* ─── NOTIFICATION CENTER ─── */}
             <div className="relative">
               <button 
                 onClick={() => { setShowNotifications(!showNotifications); setShowProfileMenu(false); }}
-                className="p-2 sm:p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 relative transition"
+                className="p-1.5 sm:p-2.5 rounded-lg sm:rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 relative transition"
+                title="Notifications"
               >
-                <FaBell size={13} />
+                <FaBell size={12} />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white rounded-full text-xxs font-extrabold flex items-center justify-center animate-pulse">
+                  <span className="absolute -top-1 -right-1 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-rose-500 text-white rounded-full text-[9px] sm:text-xxs font-extrabold flex items-center justify-center animate-pulse">
                     {unreadCount}
                   </span>
                 )}
@@ -675,7 +728,7 @@ export default function DashboardLayout() {
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute right-0 mt-3 w-80 sm:w-96 max-w-[calc(100vw-1.5rem)] rounded-2xl border border-slate-800 bg-[#111827] shadow-2xl p-0 z-50 flex flex-col overflow-hidden"
+                    className="fixed sm:absolute left-2 right-2 sm:left-auto sm:right-0 top-14 sm:top-full mt-1 sm:mt-3 w-auto sm:w-96 max-w-full sm:max-w-[calc(100vw-1.5rem)] rounded-2xl border border-slate-800 bg-[#111827] shadow-2xl p-0 z-50 flex flex-col overflow-hidden"
                   >
                     {/* Header */}
                     <div className="p-4 border-b border-slate-800 flex items-center justify-between">
@@ -774,7 +827,7 @@ export default function DashboardLayout() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className="absolute right-0 mt-3 w-72 max-w-[calc(100vw-1.5rem)] rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827] shadow-xl p-4 z-50 flex flex-col gap-4 text-xs font-semibold"
+                    className="fixed sm:absolute left-2 right-2 sm:left-auto sm:right-0 top-14 sm:top-full mt-1 sm:mt-3 w-auto sm:w-72 max-w-full sm:max-w-[calc(100vw-1.5rem)] max-h-[85vh] overflow-y-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827] shadow-xl p-4 z-50 flex flex-col gap-4 text-xs font-semibold"
                   >
                     <div className="pb-3 border-b border-slate-800">
                       <span className="font-extrabold block text-sm">{user.firstName} {user.lastName}</span>
@@ -828,13 +881,13 @@ export default function DashboardLayout() {
         </header>
 
         {/* ─── CONTENT ─── */}
-        <main className="flex-1 p-3.5 sm:p-6 pb-24 md:pb-6 max-w-7xl mx-auto w-full overflow-x-hidden relative">
+        <main className="flex-1 p-3 sm:p-6 pb-28 md:pb-6 max-w-7xl mx-auto w-full overflow-x-hidden relative">
           <Outlet />
           <AIAssistantWidget />
         </main>
 
         {/* ─── MOBILE BOTTOM NAVIGATION BAR ─── */}
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#111827]/95 backdrop-blur-lg border-t border-slate-800/80 px-2 py-2 flex items-center justify-around shadow-2xl">
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#111827]/95 backdrop-blur-lg border-t border-slate-800/80 px-2 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] flex items-center justify-around shadow-2xl">
           <Link
             to={menuItems[0]?.path || '/dashboard'}
             className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition ${

@@ -61,16 +61,16 @@ export default function EmployeeDashboard() {
       className="flex flex-col gap-8 text-xs font-semibold"
     >
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl p-8 text-white shadow-xl flex flex-col justify-between items-start gap-4">
+      <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-white shadow-xl flex flex-col justify-between items-start gap-4">
         <div>
           <span className="text-indigo-200 font-bold uppercase tracking-widest text-xxs">Employee Workspace</span>
-          <h1 className="text-3xl font-extrabold tracking-tight">Hello {user.firstName}</h1>
-          <p className="opacity-90 text-sm mt-1">{user.designation || 'Employee'} • {user.department || 'Engineering'} Department</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Hello {user.firstName}</h1>
+          <p className="opacity-90 text-xs sm:text-sm mt-1">{user.designation || 'Employee'} • {user.department || 'Engineering'} Department</p>
         </div>
       </div>
 
       {/* Metrics widgets */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
         {/* Attendance dial */}
         <div className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827]/40 shadow-sm flex items-center justify-between gap-4">
           <div className="flex flex-col gap-1">
@@ -116,7 +116,7 @@ export default function EmployeeDashboard() {
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-white">
               <FaUser /> Roster Profile Overview
             </h2>
-            <div className="grid grid-cols-2 gap-6 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-xs">
               <div>
                 <span className="text-slate-400 block mb-1">Full Name</span>
                 <span className="font-bold text-slate-100">{user.firstName} {user.lastName}</span>
@@ -131,7 +131,7 @@ export default function EmployeeDashboard() {
               </div>
               <div>
                 <span className="text-slate-400 block mb-1">Assigned Email</span>
-                <span className="font-bold text-slate-100 font-mono">{user.email}</span>
+                <span className="font-bold text-slate-100 font-mono break-all">{user.email}</span>
               </div>
             </div>
           </div>
@@ -172,12 +172,12 @@ export default function EmployeeDashboard() {
       {/* Leave Modal Overlay */}
       <AnimatePresence>
         {showLeaveModal && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-6">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md bg-[#111827] border border-slate-850 p-8 rounded-3xl shadow-2xl flex flex-col gap-6"
+              className="w-full max-w-md bg-[#111827] border border-slate-850 p-5 sm:p-8 rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col gap-5 sm:gap-6 max-h-[90vh] overflow-y-auto"
             >
               <div className="text-center">
                 <span className="text-indigo-400 font-bold text-xxs uppercase tracking-widest">Workflow Application</span>

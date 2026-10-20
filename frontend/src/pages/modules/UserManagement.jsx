@@ -241,13 +241,13 @@ export default function UserManagement() {
   return (
     <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-8 pb-12">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-8 border border-indigo-900/40 shadow-2xl relative overflow-hidden">
+      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-indigo-900/40 shadow-2xl relative overflow-hidden">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10">
           <div>
             <div className="flex items-center gap-2 text-indigo-400 text-xs font-black uppercase tracking-wider">
               <FaUsers /> Enterprise Identity & Directory
             </div>
-            <h1 className="text-3xl font-black text-white tracking-tight mt-1">
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-1">
               User Management & Accounts Control
             </h1>
             <p className="text-slate-300 text-sm mt-1 max-w-2xl">
@@ -778,12 +778,12 @@ export default function UserManagement() {
       {/* ─── MODAL 2: ADMIN CHANGE PASSWORD ─── */}
       <AnimatePresence>
         {passwordModalUser && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-slate-900 rounded-3xl border border-slate-800 max-w-md w-full p-6 shadow-2xl flex flex-col gap-4"
+              className="bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-800 max-w-md w-full p-4 sm:p-6 shadow-2xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto"
             >
               <div className="flex justify-between items-center pb-3 border-b border-slate-800">
                 <div className="flex items-center gap-2 text-amber-400">
@@ -869,12 +869,12 @@ export default function UserManagement() {
       {/* ─── MODAL 3: PROVISION NEW USER ─── */}
       <AnimatePresence>
         {showAddModal && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-slate-900 rounded-3xl border border-slate-800 max-w-lg w-full p-6 shadow-2xl flex flex-col gap-4"
+              className="bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-800 max-w-lg w-full p-4 sm:p-6 shadow-2xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto"
             >
               <div className="flex justify-between items-center pb-3 border-b border-slate-800">
                 <div className="flex items-center gap-2 text-indigo-400">

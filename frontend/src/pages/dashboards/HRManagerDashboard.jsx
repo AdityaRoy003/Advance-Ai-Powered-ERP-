@@ -80,10 +80,10 @@ export default function HRManagerDashboard() {
       className="flex flex-col gap-8 text-xs font-semibold"
     >
       {/* Top Banner */}
-      <div className="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-3xl p-8 text-white shadow-xl flex flex-col justify-between items-start gap-4">
+      <div className="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-white shadow-xl flex flex-col justify-between items-start gap-4">
         <div>
           <span className="text-emerald-250 font-bold uppercase tracking-widest text-xxs">Human Resources Hub</span>
-          <h1 className="text-3xl font-extrabold tracking-tight">HR Dashboard</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">HR Dashboard</h1>
           <p className="opacity-95 text-sm mt-1">Manage personnel records, payroll systems, leave workflows, and active recruitments.</p>
         </div>
       </div>
@@ -115,16 +115,16 @@ export default function HRManagerDashboard() {
         {/* Left Col: Employee Directory */}
         <div className="lg:col-span-8 flex flex-col gap-6">
           <div className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827]/40 shadow-sm">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-4">
               <div>
-                <h2 className="text-xl font-bold flex items-center gap-2 text-white">
+                <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2 text-white">
                   <FaUsers /> Personnel Directory
                 </h2>
                 <p className="text-slate-400 text-xxs mt-0.5">Live roster of all accounts stored in database.</p>
               </div>
               <button 
                 onClick={() => setShowAddModal(true)}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-lg transition flex items-center gap-2 text-xs"
+                className="self-start sm:self-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 sm:py-2.5 px-3.5 sm:px-4 rounded-xl shadow-lg transition flex items-center gap-2 text-xs"
               >
                 <FaPlus /> Provision Staff
               </button>
@@ -200,12 +200,12 @@ export default function HRManagerDashboard() {
       {/* Provision Staff Modal */}
       <AnimatePresence>
         {showAddModal && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-[#111827] border border-slate-800 p-6 rounded-3xl w-full max-w-md shadow-2xl flex flex-col gap-5 text-white"
+              className="bg-[#111827] border border-slate-800 p-4 sm:p-6 rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl flex flex-col gap-4 sm:gap-5 text-white max-h-[90vh] overflow-y-auto"
             >
               <div className="flex justify-between items-center border-b border-slate-800 pb-3">
                 <h3 className="text-lg font-bold">Provision New Employee</h3>

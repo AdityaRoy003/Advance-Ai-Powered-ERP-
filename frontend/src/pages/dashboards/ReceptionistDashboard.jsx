@@ -50,36 +50,36 @@ export default function ReceptionistDashboard() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-8 text-xs font-semibold pb-16">
-      <div className="bg-gradient-to-r from-cyan-950 via-slate-900 to-indigo-950 rounded-3xl p-8 border border-cyan-900/40 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="bg-gradient-to-r from-cyan-950 via-slate-900 to-indigo-950 rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-cyan-900/40 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <span className="text-cyan-400 font-bold uppercase tracking-widest text-xxs flex items-center gap-2">
             <FaPhone /> Front Desk Reception & Campus Visitor Operations
           </span>
-          <h1 className="text-3xl font-black tracking-tight text-white mt-1">Hello, {name}</h1>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white mt-1">Hello, {name}</h1>
           <p className="text-slate-400 text-xs">Issue campus visitor passes, register appointment logs, route inquiries to administrative departments, and monitor entrance lobby logs.</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 font-mono">
         {[
           { label: 'Active Visitors On-Campus', val: `${visitors.filter(v => v.status === 'Checked In').length}`, color: 'text-cyan-400' },
           { label: 'Total Visits Logged', val: `${visitors.length}`, color: 'text-indigo-400' },
           { label: 'Badges Returned', val: `${visitors.filter(v => v.status === 'Checked Out').length}`, color: 'text-emerald-400' },
           { label: 'Desk Status', val: 'Operational', color: 'text-amber-400' }
         ].map((s, i) => (
-          <div key={i} className="p-5 rounded-2xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-1">
-            <span className="text-xxs uppercase tracking-wider text-slate-400 font-sans font-bold">{s.label}</span>
-            <span className={`text-2xl font-black ${s.color}`}>{s.val}</span>
+          <div key={i} className="p-3.5 sm:p-5 rounded-2xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-1 min-w-0">
+            <span className="text-[10px] sm:text-xxs uppercase tracking-wider text-slate-400 font-sans font-bold truncate">{s.label}</span>
+            <span className={`text-xl sm:text-2xl font-black ${s.color} truncate`}>{s.val}</span>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-8 flex flex-col gap-4">
-          <div className="p-6 rounded-3xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-4">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2"><FaIdCard className="text-cyan-400" /> Active Campus Visitor Registry</h2>
+          <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-800 bg-[#111827]/60 flex flex-col gap-4">
+            <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2"><FaIdCard className="text-cyan-400" /> Active Campus Visitor Registry</h2>
             {visitors.length === 0 ? (
-              <div className="p-12 text-center border border-dashed border-slate-800 rounded-2xl flex flex-col items-center gap-2 text-slate-400">
+              <div className="p-8 sm:p-12 text-center border border-dashed border-slate-800 rounded-2xl flex flex-col items-center gap-2 text-slate-400">
                 <FaUser className="text-3xl text-slate-600 mb-1" />
                 <span className="font-bold text-sm text-slate-300">No Visitors Registered Today</span>
                 <p className="text-xxs text-slate-500">Visitor passes generated at the front desk will appear here in real time.</p>
@@ -87,9 +87,9 @@ export default function ReceptionistDashboard() {
             ) : (
               <div className="flex flex-col gap-3">
                 {visitors.map(v => (
-                  <div key={v.id} className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex justify-between items-center">
+                  <div key={v.id} className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
                     <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-bold text-white text-xs">{v.name}</span>
                         <span className="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 font-mono text-xxs font-bold">{v.badge}</span>
                       </div>
@@ -101,7 +101,7 @@ export default function ReceptionistDashboard() {
                         setVisitors(visitors.map(x => x.id === v.id ? { ...x, status: 'Checked Out' } : x));
                         toast.success(`Badge ${v.badge} surrendered. Checked out.`);
                       }}
-                      className={`px-3 py-1.5 rounded-xl text-xxs font-bold transition ${v.status === 'Checked In' ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-emerald-500/10 text-emerald-400 font-mono'}`}
+                      className={`px-3 py-1.5 rounded-xl text-xxs font-bold transition self-start sm:self-auto ${v.status === 'Checked In' ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-emerald-500/10 text-emerald-400 font-mono'}`}
                     >
                       {v.status === 'Checked In' ? 'Check Out' : 'Completed ✓'}
                     </button>

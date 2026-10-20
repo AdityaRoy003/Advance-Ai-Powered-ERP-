@@ -258,21 +258,21 @@ export default function StudentDashboard() {
     <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-8 text-xs font-semibold pb-16">
       
       {/* Top Banner Header */}
-      <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-3xl p-8 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6 relative overflow-hidden">
         <div className="z-10 flex flex-col gap-1">
           <span className="text-white/80 font-bold uppercase tracking-widest text-xxs">Student Academic Hub</span>
-          <h1 className="text-3xl font-black tracking-tight">Welcome, {name}</h1>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight">Welcome, {name}</h1>
           <p className="opacity-95 text-xs">{dept} Department • {programName} • ID: {studentId}</p>
         </div>
 
-        <div className="z-10 flex items-center gap-3">
-          <div className="bg-white/15 px-4 py-2 rounded-2xl backdrop-blur-md border border-white/20 text-center font-mono">
-            <span className="text-xxs uppercase tracking-wider block opacity-80">Overall CGPA</span>
-            <span className="text-xl font-black">{calculatedCGPA} / 4.0</span>
+        <div className="z-10 flex flex-wrap items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+          <div className="bg-white/15 px-3.5 sm:px-4 py-2 rounded-xl sm:rounded-2xl backdrop-blur-md border border-white/20 text-center font-mono">
+            <span className="text-[10px] sm:text-xxs uppercase tracking-wider block opacity-80">Overall CGPA</span>
+            <span className="text-lg sm:text-xl font-black">{calculatedCGPA} / 4.0</span>
           </div>
           <button 
             onClick={() => setActiveTab('attendance')}
-            className="bg-white text-indigo-900 hover:bg-slate-100 font-bold px-4 py-2.5 rounded-2xl text-xs shadow-lg transition flex items-center gap-2"
+            className="bg-white text-indigo-900 hover:bg-slate-100 font-bold px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-xs shadow-lg transition flex items-center gap-2"
           >
             <FaUserClock /> Attendance ({attendanceData.percentage}%)
           </button>
@@ -280,7 +280,7 @@ export default function StudentDashboard() {
       </div>
 
       {/* 20-Section Student Navigation Bar */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800 scrollbar-thin">
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800 scrollbar-thin -mx-1 px-1">
         {[
           { id: 'overview', label: 'Dashboard', icon: <FaBolt /> },
           { id: 'profile', label: 'Profile', icon: <FaUser /> },
@@ -324,20 +324,20 @@ export default function StudentDashboard() {
         <div className="flex flex-col gap-8">
           
           {/* Quick Stats Banner */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 font-mono">
             {[
               { label: 'Attendance', val: `${attendanceData.percentage}%`, desc: 'Live Session Rate', color: 'text-emerald-400', icon: <FaUserClock /> },
               { label: 'Enrolled Courses', val: `${courses.length}`, desc: 'Active Term', color: 'text-indigo-400', icon: <FaBookOpen /> },
               { label: 'Pending Tasks', val: `${assignments.filter(a => a.status === 'Pending').length}`, desc: 'Due this term', color: 'text-amber-400', icon: <FaClipboardList /> },
               { label: 'Upcoming Exams', val: `${examsList.length}`, desc: 'Schedules active', color: 'text-purple-400', icon: <FaFileSignature /> }
             ].map((s, i) => (
-              <div key={i} className="p-5 rounded-2xl border border-slate-800 bg-[#111827]/60 flex justify-between items-center">
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-xxs uppercase tracking-wider text-slate-400 font-sans font-bold">{s.label}</span>
-                  <span className={`text-2xl font-black ${s.color}`}>{s.val}</span>
-                  <span className="text-xxs text-slate-500 font-sans">{s.desc}</span>
+              <div key={i} className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-800 bg-[#111827]/60 flex justify-between items-center min-w-0">
+                <div className="flex flex-col gap-0.5 min-w-0">
+                  <span className="text-[10px] sm:text-xxs uppercase tracking-wider text-slate-400 font-sans font-bold truncate">{s.label}</span>
+                  <span className={`text-xl sm:text-2xl font-black ${s.color} truncate`}>{s.val}</span>
+                  <span className="text-[10px] sm:text-xxs text-slate-500 font-sans truncate">{s.desc}</span>
                 </div>
-                <div className="text-2xl text-slate-700">{s.icon}</div>
+                <div className="text-xl sm:text-2xl text-slate-700 shrink-0">{s.icon}</div>
               </div>
             ))}
           </div>

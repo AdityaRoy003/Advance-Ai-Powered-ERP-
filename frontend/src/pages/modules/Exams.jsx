@@ -77,7 +77,7 @@ export default function Exams() {
 
           <div className="flex flex-col gap-4">
             {exams.map((ex) => (
-              <div key={ex.id} className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827]/40 shadow-sm flex justify-between items-center gap-4 text-xs">
+              <div key={ex.id} className="p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827]/40 shadow-sm flex flex-col sm:flex-row justify-between sm:items-center gap-4 text-xs">
                 <div>
                   <span className="font-extrabold text-sm block">{ex.title}</span>
                   <span className="text-xxs text-slate-400 block mt-0.5">Subject: {ex.subject} • Date: {ex.date}</span>
@@ -86,7 +86,7 @@ export default function Exams() {
                 {ex.questions.length > 0 && (
                   <button 
                     onClick={() => handleLaunchExam(ex)}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-xl text-xxs transition flex items-center gap-1.5"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-xl text-xxs transition flex items-center gap-1.5 self-start sm:self-auto"
                   >
                     <FaFileSignature /> Take Exam
                   </button>
@@ -117,12 +117,12 @@ export default function Exams() {
       {/* Online Assessment taking console overlay */}
       <AnimatePresence>
         {activeExam && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-6">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-xl bg-[#111827] border border-slate-850 p-8 rounded-3xl shadow-2xl flex flex-col gap-6"
+              className="w-full max-w-xl bg-[#111827] border border-slate-850 p-5 sm:p-8 rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col gap-5 sm:gap-6 max-h-[90vh] overflow-y-auto"
             >
               <div className="flex justify-between items-center border-b border-slate-800 pb-3">
                 <div>

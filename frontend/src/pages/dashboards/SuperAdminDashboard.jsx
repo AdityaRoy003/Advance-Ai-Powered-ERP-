@@ -308,17 +308,17 @@ export default function SuperAdminDashboard() {
       className="flex flex-col gap-8 text-xs font-semibold"
     >
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 rounded-3xl p-8 border border-slate-800/80 shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-slate-800/80 shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <span className="text-indigo-400 font-bold uppercase tracking-widest text-xxs">Enterprise Governance</span>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white mt-1">Super Admin Console</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mt-1">Super Admin Console</h1>
           <p className="opacity-90 text-sm mt-1">Multi-tenant hierarchy, RBAC permissions, system configuration, AI & security center.</p>
         </div>
 
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setShowUserModal(true)}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-5 rounded-2xl shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 text-xs"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-5 rounded-xl sm:rounded-2xl shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 text-xs"
           >
             <FaUserPlus /> Provision User Account
           </button>
@@ -326,7 +326,7 @@ export default function SuperAdminDashboard() {
       </div>
 
       {/* Navigation Module Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800">
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800 scrollbar-none -mx-1 px-1">
         {[
           { id: 'org_hierarchy', label: 'Organization Hierarchy (Multi-Tenant)', icon: <FaSitemap /> },
           { id: 'users_roles', label: 'Users & Custom Roles', icon: <FaUsers /> },
@@ -827,12 +827,12 @@ export default function SuperAdminDashboard() {
       {/* Provision User Modal */}
       <AnimatePresence>
         {showUserModal && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-[#111827] border border-slate-800 p-6 rounded-3xl w-full max-w-md shadow-2xl flex flex-col gap-5 text-white"
+              className="bg-[#111827] border border-slate-800 p-4 sm:p-6 rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl flex flex-col gap-4 sm:gap-5 text-white max-h-[90vh] overflow-y-auto"
             >
               <div className="flex justify-between items-center border-b border-slate-800 pb-3">
                 <h3 className="text-lg font-bold">Provision New User Account</h3>

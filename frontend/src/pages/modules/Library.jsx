@@ -94,16 +94,16 @@ export default function Library() {
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col gap-6"
     >
-      <div className="flex justify-between items-center flex-wrap gap-4">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-black">Library Book Shelf Catalog</h1>
+          <h1 className="text-xl sm:text-2xl font-black">Library Book Shelf Catalog</h1>
           <p className="text-slate-400 text-xs mt-0.5">Explore physical & digital books, instant self check-out, and syllabus downloads.</p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
           <button
             onClick={handleExportCatalog}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700"
+            className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700"
           >
             <FaDownload />
             <span>Export Catalog</span>
@@ -123,7 +123,7 @@ export default function Library() {
       </div>
 
       {/* Category Pills */}
-      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none -mx-1 px-1">
         {categories.map((cat) => (
           <button
             key={cat}

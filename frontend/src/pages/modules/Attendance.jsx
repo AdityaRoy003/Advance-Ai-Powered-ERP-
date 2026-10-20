@@ -159,16 +159,16 @@ export default function Attendance() {
             <h1 className="text-2xl font-black">My Attendance</h1>
             <p className="text-slate-400 text-xs mt-0.5">Subject-wise real-time attendance, dates & class timings</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => setActiveView('summary')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition ${activeView === 'summary' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'}`}
+              className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition ${activeView === 'summary' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'}`}
             >
               Summary View
             </button>
             <button
               onClick={() => setActiveView('detail')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition ${activeView === 'detail' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'}`}
+              className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition ${activeView === 'detail' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'}`}
             >
               Detailed Records
             </button>
@@ -326,31 +326,31 @@ export default function Attendance() {
                       <span>Faculty: <strong className="text-white">{selectedSubject.faculty}</strong></span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 text-xs font-mono">
+                  <div className="flex items-center gap-3 sm:gap-4 text-xs font-mono flex-wrap">
                     <div className="text-center">
-                      <div className={`text-2xl font-black ${pctColor(getPct(selectedSubject.attended, selectedSubject.totalClasses))}`}>
+                      <div className={`text-xl sm:text-2xl font-black ${pctColor(getPct(selectedSubject.attended, selectedSubject.totalClasses))}`}>
                         {getPct(selectedSubject.attended, selectedSubject.totalClasses)}%
                       </div>
                       <div className="text-xxs text-slate-400">Attendance</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-xl font-black text-emerald-400">{selectedSubject.attended}</div>
+                      <div className="text-lg sm:text-xl font-black text-emerald-400">{selectedSubject.attended}</div>
                       <div className="text-xxs text-slate-400">Present</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-xl font-black text-rose-400">{selectedSubject.totalClasses - selectedSubject.attended}</div>
+                      <div className="text-lg sm:text-xl font-black text-rose-400">{selectedSubject.totalClasses - selectedSubject.attended}</div>
                       <div className="text-xxs text-slate-400">Absent</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-xl font-black text-slate-300">{selectedSubject.totalClasses}</div>
+                      <div className="text-lg sm:text-xl font-black text-slate-300">{selectedSubject.totalClasses}</div>
                       <div className="text-xxs text-slate-400">Total</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Records Table */}
-                <div className="overflow-x-auto rounded-2xl border border-slate-800">
-                  <table className="w-full text-xs text-left">
+                <div className="w-full overflow-x-auto scrollbar-thin rounded-2xl border border-slate-800 pb-2">
+                  <table className="w-full min-w-[560px] text-xs text-left">
                     <thead>
                       <tr className="bg-slate-900/80 border-b border-slate-800 text-xxs text-slate-400 uppercase tracking-wider">
                         <th className="px-5 py-3.5">#</th>
