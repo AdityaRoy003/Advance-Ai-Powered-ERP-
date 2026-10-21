@@ -2,25 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { UsersAPI, CybersecurityAPI } from '../../services/api';
+import { UsersAPI, CybersecurityAPI, IssuesAPI } from '../../services/api';
+import ReportedIssuesHub from '../modules/ReportedIssuesHub';
 import { 
   FaUserCog, FaShieldAlt, FaServer, FaHistory, 
-  FaDownload, FaBan, FaCheck, FaExclamationTriangle, FaUsers, FaArrowRight
+  FaDownload, FaBan, FaCheck, FaExclamationTriangle, FaUsers, FaArrowRight, FaBug
 } from 'react-icons/fa';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [usersList, setUsersList] = useState([]);
   const [activeThreats, setActiveThreats] = useState([]);
+  const [activeAdminTab, setActiveAdminTab] = useState('overview'); // overview | reported_issues
+  const [issueStats, setIssueStats] = useState({ total: 0, open: 0, inProgress: 0, resolved: 0, critical: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAdminDashboardData = async () => {
       setLoading(true);
       try {
-        const [usersRes, securityRes] = await Promise.all([
+        const [usersRes, securityRes, statsRes] = await Promise.all([
           UsersAPI.getAll(),
-          CybersecurityAPI.getAuditLogs()
+          CybersecurityAPI.getAuditLogs(),
+          IssuesAPI.getStats().catch(() => ({ total: 0, open: 0, inProgress: 0, resolved: 0 }))
         ]);
 
         if (Array.isArray(usersRes)) {
@@ -39,6 +43,10 @@ export default function AdminDashboard() {
           setActiveThreats([
             { id: 1, event: 'Zero high-risk intrusion detections. All endpoints secured.', severity: 'LOW', time: 'Just now' }
           ]);
+        }
+
+        if (statsRes) {
+          setIssueStats(statsRes);
         }
       } catch (err) {
         console.warn('Error syncing admin live data:', err);
@@ -103,26 +111,82 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Server Health Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      {/* Server Health & Operations Metrics Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {[
           { label: 'Total Provisioned Accounts', val: String(usersList.length), icon: <FaUsers className="text-indigo-400" />, desc: 'Live MongoDB records' },
           { label: 'Active Status Ratio', val: `${usersList.filter(u => u.status === 'active').length} / ${usersList.length}`, icon: <FaServer className="text-emerald-400" />, desc: 'System authorized' },
+          { 
+            label: 'Reported User Issues', 
+            val: String(issueStats.open), 
+            icon: <FaBug className="text-rose-400" />, 
+            desc: `${issueStats.open} pending triage`, 
+            onClick: () => setActiveAdminTab('reported_issues'),
+            clickable: true,
+            highlight: issueStats.open > 0
+          },
           { label: 'Security Firewall', val: 'Active Filter', icon: <FaShieldAlt className="text-amber-400" />, desc: 'JWT + Rate limiting' },
           { label: 'SIEM Threat Level', val: 'Low Risk', icon: <FaShieldAlt className="text-pink-400" />, desc: 'Live anomaly scanner' }
         ].map((m, idx) => (
-          <div key={idx} className="p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827]/40 shadow-sm flex items-center justify-between gap-4">
+          <div 
+            key={idx} 
+            onClick={m.onClick}
+            className={`p-4 sm:p-5 rounded-2xl border transition ${
+              m.clickable ? 'cursor-pointer hover:border-indigo-500/60' : ''
+            } ${
+              m.highlight 
+                ? 'border-rose-500/40 bg-rose-500/5 dark:bg-rose-950/20' 
+                : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827]/40 shadow-sm'
+            } flex items-center justify-between gap-4`}
+          >
             <div className="flex flex-col gap-1">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">{m.label}</span>
-              <span className="text-xl sm:text-2xl font-black text-white">{m.val}</span>
+              <span className="text-xxs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">{m.label}</span>
+              <span className={`text-xl sm:text-2xl font-black ${m.highlight ? 'text-rose-400' : 'text-slate-900 dark:text-white'}`}>{m.val}</span>
               <span className="text-xxs text-slate-400">{m.desc}</span>
             </div>
-            <div className="p-3 sm:p-3.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-lg shrink-0">{m.icon}</div>
+            <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl text-lg shrink-0">{m.icon}</div>
           </div>
         ))}
       </div>
 
-      {/* Split contents */}
+      {/* Admin Module Navigation Tabs */}
+      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+        <button
+          onClick={() => setActiveAdminTab('overview')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition ${
+            activeAdminTab === 'overview'
+              ? 'bg-indigo-600 text-white shadow-md'
+              : 'bg-slate-100 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 hover:text-white border border-slate-200 dark:border-slate-800'
+          }`}
+        >
+          <FaServer /> System Accounts & Security
+        </button>
+        <button
+          onClick={() => setActiveAdminTab('reported_issues')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition relative ${
+            activeAdminTab === 'reported_issues'
+              ? 'bg-indigo-600 text-white shadow-md'
+              : 'bg-slate-100 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 hover:text-white border border-slate-200 dark:border-slate-800'
+          }`}
+        >
+          <FaBug className="text-rose-400" />
+          <span>Reported Issues & Resolution Desk</span>
+          {issueStats.open > 0 && (
+            <span className="px-2 py-0.5 bg-rose-500 text-white text-[10px] rounded-full font-black animate-pulse">
+              {issueStats.open} Open
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Tab 2: Reported Issues Desk */}
+      {activeAdminTab === 'reported_issues' && (
+        <ReportedIssuesHub embedded={true} />
+      )}
+
+      {/* Tab 1: System Overview & Security */}
+      {activeAdminTab === 'overview' && (
+      /* Split contents */
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
         
         {/* Users Records Table list */}
@@ -228,8 +292,8 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
-
       </div>
+      )}
     </motion.div>
   );
 }

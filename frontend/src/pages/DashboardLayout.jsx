@@ -16,7 +16,7 @@ import {
   FaInfoCircle, FaStream, FaWifi, FaBriefcase, FaPhone, FaKey,
   FaMicrophone, FaCubes, FaBookOpen, FaHeartbeat, FaFlask, FaTrophy, FaUserFriends, FaAward,
   FaUtensils, FaLeaf, FaWrench, FaBoxes, FaCogs, FaPuzzlePiece, FaCode, FaCrown, FaLaptopCode, FaUserShield, FaGlobe, FaUniversalAccess, FaClipboardCheck, FaUsers,
-  FaCalendarAlt, FaUserTie, FaBalanceScale, FaTasks
+  FaCalendarAlt, FaUserTie, FaBalanceScale, FaTasks, FaBug
 } from 'react-icons/fa';
 import { useLanguage } from '../context/LanguageContext';
 import { useAccessibility } from '../context/AccessibilityContext';
@@ -50,7 +50,8 @@ const buildSearchItems = (userRole) => {
     { type: 'Document', title: 'IT Security Policy v3.2.pdf', desc: 'System Config • 2.4 MB • All Access', link: '/dashboard/library', icon: '📄' },
     { type: 'Announcement', title: 'Mid-Term Exam Schedule Published', desc: 'Posted by Principal Office • 2 days ago', link: '/dashboard/student', icon: '📢' },
     { type: 'Fee Record', title: 'Invoice #EDV-2026-9081', desc: 'Aditya Roy • Semester 4 • ₹42,000 Due', link: '/dashboard/finance', icon: '💳' },
-    { type: 'Library Book', title: 'Introduction to Algorithms (CLRS)', desc: 'Available: 3 copies • CS Section', link: '/dashboard/library', icon: '📖' }
+    { type: 'Library Book', title: 'Introduction to Algorithms (CLRS)', desc: 'Available: 3 copies • CS Section', link: '/dashboard/library', icon: '📖' },
+    { type: 'Support', title: 'Reported Issues & Resolution Desk', desc: 'Triage user bugs, system anomalies & notifications', link: '/dashboard/reported-issues', icon: '🐞' }
   ];
   if (userRole === 'STUDENT' || userRole === 'PARENT') {
     return base.filter(item => !['Fee Record', 'System Config'].includes(item.type));
@@ -165,6 +166,7 @@ export default function DashboardLayout() {
           { name: 'Users Directory & Accounts', path: '/dashboard/users', icon: <FaUsers /> },
           { name: 'Policy Simulator & RBAC', path: '/dashboard/policy-simulator', icon: <FaFlask /> },
           { name: 'ERP Operations Hub (25)', path: '/dashboard/operations', icon: <FaClipboardCheck /> },
+          { name: 'Reported Issues Desk', path: '/dashboard/reported-issues', icon: <FaBug /> },
           { name: 'Global Analytics', path: '/dashboard/analytics', icon: <FaChartBar /> },
           { name: 'Voice & AI Gateway', path: '/dashboard/ai', icon: <FaRobot /> },
           { name: 'Live Chat', path: '/dashboard/chat', icon: <FaComments /> }
@@ -193,6 +195,7 @@ export default function DashboardLayout() {
           { name: 'Transport System', path: '/dashboard/transport', icon: <FaTools /> },
           { name: 'Library System', path: '/dashboard/library', icon: <FaBookOpen /> },
           { name: 'Leave Approvals', path: '/dashboard/approvals', icon: <FaFileSignature /> },
+          { name: 'Reported Issues Desk', path: '/dashboard/reported-issues', icon: <FaBug /> },
           { name: 'Live Chat', path: '/dashboard/chat', icon: <FaComments /> }
         ];
 

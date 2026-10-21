@@ -10,6 +10,7 @@ import {
   FaTrash, FaEdit, FaSync, FaDownload, FaPlus, FaLaptop, FaBan, FaUndo
 } from 'react-icons/fa';
 import { UsersAPI, DepartmentsAPI, CybersecurityAPI, InstitutionsAPI } from '../../services/api';
+import ReportedIssuesHub from '../modules/ReportedIssuesHub';
 
 export default function SuperAdminDashboard() {
   const [activeTab, setActiveTab] = useState('org_hierarchy'); // org_hierarchy | users_roles | sessions_api | system_config | backup_mgmt | audit_security | ai_config | notif_config
@@ -329,6 +330,7 @@ export default function SuperAdminDashboard() {
       <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800 scrollbar-none -mx-1 px-1">
         {[
           { id: 'org_hierarchy', label: 'Organization Hierarchy (Multi-Tenant)', icon: <FaSitemap /> },
+          { id: 'reported_issues', label: 'Reported Issues Desk', icon: <FaExclamationTriangle className="text-amber-400" /> },
           { id: 'users_roles', label: 'Users & Custom Roles', icon: <FaUsers /> },
           { id: 'sessions_api', label: 'Sessions & API Keys', icon: <FaKey /> },
           { id: 'system_config', label: 'System Config & Feature Flags', icon: <FaCogs /> },
@@ -821,6 +823,13 @@ export default function SuperAdminDashboard() {
               Update Gateways
             </button>
           </div>
+        </div>
+      )}
+
+      {/* ─── TAB: USER REPORTED ISSUES & RESOLUTION DESK ─── */}
+      {activeTab === 'reported_issues' && (
+        <div className="flex flex-col gap-6">
+          <ReportedIssuesHub embedded={true} />
         </div>
       )}
 

@@ -90,6 +90,7 @@ const StudentGamificationLeaderboard = lazy(() => import('./pages/modules/Studen
 const PolicySimulator = lazy(() => import('./pages/modules/PolicySimulator'));
 const ERPCompletenessHub = lazy(() => import('./pages/modules/ERPCompletenessHub'));
 const UserManagement = lazy(() => import('./pages/modules/UserManagement'));
+const ReportedIssuesHub = lazy(() => import('./pages/modules/ReportedIssuesHub'));
 
 // Loading Fallback Component with 3D EduVerse AI Orb
 const PageLoader = () => (
@@ -397,6 +398,13 @@ function App() {
                   <Route path="gamification" element={<StudentGamificationLeaderboard />} />
                   <Route path="portfolio" element={<StudentPublicPortfolio />} />
                   <Route path="health" element={<CampusHealthWellness />} />
+                  
+                  {/* Reported Issues & User Support Hub (SuperAdmin & Admin) */}
+                  <Route path="reported-issues" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
+                      <ReportedIssuesHub />
+                    </RoleProtectedRoute>
+                  } />
 
                   {/* Catch-all dashboard redirect */}
                   <Route path="*" element={<DynamicDashboardRedirect />} />

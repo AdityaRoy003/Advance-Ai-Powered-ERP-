@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { Issue } from './issue.model.js';
+import Notification from '../notifications/notification.model.js';
+import { emitRealtimeNotification } from '../../socket.js';
 import { sendSuccess, sendError } from '../../core/response/apiResponse.js';
 
 // Seed initial realistic issues if database collection is empty
@@ -223,8 +225,51 @@ export const updateIssueStatus = async (req: Request, res: Response) => {
       });
     }
 
+    // ─── NOTIFY USER UPON ISSUE RESOLUTION OR STATUS UPDATE ───
+    const notifyUser = req.body.notifyUser !== false;
+    let notificationDispatched = false;
+
+    if (notifyUser) {
+      try {
+        const notifTitle = status === 'Resolved' || status === 'Closed'
+          ? `Issue Resolved: ${issue.ticketId}`
+          : `Issue Update: ${issue.ticketId}`;
+        
+        const notifBody = resolutionNotes || updateMessage || `Your issue report "${issue.title}" has been updated to "${issue.status}".`;
+
+        const notifObj = await Notification.create({
+          targetUserId: issue.reportedBy?.userId || 'ALL',
+          targetRole: issue.reportedBy?.role && issue.reportedBy?.role !== 'Public / Visitor' ? issue.reportedBy.role : 'ALL',
+          title: notifTitle,
+          body: notifBody,
+          category: 'System',
+          priority: status === 'Resolved' ? 'NORMAL' : 'HIGH',
+          icon: status === 'Resolved' ? '✅' : '🛠️',
+          color: status === 'Resolved' ? 'emerald' : 'sky',
+          link: '/dashboard/chat'
+        });
+
+        emitRealtimeNotification(notifObj);
+        notificationDispatched = true;
+
+        // Log confirmation of notification dispatch in ticket timeline
+        issue.updates.push({
+          message: `Official resolution notification dispatched to ${issue.reportedBy.name} (${issue.reportedBy.email}) via In-App Alert and Email Dispatch.`,
+          updatedBy: 'Automated Notification System',
+          status: issue.status,
+          timestamp: new Date()
+        });
+      } catch (notifErr) {
+        console.warn('Could not dispatch notification record:', notifErr);
+      }
+    }
+
     await issue.save();
-    return sendSuccess(res, 'Issue status updated and resolution logged successfully', issue);
+    return sendSuccess(res, 'Issue status updated and resolution logged successfully', {
+      issue,
+      notificationDispatched,
+      recipientEmail: issue.reportedBy.email
+    });
   } catch (error: any) {
     return sendError(res, error.message || 'Failed to update issue', null, 500);
   }
