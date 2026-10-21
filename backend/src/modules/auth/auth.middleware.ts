@@ -26,12 +26,16 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
     return sendError(res, 'Authentication token is required', null, 401);
   }
 
-  // Support demo and dev tokens
-  if (token.startsWith('demo-') || token === 'dev-token' || token === 'demo-new-user') {
+  // Allow mock dev tokens only in development if explicitly enabled
+  const isDevMode = process.env.NODE_ENV !== 'production';
+  const allowDemoTokens = isDevMode && process.env.ALLOW_DEMO_TOKENS === 'true';
+
+  if (allowDemoTokens && (token.startsWith('demo-') || token === 'dev-token')) {
     req.user = {
       sub: '6a967ca80579b9064faf4053',
-      email: 'superadmin@eduverse.com',
-      role: 'SUPER_ADMIN'
+      id: '6a967ca80579b9064faf4053',
+      email: 'demo@eduverse.com',
+      role: 'EMPLOYEE'
     };
     return next();
   }
@@ -43,26 +47,16 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
       role: string;
       institutionId?: string;
     };
-    req.user = payload;
+
+    req.user = {
+      ...payload,
+      id: payload.sub,
+      _id: payload.sub
+    };
+
     return next();
   } catch (err) {
-    // If token expired, decode gracefully in dev environment so admin sessions don't suddenly go blank
-    try {
-      const decoded = jwt.decode(token) as any;
-      if (decoded && (decoded.email || decoded.sub)) {
-        (req as any).user = {
-          sub: decoded.sub || '6a967ca80579b9064faf4053',
-          email: decoded.email || 'superadmin@eduverse.com',
-          role: decoded.role || 'SUPER_ADMIN',
-          institutionId: decoded.institutionId
-        };
-        return next();
-      }
-    } catch {
-      // ignore
-    }
-
-    return sendError(res, 'Invalid or expired token', null, 401);
+    return sendError(res, 'Invalid, expired, or tampered authentication token', null, 401);
   }
 };
 

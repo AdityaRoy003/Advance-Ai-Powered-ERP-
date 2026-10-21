@@ -61,8 +61,8 @@ export const refresh = async (req: Request, res: Response) => {
 
 export const forgotPassword = async (req: Request, res: Response) => {
   try {
-    const result = await authService.forgotPassword(req.body.email);
-    return sendSuccess(res, 'OTP verification code sent to email', result, 200);
+    await authService.forgotPassword(req.body.email);
+    return sendSuccess(res, 'If an account exists with this email address, a password reset verification code has been dispatched.', null, 200);
   } catch (error) {
     const err = error instanceof AppError ? error : new AppError('Forgot password request failed', 500);
     return sendError(res, err.message, err.errors, err.statusCode);

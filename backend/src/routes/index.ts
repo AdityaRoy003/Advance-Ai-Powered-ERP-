@@ -35,6 +35,7 @@ import privacyRoutes from '../modules/privacy/privacy.routes.js';
 import issueRoutes from '../modules/issues/issue.routes.js';
 import { authenticate } from '../modules/auth/auth.middleware.js';
 import { tenantScope } from '../middlewares/tenantScope.middleware.js';
+import { authorizeRoles } from '../middlewares/rbac.middleware.js';
 import { sendSuccess } from '../core/response/apiResponse.js';
 
 const router = Router();
@@ -66,7 +67,7 @@ router.get('/health', (req, res) => {
 router.use(['/v1/auth', '/auth'], authRoutes);
 
 // Institution management — Super Admin only
-router.use(['/v1/institutions', '/institutions'], authenticate, institutionRoutes);
+router.use(['/v1/institutions', '/institutions'], authenticate, authorizeRoles('SUPER_ADMIN'), institutionRoutes);
 
 // All tenant-scoped data routes
 router.use(['/v1/users', '/users'],                 authenticate, tenantScope, userRoutes);
@@ -77,7 +78,7 @@ router.use(['/v1/finance', '/finance'],             authenticate, tenantScope, f
 router.use(['/v1/library', '/library'],             authenticate, tenantScope, libraryRoutes);
 router.use(['/v1/exams', '/exams'],                 authenticate, tenantScope, examRoutes);
 router.use(['/v1/ai', '/ai'],                       authenticate, tenantScope, aiRoutes);
-router.use(['/v1/cybersecurity', '/cybersecurity'], authenticate, tenantScope, securityRoutes);
+router.use(['/v1/cybersecurity', '/cybersecurity'], authenticate, authorizeRoles('SUPER_ADMIN', 'ADMIN', 'CYBER_SECURITY_OFFICER'), tenantScope, securityRoutes);
 router.use(['/v1/hostel', '/hostel'],               authenticate, tenantScope, hostelRoutes);
 router.use(['/v1/transport', '/transport'],         authenticate, tenantScope, transportRoutes);
 router.use(['/v1/courses', '/courses'],             authenticate, tenantScope, courseRoutes);
@@ -94,8 +95,8 @@ router.use(['/v1/campus', '/campus'],               authenticate, tenantScope, c
 router.use(['/v1/facilities', '/facilities'],       authenticate, tenantScope, facilitiesRoutes);
 router.use(['/v1/iot', '/iot'],                     authenticate, tenantScope, iotRoutes);
 router.use(['/v1/automation', '/automation'],       authenticate, tenantScope, automationRoutes);
-router.use(['/v1/executive', '/executive'],         authenticate, tenantScope, executiveRoutes);
-router.use(['/v1/system-ops', '/system-ops'],       authenticate, tenantScope, systemOpsRoutes);
+router.use(['/v1/executive', '/executive'],         authenticate, authorizeRoles('SUPER_ADMIN', 'ADMIN'), tenantScope, executiveRoutes);
+router.use(['/v1/system-ops', '/system-ops'],       authenticate, authorizeRoles('SUPER_ADMIN', 'ADMIN'), tenantScope, systemOpsRoutes);
 router.use(['/v1/social', '/social'],               authenticate, tenantScope, socialRoutes);
 router.use(['/v1/operations', '/operations'],       authenticate, tenantScope, operationsRoutes);
 // Public & Authenticated Privacy and Cookie Consent Management

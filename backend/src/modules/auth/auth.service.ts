@@ -1,7 +1,10 @@
+import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import env from '../../config/env.js';
 import { AUTH_CONSTANTS } from './auth.constants.js';
 import { generateTokenPair } from './auth.tokens.js';
-import type { AuthResponse, AuthPayload, RegisterPayload } from './auth.types.js';
+import type { AuthResponse, AuthPayload, RegisterPayload, TokenPair } from './auth.types.js';
 import { validateLoginPayload, validateRegisterPayload } from './auth.validation.js';
 import AppError from '../../core/errors/AppError.js';
 import authRepository from './auth.repository.js';
@@ -85,31 +88,54 @@ class AuthService {
     return { user: user.toObject(), tokens };
   }
 
-  public async refreshToken(token: string): Promise<{ accessToken: string }> {
+  public async refreshToken(token: string): Promise<TokenPair> {
     if (!token) {
       throw new AppError('Refresh token is required', 400);
     }
-    return { accessToken: token };
+
+    let decoded: any;
+    try {
+      decoded = jwt.verify(token, env.JWT_SECRET);
+    } catch {
+      throw new AppError('Invalid or expired refresh token', 401);
+    }
+
+    if (decoded.type !== 'refresh') {
+      throw new AppError('Provided token is not a valid refresh token', 401);
+    }
+
+    const user = await User.findOne({ _id: decoded.sub, isDeleted: { $ne: true }, status: 'active' });
+    if (!user) {
+      throw new AppError('Session user no longer exists or is suspended', 401);
+    }
+
+    return generateTokenPair({
+      sub: String(user._id),
+      email: user.email,
+      role: user.role,
+      institutionId: (user as any).institutionId ? String((user as any).institutionId) : null
+    });
   }
 
-  public async forgotPassword(email: string): Promise<{ otp: string }> {
+  public async forgotPassword(email: string): Promise<void> {
     if (!email) throw new AppError('Email address is required', 400);
 
     const user = await User.findOne({ email: email.toLowerCase(), isDeleted: { $ne: true } });
     if (!user) {
-      // Security practice: return success message even if email not found
-      return { otp: '000000' };
+      // Timing-safe return without revealing user existence
+      return;
     }
 
-    // Generate 6-digit OTP token
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    // Generate cryptographically secure 6-digit OTP token
+    const otp = crypto.randomInt(100000, 1000000).toString();
     user.otpSecret = otp;
     user.otpExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 mins expiry
     await user.save();
 
-    console.log(`🔑 OTP generated for ${email}: ${otp}`);
-
-    return { otp };
+    // Log to console for dev environment verification (never returned to client)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`🔑 [DEV-CONSOLE] Password Reset OTP for ${email}: ${otp}`);
+    }
   }
 
   public async resetPassword(payload: { email: string; otp: string; newPassword: string }): Promise<void> {
