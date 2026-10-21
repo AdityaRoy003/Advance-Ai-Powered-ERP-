@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { AcademicAPI } from '../services/api';
 import { FaCheckCircle, FaExclamationTriangle, FaShieldAlt, FaQrcode, FaArrowLeft, FaPrint } from 'react-icons/fa';
+import EduVerseOrbLoader from '../components/common/EduVerseOrbLoader';
 
 export default function HallTicketVerification() {
   const { id } = useParams();
@@ -52,9 +53,12 @@ export default function HallTicketVerification() {
         </div>
 
         {loading ? (
-          <div className="py-16 text-center flex flex-col items-center gap-3">
-            <div className="w-10 h-10 border-3 border-purple-500 border-t-transparent rounded-full animate-spin" />
-            <span className="text-xs text-slate-400 font-mono">Querying Institution Examination Registry...</span>
+          <div className="py-16 text-center flex items-center justify-center">
+            <EduVerseOrbLoader 
+              size="md" 
+              message="Verifying Digital Hall Ticket..." 
+              submessage="Querying Institution Examination Registry & Cryptographic Hash" 
+            />
           </div>
         ) : error ? (
           <div className="py-8 text-center flex flex-col items-center gap-4">

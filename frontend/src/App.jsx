@@ -14,6 +14,7 @@ import { CookieConsentProvider } from './context/CookieConsentContext';
 import CookieConsentBanner from './components/privacy/CookieConsentBanner';
 import CookieConsentModal from './components/privacy/CookieConsentModal';
 import PrivacyPolicyModal from './components/privacy/PrivacyPolicyModal';
+import EduVerseOrbLoader from './components/common/EduVerseOrbLoader';
 
 // Layout
 import DashboardLayout from './pages/DashboardLayout';
@@ -89,14 +90,14 @@ const PolicySimulator = lazy(() => import('./pages/modules/PolicySimulator'));
 const ERPCompletenessHub = lazy(() => import('./pages/modules/ERPCompletenessHub'));
 const UserManagement = lazy(() => import('./pages/modules/UserManagement'));
 
-// Loading Fallback Component
+// Loading Fallback Component with 3D EduVerse AI Orb
 const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center bg-[#090d16] text-white">
-    <div className="flex flex-col items-center gap-3">
-      <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-      <span className="text-xs font-semibold text-slate-400">Loading EduVerse ERP Module...</span>
-    </div>
-  </div>
+  <EduVerseOrbLoader 
+    fullScreen 
+    size="lg" 
+    message="Initializing EduVerse AI Platform" 
+    submessage="Restoring security context & tenant configurations" 
+  />
 );
 
 // Protected Route Component

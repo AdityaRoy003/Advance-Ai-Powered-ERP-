@@ -6,6 +6,7 @@ import {
   FaRobot, FaCalendarAlt, FaFileCode, FaBrain, 
   FaSearch, FaChevronRight, FaPlus, FaVolumeUp 
 } from 'react-icons/fa';
+import EduVerseOrbLoader from '../../components/common/EduVerseOrbLoader';
 
 export default function AIAssistant() {
   const [activeTab, setActiveTab] = useState('chat');
@@ -181,7 +182,10 @@ export default function AIAssistant() {
                 </div>
               ))}
               {chatLoading && (
-                <span className="text-xxs font-mono text-slate-500 animate-pulse">AI Agent compiling query...</span>
+                <div className="flex items-center gap-3 p-3 rounded-2xl bg-indigo-950/30 border border-indigo-500/20">
+                  <EduVerseOrbLoader size="sm" showText={false} />
+                  <span className="text-xs font-mono text-cyan-400 animate-pulse">Deep RAG Assistant synthesizing response...</span>
+                </div>
               )}
             </div>
 
@@ -225,6 +229,16 @@ export default function AIAssistant() {
                 {timetableLoading ? 'Resolving conflicts...' : 'Generate New Timetable'}
               </button>
             </div>
+
+            {timetableLoading && (
+              <div className="border border-indigo-500/30 bg-slate-950/70 p-8 rounded-2xl flex items-center justify-center shadow-xl backdrop-blur-md">
+                <EduVerseOrbLoader 
+                  size="md" 
+                  message="AI Timetable Constraint Engine Resolving..." 
+                  submessage="Evaluating faculty workloads & classroom capacities" 
+                />
+              </div>
+            )}
 
             {timetableOutput && (
               <div className="border border-slate-800 bg-slate-950/60 p-6 rounded-2xl font-mono text-xs flex flex-col gap-4">

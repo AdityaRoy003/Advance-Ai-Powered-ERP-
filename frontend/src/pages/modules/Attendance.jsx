@@ -10,6 +10,7 @@ import {
   FaCheckCircle, FaTimesCircle, FaExclamationTriangle, FaChartPie,
   FaDownload, FaSearch
 } from 'react-icons/fa';
+import EduVerseOrbLoader from '../../components/common/EduVerseOrbLoader';
 
 const getPct = (attended, total) => total ? Math.round((attended / total) * 100) : 0;
 const pctColor = (pct) => pct >= 75 ? 'text-emerald-400' : pct >= 60 ? 'text-amber-400' : 'text-rose-400';
@@ -422,9 +423,12 @@ export default function Attendance() {
             <div className="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2 border-indigo-500" />
             <div className="absolute bottom-4 right-4 w-6 h-6 border-b-2 border-r-2 border-indigo-500" />
             {scanning ? (
-              <div className="flex flex-col items-center gap-3">
-                <FaCircleNotch className="text-indigo-400 text-4xl animate-spin" />
-                <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest">Scanning Face embeds...</span>
+              <div className="flex flex-col items-center justify-center py-2">
+                <EduVerseOrbLoader 
+                  size="sm" 
+                  message="Biometric AI Core Active" 
+                  submessage="Extracting 128-D facial vector embeds" 
+                />
               </div>
             ) : scanResult ? (
               <div className="flex flex-col items-center gap-3">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useNavigate, Link, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -22,6 +22,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { useCookieConsent } from '../context/CookieConsentContext';
 import AIAssistantWidget from '../components/AIAssistantWidget';
+import EduVerseOrbLoader from '../components/common/EduVerseOrbLoader';
 
 // ─── NOTIFICATION CATEGORIES ───
 const NOTIF_CATEGORIES = ['All', 'Academic', 'Finance', 'Transport', 'Hostel', 'Security', 'System'];
@@ -920,7 +921,17 @@ export default function DashboardLayout() {
 
         {/* ─── CONTENT ─── */}
         <main className="flex-1 p-3 sm:p-6 pb-28 md:pb-6 max-w-7xl mx-auto w-full overflow-x-hidden relative">
-          <Outlet />
+          <Suspense fallback={
+            <div className="min-h-[50vh] flex items-center justify-center py-16">
+              <EduVerseOrbLoader 
+                size="md" 
+                message="Loading ERP Module..." 
+                submessage="Retrieving operational telemetry & datasets" 
+              />
+            </div>
+          }>
+            <Outlet />
+          </Suspense>
           <AIAssistantWidget />
         </main>
 

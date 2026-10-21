@@ -11,6 +11,7 @@ import {
   FaPlus, FaSearch, FaDownload, FaSyncAlt, FaPrint, FaQrcode, 
   FaEye, FaTimes, FaShieldAlt, FaChartBar, FaUserGraduate, FaChalkboardTeacher
 } from 'react-icons/fa';
+import EduVerseOrbLoader from '../../components/common/EduVerseOrbLoader';
 
 export default function AcademicControllerDashboard({ initialTab = 'overview' }) {
   const { user } = useAuth();
@@ -631,6 +632,17 @@ export default function AcademicControllerDashboard({ initialTab = 'overview' })
               </div>
             </div>
 
+            {/* Solver Active State with 3D Orb */}
+            {solving && (
+              <div className="p-8 rounded-3xl bg-purple-950/40 border border-purple-500/40 flex items-center justify-center shadow-2xl backdrop-blur-md">
+                <EduVerseOrbLoader 
+                  size="lg"
+                  message="AI Timetable Constraint Engine Active"
+                  submessage="Running Google OR-Tools CP-SAT solver • Eliminating teacher and room conflicts"
+                />
+              </div>
+            )}
+
             {/* Solver Report Card if executed */}
             {solverResult && (
               <div className="p-5 rounded-2xl bg-purple-950/40 border border-purple-800/40 flex flex-col sm:flex-row justify-between sm:items-center gap-4 font-mono">
@@ -1200,9 +1212,12 @@ export default function AcademicControllerDashboard({ initialTab = 'overview' })
             </div>
 
             {aiLoading ? (
-              <div className="py-12 text-center flex flex-col items-center gap-3">
-                <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
-                <span className="text-xs text-slate-400 font-mono">Querying live database records...</span>
+              <div className="py-10 text-center flex flex-col items-center justify-center">
+                <EduVerseOrbLoader 
+                  size="md"
+                  message="AI Copilot Querying Live Database Records..."
+                  submessage="Synthesizing academic operational heuristics & constraints"
+                />
               </div>
             ) : aiOutput ? (
               <div className="p-5 rounded-2xl bg-purple-950/30 border border-purple-800/40 font-mono flex flex-col gap-3">

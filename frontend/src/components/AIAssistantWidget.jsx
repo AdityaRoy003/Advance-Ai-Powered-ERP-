@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-hot-toast';
 import { FaRobot, FaPaperPlane, FaTimes, FaInbox } from 'react-icons/fa';
+import EduVerseOrbLoader from './common/EduVerseOrbLoader';
 
 export default function AIAssistantWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -99,7 +100,13 @@ export default function AIAssistantWidget() {
                 </div>
               ))}
               {loading && (
-                <span className="text-xxs font-mono text-slate-500 animate-pulse">Copilot is querying database...</span>
+                <div className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-900/80 border border-cyan-500/20">
+                  <EduVerseOrbLoader size="sm" showText={false} />
+                  <div className="flex flex-col">
+                    <span className="text-[11px] font-bold text-cyan-300">EduVerse AI Thinking</span>
+                    <span className="text-[10px] font-mono text-slate-400">Querying live metrics...</span>
+                  </div>
+                </div>
               )}
             </div>
 

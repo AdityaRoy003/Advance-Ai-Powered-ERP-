@@ -182,3 +182,55 @@
   outline-offset: 2px !important;
 }
 
+/* ─── EduVerse 3D AI Glass Orb Animations ─── */
+@keyframes spinOrbit {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinOrbitReverse {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes orbBreathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.95;
+  }
+  50% {
+    transform: scale(1.025);
+    opacity: 1;
+  }
+}
+
+@keyframes orbShimmer {
+  0% {
+    left: -50%;
+  }
+  50% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-\[spinOrbit_16s_linear_infinite\],
+  .animate-\[spinOrbit_8s_linear_infinite\],
+  .animate-\[spinOrbitReverse_11s_linear_infinite\],
+  .animate-\[orbBreathe_4s_ease-in-out_infinite\] {
+    animation: none !important;
+  }
+}
+
+
