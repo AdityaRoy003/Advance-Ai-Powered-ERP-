@@ -96,6 +96,14 @@ const ReportedIssuesHub = lazy(() => import('./pages/modules/ReportedIssuesHub')
 const InstitutionOnboarding = lazy(() => import('./pages/InstitutionOnboarding'));
 const InstitutionalBilling = lazy(() => import('./pages/modules/InstitutionalBilling'));
 
+// 6 Core Commercial & Enterprise Accreditation Modules
+const AdmissionsCRM = lazy(() => import('./pages/modules/AdmissionsCRM'));
+const DataMigrationEngine = lazy(() => import('./pages/modules/DataMigrationEngine'));
+const PlagiarismAIDetector = lazy(() => import('./pages/modules/PlagiarismAIDetector'));
+const LectureSummarizerStudio = lazy(() => import('./pages/modules/LectureSummarizerStudio'));
+const AccreditationSSRCompiler = lazy(() => import('./pages/modules/AccreditationSSRCompiler'));
+const AlumniNetworkHub = lazy(() => import('./pages/modules/AlumniNetworkHub'));
+
 // Loading Fallback Component with 3D EduVerse AI Orb
 const PageLoader = () => (
   <EduVerseOrbLoader 
@@ -418,6 +426,18 @@ function App() {
                       <ReportedIssuesHub />
                     </RoleProtectedRoute>
                   } />
+
+                  {/* 6 Core Commercial & Enterprise Modules */}
+                  <Route path="admissions" element={<AdmissionsCRM />} />
+                  <Route path="migration" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
+                      <DataMigrationEngine />
+                    </RoleProtectedRoute>
+                  } />
+                  <Route path="plagiarism" element={<PlagiarismAIDetector />} />
+                  <Route path="lecture-ai" element={<LectureSummarizerStudio />} />
+                  <Route path="ssr-compiler" element={<AccreditationSSRCompiler />} />
+                  <Route path="alumni" element={<AlumniNetworkHub />} />
 
                   {/* Catch-all dashboard redirect */}
                   <Route path="*" element={<DynamicDashboardRedirect />} />

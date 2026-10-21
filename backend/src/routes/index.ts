@@ -33,6 +33,12 @@ import operationsRoutes from '../modules/erp_operations/erp_operations.routes.js
 import academicRoutes from '../modules/academic_controller/academic.routes.js';
 import privacyRoutes from '../modules/privacy/privacy.routes.js';
 import issueRoutes from '../modules/issues/issue.routes.js';
+import admissionsRoutes from '../modules/admissions/admissions.routes.js';
+import migrationRoutes from '../modules/migration/migration.routes.js';
+import plagiarismRoutes from '../modules/plagiarism/plagiarism.routes.js';
+import lectureRoutes from '../modules/lecture_summarizer/lecture.routes.js';
+import ssrRoutes from '../modules/ssr_compiler/ssr.routes.js';
+import alumniRoutes from '../modules/alumni/alumni.routes.js';
 import { authenticate } from '../modules/auth/auth.middleware.js';
 import { tenantScope } from '../middlewares/tenantScope.middleware.js';
 import { authorizeRoles } from '../middlewares/rbac.middleware.js';
@@ -106,5 +112,13 @@ router.use(['/v1/issues', '/issues'],                 issueRoutes);
 // Public QR verification endpoint bypasses auth for mobile scanners
 router.get(['/v1/academic/hall-tickets/verify/:id', '/academic/hall-tickets/verify/:id'], academicRoutes);
 router.use(['/v1/academic', '/academic'],           authenticate, tenantScope, academicRoutes);
+
+// Tier 1 & Tier 2 & Tier 4 SaaS Enterprise Modules
+router.use(['/v1/admissions', '/admissions'],       admissionsRoutes);
+router.use(['/v1/migration', '/migration'],         migrationRoutes);
+router.use(['/v1/plagiarism', '/plagiarism'],       plagiarismRoutes);
+router.use(['/v1/lecture-ai', '/lecture-ai'],       lectureRoutes);
+router.use(['/v1/ssr', '/ssr'],                     ssrRoutes);
+router.use(['/v1/alumni', '/alumni'],               alumniRoutes);
 
 export default router;

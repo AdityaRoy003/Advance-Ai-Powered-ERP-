@@ -16,7 +16,8 @@ import {
   FaInfoCircle, FaStream, FaWifi, FaBriefcase, FaPhone, FaKey,
   FaMicrophone, FaCubes, FaBookOpen, FaHeartbeat, FaFlask, FaTrophy, FaUserFriends, FaAward,
   FaUtensils, FaLeaf, FaWrench, FaBoxes, FaCogs, FaPuzzlePiece, FaCode, FaCrown, FaLaptopCode, FaUserShield, FaGlobe, FaUniversalAccess, FaClipboardCheck, FaUsers,
-  FaCalendarAlt, FaUserTie, FaBalanceScale, FaTasks, FaBug, FaChevronDown, FaPlus
+  FaCalendarAlt, FaUserTie, FaBalanceScale, FaTasks, FaBug, FaChevronDown, FaPlus,
+  FaFileImport, FaVideo, FaCertificate, FaHandHoldingUsd
 } from 'react-icons/fa';
 import { useLanguage } from '../context/LanguageContext';
 import { useAccessibility } from '../context/AccessibilityContext';
@@ -54,7 +55,13 @@ const buildSearchItems = (userRole) => {
     { type: 'Announcement', title: 'Mid-Term Exam Schedule Published', desc: 'Posted by Principal Office • 2 days ago', link: '/dashboard/student', icon: '📢' },
     { type: 'Fee Record', title: 'Invoice #EDV-2026-9081', desc: 'Aditya Roy • Semester 4 • ₹42,000 Due', link: '/dashboard/finance', icon: '💳' },
     { type: 'Library Book', title: 'Introduction to Algorithms (CLRS)', desc: 'Available: 3 copies • CS Section', link: '/dashboard/library', icon: '📖' },
-    { type: 'Support', title: 'Reported Issues & Resolution Desk', desc: 'Triage user bugs, system anomalies & notifications', link: '/dashboard/reported-issues', icon: '🐞' }
+    { type: 'Support', title: 'Reported Issues & Resolution Desk', desc: 'Triage user bugs, system anomalies & notifications', link: '/dashboard/reported-issues', icon: '🐞' },
+    { type: 'Admissions', title: 'Admissions & Enrollment CRM Pipeline', desc: 'Interactive Kanban, candidate portal & fee tracking', link: '/dashboard/admissions', icon: '🎯' },
+    { type: 'Migration', title: 'Bulk CSV / Excel Data Migration Engine', desc: 'Smart column auto-mapping & dry-run validator', link: '/dashboard/migration', icon: '📥' },
+    { type: 'Plagiarism', title: 'Plagiarism & AI Content Integrity Engine', desc: 'Turnitin & GPTZero alternative similarity scanner', link: '/dashboard/plagiarism', icon: '🛡️' },
+    { type: 'AI Lecture', title: 'AI Lecture Summarizer & Video Chapterizer', desc: 'Whisper audio transcription, chapters & flashcards', link: '/dashboard/lecture-ai', icon: '🎥' },
+    { type: 'Accreditation', title: 'One-Click NAAC / NBA / ABET SSR Compiler', desc: 'Self-study report generator & criteria CGPA predictor', link: '/dashboard/ssr-compiler', icon: '📜' },
+    { type: 'Alumni', title: 'Alumni Network, Job Referrals & Endowment', desc: 'Global graduate directory, referral board & donations', link: '/dashboard/alumni', icon: '🤝' }
   ];
   if (userRole === 'STUDENT' || userRole === 'PARENT') {
     return base.filter(item => !['Fee Record', 'System Config'].includes(item.type));
@@ -214,6 +221,12 @@ export default function DashboardLayout() {
       case 'SUPER_ADMIN':
         return [
           { name: 'Super Admin HQ', path: '/dashboard/super_admin', icon: <FaChartBar /> },
+          { name: 'Admissions CRM Pipeline', path: '/dashboard/admissions', icon: <FaUserGraduate /> },
+          { name: 'Bulk Data Migration Engine', path: '/dashboard/migration', icon: <FaFileImport /> },
+          { name: 'Plagiarism & AI Integrity', path: '/dashboard/plagiarism', icon: <FaShieldAlt /> },
+          { name: 'AI Lecture Summarizer', path: '/dashboard/lecture-ai', icon: <FaVideo /> },
+          { name: 'Accreditation SSR Compiler', path: '/dashboard/ssr-compiler', icon: <FaCertificate /> },
+          { name: 'Alumni & Endowments', path: '/dashboard/alumni', icon: <FaHandHoldingUsd /> },
           { name: 'Executive Command HQ', path: '/dashboard/executive', icon: <FaCrown /> },
           { name: 'Institutions (Multi-Tenant)', path: '/dashboard/institutions', icon: <FaBuilding /> },
           { name: 'Subscription & Quotas', path: '/dashboard/billing', icon: <FaCreditCard /> },
@@ -238,6 +251,12 @@ export default function DashboardLayout() {
       case 'ADMIN':
         return [
           { name: 'Admin Dashboard', path: '/dashboard/admin', icon: <FaChartBar /> },
+          { name: 'Admissions CRM Pipeline', path: '/dashboard/admissions', icon: <FaUserGraduate /> },
+          { name: 'Bulk Data Migration Engine', path: '/dashboard/migration', icon: <FaFileImport /> },
+          { name: 'Plagiarism & AI Integrity', path: '/dashboard/plagiarism', icon: <FaShieldAlt /> },
+          { name: 'AI Lecture Summarizer', path: '/dashboard/lecture-ai', icon: <FaVideo /> },
+          { name: 'Accreditation SSR Compiler', path: '/dashboard/ssr-compiler', icon: <FaCertificate /> },
+          { name: 'Alumni & Endowments', path: '/dashboard/alumni', icon: <FaHandHoldingUsd /> },
           { name: 'Subscription & Quotas', path: '/dashboard/billing', icon: <FaCreditCard /> },
           { name: 'Users Directory & Accounts', path: '/dashboard/users', icon: <FaUsers /> },
           { name: 'Policy Simulator & RBAC', path: '/dashboard/policy-simulator', icon: <FaFlask /> },
@@ -300,6 +319,7 @@ export default function DashboardLayout() {
       case 'PLACEMENT':
         return [
           { name: 'Placement Operations HQ', path: '/dashboard/placement_officer', icon: <FaBriefcase /> },
+          { name: 'Alumni Network & Job Referrals', path: '/dashboard/alumni', icon: <FaHandHoldingUsd /> },
           { name: 'Career Intelligence AI', path: '/dashboard/career-ai', icon: <FaBriefcase /> },
           { name: 'Hackathon & Innovation Hub', path: '/dashboard/hackathons', icon: <FaTrophy /> },
           { name: 'Student Portfolios', path: '/dashboard/portfolio', icon: <FaAward /> },
@@ -335,6 +355,7 @@ export default function DashboardLayout() {
       case 'ACADEMIC':
         return [
           { name: 'Academic Dashboard', path: '/dashboard/academic_controller', icon: <FaChartBar /> },
+          { name: 'Accreditation SSR Compiler', path: '/dashboard/ssr-compiler', icon: <FaCertificate /> },
           { name: 'Academic Calendar', path: '/dashboard/academic-calendar', icon: <FaCalendarAlt /> },
           { name: 'Timetable Management', path: '/dashboard/timetable-mgmt', icon: <FaCalendarCheck /> },
           { name: 'Exam Management', path: '/dashboard/exam-mgmt', icon: <FaFileAlt /> },
@@ -354,6 +375,9 @@ export default function DashboardLayout() {
       case 'FACULTY':
         return [
           { name: 'Faculty Dashboard', path: '/dashboard/teacher', icon: <FaChartBar /> },
+          { name: 'Plagiarism & AI Detector', path: '/dashboard/plagiarism', icon: <FaShieldAlt /> },
+          { name: 'AI Lecture Summarizer', path: '/dashboard/lecture-ai', icon: <FaVideo /> },
+          { name: 'Accreditation SSR Compiler', path: '/dashboard/ssr-compiler', icon: <FaCertificate /> },
           { name: 'LMS & Lesson Plans', path: '/dashboard/lms', icon: <FaBookOpen /> },
           { name: 'Classroom Attendance', path: '/dashboard/attendance', icon: <FaCalendarCheck /> },
           { name: 'Exams & Grading', path: '/dashboard/exams', icon: <FaFileAlt /> },
@@ -372,6 +396,8 @@ export default function DashboardLayout() {
       case 'STUDENT':
         return [
           { name: 'Student Dashboard', path: '/dashboard/student', icon: <FaChartBar /> },
+          { name: 'AI Lecture Notes & Cards', path: '/dashboard/lecture-ai', icon: <FaVideo /> },
+          { name: 'Alumni Network & Referrals', path: '/dashboard/alumni', icon: <FaHandHoldingUsd /> },
           { name: 'LMS & Video Classes', path: '/dashboard/lms', icon: <FaBookOpen /> },
           { name: 'Achievements & Badges', path: '/dashboard/gamification', icon: <FaTrophy /> },
           { name: 'Campus Social Feed', path: '/dashboard/community', icon: <FaComments /> },

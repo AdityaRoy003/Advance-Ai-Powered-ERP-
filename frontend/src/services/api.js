@@ -392,6 +392,96 @@ export const InstitutionsAPI = {
   }
 };
 
+export const AdmissionsAPI = {
+  getAll: async (params = {}) => {
+    try {
+      const res = await apiClient.get('/admissions', { params });
+      return res.data?.data || { applications: [], stageCounts: {} };
+    } catch (err) {
+      return { applications: [], stageCounts: {} };
+    }
+  },
+  updateStage: async (id, stage, note = '') => {
+    const res = await apiClient.patch(`/admissions/${id}/stage`, { stage, note });
+    return res.data;
+  },
+  create: async (data) => {
+    const res = await apiClient.post('/admissions/apply', data);
+    return res.data;
+  },
+  track: async (appNumber) => {
+    const res = await apiClient.get(`/admissions/track/${appNumber}`);
+    return res.data?.data || res.data;
+  }
+};
+
+export const MigrationAPI = {
+  validate: async (targetEntity, rows) => {
+    const res = await apiClient.post('/migration/validate', { targetEntity, rows });
+    return res.data?.data || res.data;
+  },
+  execute: async (targetEntity, rows) => {
+    const res = await apiClient.post('/migration/execute', { targetEntity, rows });
+    return res.data?.data || res.data;
+  }
+};
+
+export const PlagiarismAPI = {
+  scan: async (title, text, authorName) => {
+    const res = await apiClient.post('/plagiarism/scan', { title, text, authorName });
+    return res.data?.data || res.data;
+  }
+};
+
+export const LectureSummarizerAPI = {
+  process: async (title, subject, instructor, durationMinutes) => {
+    const res = await apiClient.post('/lecture-ai/process', { title, subject, instructor, durationMinutes });
+    return res.data?.data || res.data;
+  }
+};
+
+export const SSRCompilerAPI = {
+  getMetrics: async () => {
+    try {
+      const res = await apiClient.get('/ssr/metrics');
+      return res.data?.data || res.data;
+    } catch (err) {
+      return null;
+    }
+  }
+};
+
+export const AlumniAPI = {
+  getDirectory: async (params = {}) => {
+    try {
+      const res = await apiClient.get('/alumni/directory', { params });
+      return res.data?.data || { alumni: [], stats: {} };
+    } catch (err) {
+      return { alumni: [], stats: {} };
+    }
+  },
+  getJobs: async () => {
+    try {
+      const res = await apiClient.get('/alumni/jobs');
+      return res.data?.data || res.data || [];
+    } catch (err) {
+      return [];
+    }
+  },
+  getEndowments: async () => {
+    try {
+      const res = await apiClient.get('/alumni/endowments');
+      return res.data?.data || res.data || [];
+    } catch (err) {
+      return [];
+    }
+  },
+  pledge: async (campaignId, amount, donorName) => {
+    const res = await apiClient.post('/alumni/endowments/pledge', { campaignId, amount, donorName });
+    return res.data?.data || res.data;
+  }
+};
+
 export const LMSAPI = {
   getCourses: async () => {
     try {
