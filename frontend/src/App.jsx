@@ -10,11 +10,13 @@ import { LanguageProvider } from './context/LanguageContext';
 import { AccessibilityProvider } from './context/AccessibilityContext';
 import { CookieConsentProvider } from './context/CookieConsentContext';
 import { SupportModalProvider } from './context/SupportModalContext';
+import { VoiceAssistantProvider } from './context/VoiceAssistantContext';
 
 // Privacy & Consent Components
 import CookieConsentBanner from './components/privacy/CookieConsentBanner';
 import CookieConsentModal from './components/privacy/CookieConsentModal';
 import PrivacyPolicyModal from './components/privacy/PrivacyPolicyModal';
+import VoiceERPAssistantModal from './components/voice/VoiceERPAssistantModal';
 import EduVerseOrbLoader from './components/common/EduVerseOrbLoader';
 
 // Layout
@@ -145,12 +147,14 @@ function App() {
               <AccessibilityProvider>
                 <SupportModalProvider>
                   <BrowserRouter>
-                    <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
-                    <CookieConsentBanner />
-                    <CookieConsentModal />
-                    <PrivacyPolicyModal />
-                    <Suspense fallback={<PageLoader />}>
-                    <Routes>
+                    <VoiceAssistantProvider>
+                      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+                      <CookieConsentBanner />
+                      <CookieConsentModal />
+                      <PrivacyPolicyModal />
+                      <VoiceERPAssistantModal />
+                      <Suspense fallback={<PageLoader />}>
+                        <Routes>
                 {/* Marketing / Landing */}
                 <Route path="/" element={<LandingPage />} />
 
@@ -414,8 +418,9 @@ function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
-          </BrowserRouter>
-        </SupportModalProvider>
+          </VoiceAssistantProvider>
+        </BrowserRouter>
+      </SupportModalProvider>
       </AccessibilityProvider>
             </LanguageProvider>
           </SocketProvider>

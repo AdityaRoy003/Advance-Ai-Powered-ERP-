@@ -21,6 +21,7 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { useCookieConsent } from '../context/CookieConsentContext';
+import { useVoiceAssistant } from '../context/VoiceAssistantContext';
 import AIAssistantWidget from '../components/AIAssistantWidget';
 import EduVerseOrbLoader from '../components/common/EduVerseOrbLoader';
 import DashboardFooter from '../components/layout/DashboardFooter';
@@ -81,6 +82,7 @@ export default function DashboardLayout() {
   const [notifFilter, setNotifFilter] = useState('All');
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showA11yModal, setShowA11yModal] = useState(false);
+  const { openVoiceAssistant, isListening: isVoiceListening } = useVoiceAssistant();
 
   // Auto-close mobile drawer on route change
   useEffect(() => {
@@ -98,7 +100,7 @@ export default function DashboardLayout() {
   const searchItems = buildSearchItems(user?.role);
   const searchCategories = ['All', 'Student', 'Teacher', 'Course', 'Document', 'Announcement', 'Fee Record', 'Library Book'];
 
-  // Ctrl+K listener
+  // Global Shortcuts & Custom event listeners (Ctrl+K, Alt+V, voice events)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -107,13 +109,28 @@ export default function DashboardLayout() {
         setSearchQuery('');
         setSearchResults([]);
       }
+      if (e.altKey && (e.key === 'v' || e.key === 'V')) {
+        e.preventDefault();
+        openVoiceAssistant();
+      }
       if (e.key === 'Escape') {
         setShowGlobalSearch(false);
       }
     };
+
+    const handleOpenSearch = () => setShowGlobalSearch(true);
+    const handleOpenA11y = () => setShowA11yModal(true);
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+    window.addEventListener('open-global-search', handleOpenSearch);
+    window.addEventListener('open-a11y-modal', handleOpenA11y);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('open-global-search', handleOpenSearch);
+      window.removeEventListener('open-a11y-modal', handleOpenA11y);
+    };
+  }, [openVoiceAssistant]);
 
   // Search logic
   useEffect(() => {
@@ -434,6 +451,12 @@ export default function DashboardLayout() {
               <Link 
                 key={item.path} 
                 to={item.path}
+                onClick={(e) => {
+                  if (item.path === '/dashboard/voice-vision') {
+                    e.preventDefault();
+                    openVoiceAssistant();
+                  }
+                }}
                 className={`flex items-center gap-3.5 px-3 py-3 rounded-xl font-semibold transition ${
                   isActive 
                     ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25' 
@@ -520,7 +543,13 @@ export default function DashboardLayout() {
                     <Link
                       key={item.path}
                       to={item.path}
-                      onClick={() => setMobileDrawerOpen(false)}
+                      onClick={(e) => {
+                        setMobileDrawerOpen(false);
+                        if (item.path === '/dashboard/voice-vision') {
+                          e.preventDefault();
+                          openVoiceAssistant();
+                        }
+                      }}
                       className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-xs transition ${
                         isActive
                           ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
@@ -567,8 +596,12 @@ export default function DashboardLayout() {
 
                   {/* Voice ERP Assistant */}
                   <button
-                    onClick={() => { setMobileDrawerOpen(false); navigate('/dashboard/voice-vision'); }}
-                    className="flex items-center gap-1.5 px-2.5 py-2 rounded-xl bg-pink-500/10 border border-pink-500/30 text-pink-300"
+                    onClick={() => { setMobileDrawerOpen(false); openVoiceAssistant(); }}
+                    className={`flex items-center gap-1.5 px-2.5 py-2 rounded-xl border transition ${
+                      isVoiceListening
+                        ? 'bg-rose-500/20 border-rose-500/40 text-rose-300 animate-pulse'
+                        : 'bg-pink-500/10 border-pink-500/30 text-pink-300'
+                    }`}
                   >
                     <FaMicrophone className="text-pink-400 shrink-0" />
                     <span className="truncate">Voice ERP</span>
@@ -721,11 +754,15 @@ export default function DashboardLayout() {
               <FaUniversalAccess size={13} className={highContrast || largeText ? 'text-teal-400' : ''} />
             </button>
 
-            {/* Voice ERP Trigger (Desktop - mobile in drawer & bottom nav) */}
+            {/* Voice ERP Trigger (Desktop - opens Voice Natural Assistant) */}
             <button 
-              onClick={() => navigate('/dashboard/voice-vision')}
-              className="hidden sm:flex p-2 sm:p-2.5 rounded-xl border border-pink-500/30 bg-pink-500/10 hover:bg-pink-500/20 text-pink-400 transition"
-              title="Voice ERP Natural Assistant"
+              onClick={openVoiceAssistant}
+              className={`hidden sm:flex p-2 sm:p-2.5 rounded-xl border transition ${
+                isVoiceListening
+                  ? 'border-rose-500 bg-rose-500/20 text-rose-400 animate-pulse ring-4 ring-rose-500/30'
+                  : 'border-pink-500/30 bg-pink-500/10 hover:bg-pink-500/20 text-pink-400'
+              }`}
+              title="Voice ERP Natural Assistant (Click to Speak or Alt+V)"
             >
               <FaMicrophone size={13} />
             </button>
@@ -973,8 +1010,10 @@ export default function DashboardLayout() {
           </button>
 
           <button
-            onClick={() => navigate('/dashboard/voice-vision')}
-            className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-pink-400 hover:text-pink-300 transition"
+            onClick={openVoiceAssistant}
+            className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition ${
+              isVoiceListening ? 'text-rose-400 font-bold animate-pulse' : 'text-pink-400 hover:text-pink-300'
+            }`}
           >
             <span className="text-base"><FaMicrophone /></span>
             <span className="text-[10px]">Voice AI</span>

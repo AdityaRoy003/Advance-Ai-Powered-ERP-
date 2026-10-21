@@ -7,10 +7,12 @@ import {
   FaBroadcastTower, FaTerminal, FaPlay
 } from 'react-icons/fa';
 import { AIEngineAPI, CampusAPI } from '../../services/api';
+import { useVoiceAssistant } from '../../context/VoiceAssistantContext';
 import toast from 'react-hot-toast';
 
 export default function VoiceAndVisionHub() {
   const navigate = useNavigate();
+  const { openVoiceAssistant, isListening: isVoiceAssistantListening, executeVoiceCommand } = useVoiceAssistant();
   const [isListening, setIsListening] = useState(false);
   const [voiceQuery, setVoiceQuery] = useState('Show today\'s attendance summary');
   const [voiceOutput, setVoiceOutput] = useState(null);
@@ -106,13 +108,14 @@ export default function VoiceAndVisionHub() {
               <motion.button
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={handleSimulateSpeech}
-                className={`w-24 h-24 rounded-full flex items-center justify-center text-3xl shadow-2xl transition border-4 ${isListening ? 'bg-rose-600 border-rose-400 animate-pulse ring-8 ring-rose-500/30 text-white' : 'bg-gradient-to-tr from-pink-600 to-indigo-600 border-pink-400/40 text-white'}`}
+                onClick={openVoiceAssistant}
+                className={`w-24 h-24 rounded-full flex items-center justify-center text-3xl shadow-2xl transition border-4 ${isVoiceAssistantListening ? 'bg-rose-600 border-rose-400 animate-pulse ring-8 ring-rose-500/30 text-white' : 'bg-gradient-to-tr from-pink-600 to-indigo-600 border-pink-400/40 text-white'}`}
+                title="Click to activate Voice ERP Speech Assistant"
               >
                 <FaMicrophone />
               </motion.button>
               <span className="text-xs font-bold text-slate-300">
-                {isListening ? 'Listening & Synthesizing Audio...' : 'Click to Speak Voice Command'}
+                {isVoiceAssistantListening ? 'Listening & Synthesizing Audio...' : 'Click to Speak Voice Command'}
               </span>
             </div>
 
@@ -125,15 +128,16 @@ export default function VoiceAndVisionHub() {
                   'Open LMS and course video lectures',
                   'Navigate to Digital Campus Twin',
                   'Open Blockchain Document Vault',
-                  'Apply for semester leave'
+                  'Apply for semester leave',
+                  'Check fee status and pending dues',
+                  'Report an issue or bug'
                 ].map((phrase, i) => (
                   <button
                     key={i}
                     onClick={() => {
-                      setVoiceQuery(phrase);
-                      handleExecuteVoice(phrase);
+                      executeVoiceCommand(phrase);
                     }}
-                    className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xxs font-mono transition border border-slate-700"
+                    className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xxs font-mono transition border border-slate-700 hover:border-pink-500/40"
                   >
                     "{phrase}"
                   </button>

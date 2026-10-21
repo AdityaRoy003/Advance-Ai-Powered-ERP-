@@ -162,45 +162,121 @@ router.post('/career-engine', (req, res) => {
 // ─── 5. Voice ERP Natural Intent Engine ─────────────────────────────────────
 router.post('/voice-command', (req, res) => {
   const { transcript } = req.body;
-  const t = (transcript || '').toLowerCase();
+  const t = (transcript || '').toLowerCase().trim();
 
   let intent = 'UNKNOWN';
-  let route = '/dashboard';
-  let spokenResponse = "I couldn't identify an exact command. Please say 'Show attendance', 'Open LMS', or 'Create leave'.";
+  let route = '';
+  let action = 'NAVIGATE';
+  let spokenResponse = "I couldn't identify an exact command. Try saying 'Show attendance', 'Open fee payment', 'Report an issue', or 'Switch theme'.";
 
-  if (t.includes('attendance')) {
+  if (t.includes('attendance') || t.includes('absent') || t.includes('present')) {
     intent = 'NAVIGATE_ATTENDANCE';
     route = '/dashboard/attendance';
-    spokenResponse = 'Opening your Attendance Overview. Your current aggregate attendance is 94.2%.';
-  } else if (t.includes('lms') || t.includes('course') || t.includes('study')) {
+    spokenResponse = 'Opening Attendance Overview. Your current aggregate attendance is 94.2%.';
+  } else if (t.includes('timetable') || t.includes('time table') || t.includes('schedule') || t.includes('routine') || t.includes('class')) {
+    intent = 'NAVIGATE_TIMETABLE';
+    route = '/dashboard/timetable';
+    spokenResponse = 'Opening your academic lecture schedule and weekly timetable.';
+  } else if (t.includes('fee') || t.includes('tuition') || t.includes('finance') || t.includes('invoice') || t.includes('payment') || t.includes('dues')) {
+    intent = 'NAVIGATE_FINANCE';
+    route = '/dashboard/finance';
+    spokenResponse = 'Opening Finance & Fees Portal. You can inspect invoices and download payment receipts.';
+  } else if (t.includes('exam') || t.includes('hall ticket') || t.includes('admit card') || t.includes('grade') || t.includes('results')) {
+    intent = 'NAVIGATE_EXAMS';
+    route = '/dashboard/exams';
+    spokenResponse = 'Opening Examination Management and Hall Ticket Center.';
+  } else if (t.includes('lms') || t.includes('course') || t.includes('study') || t.includes('assignment') || t.includes('lecture')) {
     intent = 'NAVIGATE_LMS';
     route = '/dashboard/lms';
-    spokenResponse = 'Redirecting to Learning Management System. You have 2 lessons ready in Distributed Systems.';
-  } else if (t.includes('leave') || t.includes('apply leave')) {
+    spokenResponse = 'Redirecting to Learning Management System. 2 interactive modules are ready in Distributed Systems.';
+  } else if (t.includes('leave') || t.includes('apply leave') || t.includes('holiday') || t.includes('vacation')) {
     intent = 'APPLY_LEAVE';
     route = '/dashboard/approvals';
-    spokenResponse = 'Opening Leave and Approvals Center for you.';
-  } else if (t.includes('career') || t.includes('job') || t.includes('placement')) {
+    spokenResponse = 'Opening Leave Applications and Multi-Tier Approvals Center.';
+  } else if (t.includes('reported issues') || t.includes('issues desk') || t.includes('complaints list') || t.includes('admin issues') || t.includes('view issues')) {
+    intent = 'NAVIGATE_REPORTED_ISSUES';
+    route = '/dashboard/reported-issues';
+    spokenResponse = 'Navigating to User Reported Issues & Resolution Hub.';
+  } else if (t.includes('issue') || t.includes('bug') || t.includes('complaint') || t.includes('broken') || t.includes('glitch')) {
+    intent = 'REPORT_ISSUE';
+    action = 'OPEN_REPORT_ISSUE_MODAL';
+    spokenResponse = 'Opening the Institutional Issue Reporting Desk for you.';
+  } else if (t.includes('library') || t.includes('book') || t.includes('books') || t.includes('borrow')) {
+    intent = 'NAVIGATE_LIBRARY';
+    route = '/dashboard/library';
+    spokenResponse = 'Opening Digital Campus Library. Over 45,000 academic volumes and research papers available.';
+  } else if (t.includes('transport') || t.includes('bus') || t.includes('shuttle') || t.includes('gps') || t.includes('transit')) {
+    intent = 'NAVIGATE_TRANSPORT';
+    route = '/dashboard/transport';
+    spokenResponse = 'Opening Smart Campus Transit & Live GPS Fleet Tracker.';
+  } else if (t.includes('hostel') || t.includes('room') || t.includes('dorm') || t.includes('mess')) {
+    intent = 'NAVIGATE_HOSTEL';
+    route = '/dashboard/hostel';
+    spokenResponse = 'Opening Hostel Administration & Room Allocation Hub.';
+  } else if (t.includes('chat') || t.includes('message') || t.includes('messaging') || t.includes('community')) {
+    intent = 'NAVIGATE_CHAT';
+    route = '/dashboard/chat';
+    spokenResponse = 'Opening Campus Communication & Collaboration Center.';
+  } else if (t.includes('career') || t.includes('job') || t.includes('placement') || t.includes('internship') || t.includes('resume')) {
     intent = 'NAVIGATE_CAREER';
     route = '/dashboard/career-ai';
-    spokenResponse = 'Opening AI Career Intelligence and Placement Hub.';
-  } else if (t.includes('research') || t.includes('paper')) {
+    spokenResponse = 'Opening AI Career Intelligence & Placement Portal.';
+  } else if (t.includes('research') || t.includes('paper') || t.includes('publication') || t.includes('grant')) {
     intent = 'NAVIGATE_RESEARCH';
     route = '/dashboard/research';
     spokenResponse = 'Navigating to Research & Innovation Management.';
-  } else if (t.includes('twin') || t.includes('campus') || t.includes('map')) {
+  } else if (t.includes('twin') || t.includes('campus map') || t.includes('3d campus') || t.includes('map')) {
     intent = 'NAVIGATE_CAMPUS';
     route = '/dashboard/digital-twin';
-    spokenResponse = 'Opening 3D Digital Campus Twin with live IoT feeds.';
-  } else if (t.includes('vault') || t.includes('certificate') || t.includes('blockchain')) {
+    spokenResponse = 'Opening 3D Digital Campus Twin with live IoT sensor telemetry.';
+  } else if (t.includes('vault') || t.includes('certificate') || t.includes('blockchain') || t.includes('credentials')) {
     intent = 'NAVIGATE_VAULT';
     route = '/dashboard/vault';
     spokenResponse = 'Opening Digital Document Vault & Blockchain Verification Portal.';
+  } else if (t.includes('security') || t.includes('cyber') || t.includes('siem') || t.includes('firewall') || t.includes('threat')) {
+    intent = 'NAVIGATE_CYBERSECURITY';
+    route = '/dashboard/cybersecurity';
+    spokenResponse = 'Opening Enterprise Cybersecurity SOC & SIEM Telemetry.';
+  } else if (t.includes('user') || t.includes('account') || t.includes('directory') || t.includes('rbac') || t.includes('profile')) {
+    if (t.includes('profile') || t.includes('my details') || t.includes('settings')) {
+      intent = 'NAVIGATE_PROFILE';
+      route = '/dashboard/profile';
+      spokenResponse = 'Opening your Personal Profile and Account Settings.';
+    } else {
+      intent = 'NAVIGATE_USERS';
+      route = '/dashboard/users';
+      spokenResponse = 'Opening Institutional User Directory and Role Governance.';
+    }
+  } else if (t.includes('theme') || t.includes('dark mode') || t.includes('light mode') || t.includes('night mode')) {
+    intent = 'TOGGLE_THEME';
+    action = 'TOGGLE_THEME';
+    spokenResponse = 'Toggling display theme between dark and light mode.';
+  } else if (t.includes('search') || t.includes('find') || t.includes('quick search')) {
+    intent = 'OPEN_SEARCH';
+    action = 'OPEN_SEARCH';
+    spokenResponse = 'Opening Global Command Search modal.';
+  } else if (t.includes('accessibility') || t.includes('contrast') || t.includes('font size')) {
+    intent = 'OPEN_ACCESSIBILITY';
+    action = 'OPEN_ACCESSIBILITY';
+    spokenResponse = 'Opening Accessibility and Visual Adaptation settings.';
+  } else if (t.includes('logout') || t.includes('sign out') || t.includes('log out')) {
+    intent = 'LOGOUT';
+    action = 'LOGOUT';
+    spokenResponse = 'Initiating secure logout session.';
+  } else if (t.includes('who are you') || t.includes('what are you') || t.includes('what can you do') || t.includes('help')) {
+    intent = 'AI_HELP';
+    action = 'ANSWER';
+    spokenResponse = 'I am EduVerse Voice Assistant. Speak commands like "Open attendance", "Check fees", "Report an issue", or "Switch to dark mode".';
+  } else if (t.length > 0) {
+    intent = 'GENERAL_QUERY';
+    action = 'ANSWER';
+    spokenResponse = `Understood. Processing your inquiry: "${transcript}". All institutional databases are synchronized and active.`;
   }
 
   return sendSuccess(res, 'Voice Intent Processed', {
     transcript,
     intent,
+    action,
     targetRoute: route,
     spokenResponse
   });
