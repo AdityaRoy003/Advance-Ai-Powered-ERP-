@@ -66,8 +66,8 @@ router.get('/health', (req, res) => {
 // Auth — no tenant scoping needed
 router.use(['/v1/auth', '/auth'], authRoutes);
 
-// Institution management — Super Admin only
-router.use(['/v1/institutions', '/institutions'], authenticate, authorizeRoles('SUPER_ADMIN'), institutionRoutes);
+// Institution management & SaaS onboarding
+router.use(['/v1/institutions', '/institutions'], institutionRoutes);
 
 // All tenant-scoped data routes
 router.use(['/v1/users', '/users'],                 authenticate, tenantScope, userRoutes);

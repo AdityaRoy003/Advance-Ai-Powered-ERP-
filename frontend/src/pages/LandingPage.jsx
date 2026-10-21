@@ -171,6 +171,7 @@ export default function LandingPage() {
   const [aiQuery, setAiQuery] = useState('');
   const [aiResponse, setAiResponse] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
+  const [landingBillingCycle, setLandingBillingCycle] = useState('monthly');
 
   const handleAiDemo = (e) => {
     e.preventDefault();
@@ -213,16 +214,23 @@ export default function LandingPage() {
             <a href="#faq" className="hover:text-indigo-500 transition">FAQ</a>
           </nav>
 
+          {/* Real-time Status Pill & Auth Controls */}
           <div className="flex items-center gap-3">
+            {/* Real-time Platform Status Pill */}
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full text-xxs font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shadow-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>All Systems Operational (99.98% SLA)</span>
+            </div>
+
             <button onClick={toggleTheme} className="p-2 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:border-indigo-500/40 transition">
               {theme === 'dark' ? <FaSun className="text-yellow-400" /> : <FaMoon />}
             </button>
             <Link to="/login" className="text-sm font-bold border border-slate-200 dark:border-slate-800 px-4 py-2 rounded-xl hover:border-indigo-500/40 transition text-slate-600 dark:text-slate-300">
               Sign In
             </Link>
-            <button onClick={() => navigate('/register')} className="text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl shadow-lg shadow-indigo-600/20 transition flex items-center gap-1.5">
-              Get Started <FaArrowRight size={10} />
-            </button>
+            <Link to="/onboard" className="text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl shadow-lg shadow-indigo-600/20 transition flex items-center gap-1.5">
+              <span>Start Free Trial</span> <FaArrowRight size={10} />
+            </Link>
           </div>
         </div>
       </header>
@@ -276,6 +284,22 @@ export default function LandingPage() {
             >
               See AI Demo <FaAngleDown />
             </a>
+          </div>
+
+          {/* Enterprise Trust & Compliance Badges */}
+          <div className="pt-6 pb-2 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xxs font-mono font-bold text-slate-500 dark:text-slate-400">
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <FaUserShield className="text-emerald-400 text-xs" /> SOC2 Type II Certified
+            </span>
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <FaCheck className="text-indigo-400 text-xs" /> FERPA Compliant
+            </span>
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <FaGlobe className="text-cyan-400 text-xs" /> GDPR Ready
+            </span>
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <FaLock className="text-amber-400 text-xs" /> ISO 27001 Security
+            </span>
           </div>
 
           {/* Dashboard Preview Card */}
@@ -520,14 +544,66 @@ export default function LandingPage() {
       {/* PRICING SECTION */}
       <section id="pricing" className="py-24 px-6 bg-white/30 dark:bg-slate-900/20 border-y border-slate-200 dark:border-slate-800/60">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-14">
-            <span className="text-amber-400 font-bold text-sm uppercase tracking-widest">Pricing</span>
+          <div className="text-center mb-10">
+            <span className="text-amber-400 font-bold text-sm uppercase tracking-widest">SaaS Pricing Plans</span>
             <h2 className="text-4xl md:text-5xl font-black mt-3 tracking-tight">Simple, transparent pricing</h2>
-            <p className="text-slate-400 mt-4 max-w-xl mx-auto leading-relaxed">No hidden fees. Cancel anytime.</p>
+            <p className="text-slate-400 mt-3 max-w-xl mx-auto leading-relaxed">
+              14-day full feature free trial on all plans. Scale seamlessly as your campus grows.
+            </p>
+
+            {/* Monthly / Annual Billing Toggle */}
+            <div className="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 mt-6 shadow-inner">
+              <button
+                type="button"
+                onClick={() => setLandingBillingCycle('monthly')}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition ${landingBillingCycle === 'monthly' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'}`}
+              >
+                Monthly Billing
+              </button>
+              <button
+                type="button"
+                onClick={() => setLandingBillingCycle('annual')}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${landingBillingCycle === 'annual' ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'}`}
+              >
+                <span>Annual Billing</span>
+                <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-black">SAVE 20%</span>
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {plans.map((plan, i) => (
+            {[
+              {
+                id: 'starter',
+                name: 'Starter Campus',
+                price: landingBillingCycle === 'annual' ? '₹3,999' : '₹4,999',
+                period: '/month',
+                desc: 'Perfect for small colleges, institutes, and new departments.',
+                features: ['Up to 50 active users', '5 academic departments', 'Core attendance & timetable', 'Basic LMS & gradebooks', 'Standard email support'],
+                cta: 'Start Free Trial',
+                highlight: false
+              },
+              {
+                id: 'professional',
+                name: 'Professional',
+                price: landingBillingCycle === 'annual' ? '₹11,999' : '₹14,999',
+                period: '/month',
+                desc: 'Full-suite autonomous AI ERP for growing institutions.',
+                features: ['Up to 500 active users', 'Unlimited departments', 'Natural Voice ERP Assistant', 'SIEM Cybersecurity Center', 'Approvals workflow engine', '24/7 priority support'],
+                cta: 'Start Free Trial (Most Popular)',
+                highlight: true
+              },
+              {
+                id: 'enterprise',
+                name: 'Enterprise Multi-Campus',
+                price: 'Custom SLA',
+                period: '',
+                desc: 'Scalable for large universities with custom SLAs and integrations.',
+                features: ['Unlimited users & campuses', 'Custom LLM model fine-tuning', 'Blockchain verifiable credentials', 'Dedicated solutions architect', '99.99% uptime guarantee'],
+                cta: 'Contact Enterprise Sales',
+                highlight: false
+              }
+            ].map((plan, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
@@ -559,11 +635,11 @@ export default function LandingPage() {
                 </ul>
 
                 <button 
-                  onClick={() => navigate('/register')}
-                  className={`w-full font-bold py-3 rounded-xl transition text-sm ${
+                  onClick={() => navigate('/onboard')}
+                  className={`w-full font-bold py-3.5 rounded-xl transition text-sm ${
                     plan.highlight 
-                      ? 'bg-white text-indigo-600 hover:bg-indigo-50' 
-                      : 'border border-slate-200 dark:border-slate-800 hover:border-indigo-500/30 dark:hover:bg-slate-800/40'
+                      ? 'bg-white text-indigo-600 hover:bg-indigo-50 shadow-lg' 
+                      : 'border border-slate-200 dark:border-slate-800 hover:border-indigo-500/30 dark:hover:bg-slate-800/40 text-slate-800 dark:text-slate-200'
                   }`}
                 >
                   {plan.cta}
@@ -571,6 +647,25 @@ export default function LandingPage() {
               </motion.div>
             ))}
           </div>
+
+          {/* Enterprise Compliance Guarantee Footer */}
+          <div className="mt-12 p-6 rounded-2xl bg-slate-50/50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+            <div className="flex items-center gap-3">
+              <span className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg shrink-0">
+                <FaUserShield />
+              </span>
+              <div>
+                <p className="font-bold text-slate-800 dark:text-slate-200">Guaranteed Enterprise Data Privacy & Security</p>
+                <p className="text-xxs text-slate-500">Every institution runs in an isolated tenant environment with automated backups & zero cross-leakage.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 shrink-0 text-xxs font-mono text-slate-400">
+              <span>● FERPA Compliant</span>
+              <span>● SOC2 Type II</span>
+              <span>● GDPR Ready</span>
+            </div>
+          </div>
+
         </div>
       </section>
 

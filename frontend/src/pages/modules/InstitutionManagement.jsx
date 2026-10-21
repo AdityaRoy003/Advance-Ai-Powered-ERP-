@@ -6,10 +6,11 @@ import {
   FaUniversity, FaSchool, FaGraduationCap, FaTimes,
   FaGlobe, FaEnvelope, FaPhone, FaMapMarkerAlt,
   FaChartBar, FaCrown, FaLock, FaSyncAlt, FaChevronDown,
-  FaChevronRight, FaExclamationTriangle
+  FaChevronRight, FaExclamationTriangle, FaCreditCard
 } from 'react-icons/fa';
 import { InstitutionsAPI, UsersAPI } from '../../services/api';
 import toast from 'react-hot-toast';
+import InstitutionalBilling from './InstitutionalBilling';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const PLAN_COLORS = {
@@ -386,6 +387,7 @@ export default function InstitutionManagement() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editTarget, setEditTarget] = useState(null);
   const [detailTarget, setDetailTarget] = useState(null);
+  const [activeSection, setActiveSection] = useState('campuses'); // 'campuses' | 'billing'
 
   const fetchInstitutions = useCallback(async () => {
     setLoading(true);
@@ -455,14 +457,47 @@ export default function InstitutionManagement() {
             Institution Management
           </h1>
           <p className="text-slate-400 text-sm mt-0.5">
-            EduVerse SaaS — Multi-Tenant Platform Control
+            EduVerse SaaS — Multi-Tenant Platform & Subscription Control
           </p>
         </div>
-        <button onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm transition shadow-lg shadow-indigo-900/30">
-          <FaPlus /> New Institution
+        <div className="flex items-center gap-3">
+          <button onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm transition shadow-lg shadow-indigo-900/30">
+            <FaPlus /> New Institution
+          </button>
+        </div>
+      </div>
+
+      {/* SaaS Section Navigation Tabs */}
+      <div className="flex border-b border-slate-800 gap-2">
+        <button
+          onClick={() => setActiveSection('campuses')}
+          className={`flex items-center gap-2 px-5 py-3 text-xs font-bold transition border-b-2 ${
+            activeSection === 'campuses'
+              ? 'border-indigo-500 text-indigo-400'
+              : 'border-transparent text-slate-400 hover:text-white'
+          }`}
+        >
+          <FaBuilding />
+          <span>Campuses & Tenants Directory</span>
+        </button>
+        <button
+          onClick={() => setActiveSection('billing')}
+          className={`flex items-center gap-2 px-5 py-3 text-xs font-bold transition border-b-2 ${
+            activeSection === 'billing'
+              ? 'border-indigo-500 text-indigo-400'
+              : 'border-transparent text-slate-400 hover:text-white'
+          }`}
+        >
+          <FaCreditCard />
+          <span>Institutional Subscription, Quotas & Invoices</span>
         </button>
       </div>
+
+      {activeSection === 'billing' ? (
+        <InstitutionalBilling institutionId={detailTarget?._id || institutions[0]?._id} />
+      ) : (
+        <>
 
       {/* Tenant Tree Banner */}
       <div className="bg-slate-900/60 border border-slate-800 rounded-xl px-5 py-4">
@@ -628,6 +663,8 @@ export default function InstitutionManagement() {
           </tbody>
         </table>
       </div>
+      </>
+      )}
 
       {/* Modals */}
       <AnimatePresence>

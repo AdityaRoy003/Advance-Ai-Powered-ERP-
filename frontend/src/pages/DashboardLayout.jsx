@@ -16,12 +16,14 @@ import {
   FaInfoCircle, FaStream, FaWifi, FaBriefcase, FaPhone, FaKey,
   FaMicrophone, FaCubes, FaBookOpen, FaHeartbeat, FaFlask, FaTrophy, FaUserFriends, FaAward,
   FaUtensils, FaLeaf, FaWrench, FaBoxes, FaCogs, FaPuzzlePiece, FaCode, FaCrown, FaLaptopCode, FaUserShield, FaGlobe, FaUniversalAccess, FaClipboardCheck, FaUsers,
-  FaCalendarAlt, FaUserTie, FaBalanceScale, FaTasks, FaBug
+  FaCalendarAlt, FaUserTie, FaBalanceScale, FaTasks, FaBug, FaChevronDown, FaPlus
 } from 'react-icons/fa';
 import { useLanguage } from '../context/LanguageContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { useCookieConsent } from '../context/CookieConsentContext';
 import { useVoiceAssistant } from '../context/VoiceAssistantContext';
+import { InstitutionsAPI } from '../services/api';
+import toast from 'react-hot-toast';
 import AIAssistantWidget from '../components/AIAssistantWidget';
 import EduVerseOrbLoader from '../components/common/EduVerseOrbLoader';
 import DashboardFooter from '../components/layout/DashboardFooter';
@@ -61,7 +63,7 @@ const buildSearchItems = (userRole) => {
 };
 
 export default function DashboardLayout() {
-  const { user, logout, switchRole } = useAuth();
+  const { user, logout, switchRole, setSessionUser } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { notifications, markAllAsRead, dismissNotification, addNotification } = useSocket();
   const { currentLang, changeLanguage, languages } = useLanguage();
@@ -84,11 +86,54 @@ export default function DashboardLayout() {
   const [showA11yModal, setShowA11yModal] = useState(false);
   const { openVoiceAssistant, isListening: isVoiceListening } = useVoiceAssistant();
 
+  // ─── Active Tenant / Campus Switcher State ───
+  const [campuses, setCampuses] = useState([]);
+  const [activeCampus, setActiveCampus] = useState(() => {
+    try {
+      const saved = localStorage.getItem('eduverse_active_institution');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return { name: 'Apex University of Technology', code: 'AIT', plan: 'professional' };
+  });
+  const [showCampusSwitcher, setShowCampusSwitcher] = useState(false);
+  const [campusSearch, setCampusSearch] = useState('');
+
+  useEffect(() => {
+    InstitutionsAPI.getPublicList().then(list => {
+      if (Array.isArray(list) && list.length > 0) {
+        setCampuses(list);
+        setActiveCampus(curr => {
+          const match = list.find(c => c._id === curr?._id || c.code === curr?.code);
+          return match || list[0] || curr;
+        });
+      }
+    });
+  }, []);
+
+  const handleSelectCampus = (campus) => {
+    setActiveCampus(campus);
+    localStorage.setItem('eduverse_active_institution', JSON.stringify(campus));
+    if (setSessionUser && user) {
+      setSessionUser({
+        ...user,
+        institutionId: campus._id,
+        institution: campus
+      });
+    }
+    setShowCampusSwitcher(false);
+    toast.success(`Active workspace switched to ${campus.name}`, { icon: '🏛️' });
+  };
+
+  const filteredCampuses = campuses.length > 0
+    ? campuses.filter(c => !campusSearch || c.name?.toLowerCase().includes(campusSearch.toLowerCase()) || c.code?.toLowerCase().includes(campusSearch.toLowerCase()))
+    : [activeCampus];
+
   // Auto-close mobile drawer on route change
   useEffect(() => {
     setMobileDrawerOpen(false);
     setShowNotifications(false);
     setShowProfileMenu(false);
+    setShowCampusSwitcher(false);
   }, [location.pathname]);
 
   // Global Ctrl+K Search
@@ -171,6 +216,7 @@ export default function DashboardLayout() {
           { name: 'Super Admin HQ', path: '/dashboard/super_admin', icon: <FaChartBar /> },
           { name: 'Executive Command HQ', path: '/dashboard/executive', icon: <FaCrown /> },
           { name: 'Institutions (Multi-Tenant)', path: '/dashboard/institutions', icon: <FaBuilding /> },
+          { name: 'Subscription & Quotas', path: '/dashboard/billing', icon: <FaCreditCard /> },
           { name: 'Autonomous Workflows', path: '/dashboard/workflows', icon: <FaCogs /> },
           { name: 'Plugins & Integrations', path: '/dashboard/plugins', icon: <FaPuzzlePiece /> },
           { name: 'Developer Portal & APIs', path: '/dashboard/developer', icon: <FaCode /> },
@@ -192,6 +238,7 @@ export default function DashboardLayout() {
       case 'ADMIN':
         return [
           { name: 'Admin Dashboard', path: '/dashboard/admin', icon: <FaChartBar /> },
+          { name: 'Subscription & Quotas', path: '/dashboard/billing', icon: <FaCreditCard /> },
           { name: 'Users Directory & Accounts', path: '/dashboard/users', icon: <FaUsers /> },
           { name: 'Policy Simulator & RBAC', path: '/dashboard/policy-simulator', icon: <FaFlask /> },
           { name: 'ERP Operations Hub (25)', path: '/dashboard/operations', icon: <FaClipboardCheck /> },
@@ -682,6 +729,124 @@ export default function DashboardLayout() {
 
           {/* Right: Actions */}
           <div className="flex items-center gap-1 sm:gap-2.5 shrink-0">
+            
+            {/* ─── ACTIVE TENANT / CAMPUS SWITCHER ─── */}
+            <div className="relative shrink-0">
+              <button
+                onClick={() => setShowCampusSwitcher(prev => !prev)}
+                className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 hover:border-indigo-500/40 text-left transition text-xs font-semibold"
+                title="Switch Campus Workspace / Organization"
+              >
+                <div className="w-5 h-5 rounded-lg bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-xs shrink-0 font-black">
+                  {activeCampus?.name?.[0] || '🏛️'}
+                </div>
+                <div className="hidden lg:flex flex-col min-w-0 max-w-[130px]">
+                  <span className="font-bold text-slate-800 dark:text-slate-200 truncate leading-tight text-xs">
+                    {activeCampus?.name || 'Main Campus'}
+                  </span>
+                  <span className="text-[9px] text-indigo-400 font-mono uppercase tracking-wider">
+                    {activeCampus?.plan || 'PRO'} TIER
+                  </span>
+                </div>
+                <FaChevronDown size={9} className="text-slate-400 shrink-0 ml-0.5" />
+              </button>
+
+              {/* Dropdown Menu */}
+              <AnimatePresence>
+                {showCampusSwitcher && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-40" 
+                      onClick={() => setShowCampusSwitcher(false)} 
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className="absolute left-0 mt-2 w-72 sm:w-80 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] shadow-2xl p-3 z-50 space-y-2.5 backdrop-blur-xl"
+                    >
+                      <div className="flex items-center justify-between px-2 pt-1">
+                        <span className="text-xxs font-bold text-slate-400 uppercase tracking-wider font-mono">
+                          Switch Campus Workspace
+                        </span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 font-mono font-bold">
+                          MULTI-TENANT
+                        </span>
+                      </div>
+
+                      {/* Quick Search */}
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"><FaSearch size={10} /></span>
+                        <input
+                          type="text"
+                          value={campusSearch}
+                          onChange={(e) => setCampusSearch(e.target.value)}
+                          placeholder="Search campuses..."
+                          className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-xs focus:outline-none focus:border-indigo-500"
+                        />
+                      </div>
+
+                      {/* Campuses List */}
+                      <div className="max-h-48 overflow-y-auto space-y-1 pr-1">
+                        {filteredCampuses.map(c => {
+                          const isActive = (c._id && c._id === activeCampus?._id) || c.code === activeCampus?.code;
+                          return (
+                            <button
+                              key={c._id || c.code}
+                              onClick={() => handleSelectCampus(c)}
+                              className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition text-xs ${
+                                isActive 
+                                  ? 'bg-indigo-600/15 border border-indigo-500/30 text-indigo-400' 
+                                  : 'hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-300'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <span className="w-6 h-6 rounded-lg bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-xxs shrink-0">
+                                  {c.name?.[0] || '🏛️'}
+                                </span>
+                                <div className="min-w-0">
+                                  <p className="font-bold text-xs truncate leading-tight text-slate-900 dark:text-slate-100">{c.name}</p>
+                                  <p className="text-[10px] text-slate-500 font-mono">{c.code} • {c.city || 'India'}</p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                                <span className="text-[9px] px-1.5 py-0.5 rounded font-mono font-bold uppercase bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                                  {c.plan || 'PRO'}
+                                </span>
+                                {isActive && <FaCheckCircle className="text-indigo-400" size={12} />}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {/* Bottom Actions: Onboard New & Subscription */}
+                      <div className="border-t border-slate-200 dark:border-slate-800 pt-2 space-y-1">
+                        <Link
+                          to="/onboard"
+                          onClick={() => setShowCampusSwitcher(false)}
+                          className="flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-bold text-indigo-400 hover:bg-indigo-500/10 transition"
+                        >
+                          <FaPlus size={10} />
+                          <span>+ Onboard New Campus Workspace</span>
+                        </Link>
+                        <Link
+                          to="/dashboard/billing"
+                          onClick={() => setShowCampusSwitcher(false)}
+                          className="flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                        >
+                          <span className="flex items-center gap-2">
+                            <FaCreditCard className="text-amber-400" size={11} />
+                            <span>Subscription & Quotas Hub</span>
+                          </span>
+                          <FaChevronRight size={10} className="text-slate-500" />
+                        </Link>
+                      </div>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
             
             {/* Role Switcher (Super Admin) / Role Badge */}
             {isSuperAdmin ? (

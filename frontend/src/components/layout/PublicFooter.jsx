@@ -45,15 +45,33 @@ export default function PublicFooter() {
               Next-generation autonomous AI ERP unifying higher education governance, dynamic CP-SAT scheduling, SIEM cybersecurity, and verifiable blockchain credentials.
             </p>
 
-            {/* Platform Operational Status Badge */}
-            <div className="pt-2 flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xxs font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                All Systems Operational
-              </span>
-              <span className="text-xxs font-mono text-slate-400">
-                SLA: 99.98%
-              </span>
+            {/* Platform Operational Status Badge & Real-Time Pill */}
+            <div className="pt-2 flex flex-col gap-2.5">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xxs font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shadow-sm">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  All Systems Operational • 99.98% SLA
+                </span>
+                <span className="text-xxs font-mono text-slate-400">
+                  Latency: 42ms
+                </span>
+              </div>
+
+              {/* Enterprise Compliance Trust Chips */}
+              <div className="flex flex-wrap gap-1.5">
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border border-slate-300 dark:border-slate-700">
+                  🔒 SOC2 Type II
+                </span>
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border border-slate-300 dark:border-slate-700">
+                  🛡️ FERPA
+                </span>
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border border-slate-300 dark:border-slate-700">
+                  🇪🇺 GDPR
+                </span>
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border border-slate-300 dark:border-slate-700">
+                  📜 ISO 27001
+                </span>
+              </div>
             </div>
           </div>
 
@@ -79,13 +97,18 @@ export default function PublicFooter() {
                 </a>
               </li>
               <li>
+                <Link to="/onboard" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition focus:outline-none focus:underline font-bold text-indigo-500">
+                  ⚡ Start 14-Day Free Trial
+                </Link>
+              </li>
+              <li>
                 <Link to="/login" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition focus:outline-none focus:underline">
                   Portal Login
                 </Link>
               </li>
               <li>
                 <Link to="/register" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition focus:outline-none focus:underline">
-                  Institutional Registration
+                  Individual User Signup
                 </Link>
               </li>
             </ul>

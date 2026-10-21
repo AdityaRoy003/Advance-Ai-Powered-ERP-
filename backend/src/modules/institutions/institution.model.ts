@@ -13,8 +13,18 @@ export interface IInstitution extends Document {
   email?: string;
   website?: string;
   adminEmail?: string;
-  plan: 'free' | 'basic' | 'premium' | 'enterprise' | 'trial';
+  plan: 'free' | 'basic' | 'starter' | 'professional' | 'premium' | 'enterprise' | 'trial';
   status: 'active' | 'suspended' | 'trial' | 'inactive';
+  subscription?: {
+    plan: string;
+    billingCycle: 'monthly' | 'annual';
+    status: 'active' | 'trialing' | 'past_due' | 'canceled';
+    trialEndsAt?: Date;
+    currentPeriodEnd?: Date;
+    studentQuota: number;
+    facultyQuota: number;
+    storageQuotaGB: number;
+  };
   settings: {
     enableHostel: boolean;
     enableTransport: boolean;
@@ -50,13 +60,23 @@ const institutionSchema = new Schema<IInstitution>(
     adminEmail: { type: String, lowercase: true, trim: true },
     plan: {
       type: String,
-      enum: ['free', 'basic', 'premium', 'enterprise'],
+      enum: ['free', 'basic', 'starter', 'professional', 'premium', 'enterprise', 'trial'],
       default: 'trial'
     },
     status: {
       type: String,
       enum: ['active', 'suspended', 'trial', 'inactive'],
       default: 'trial'
+    },
+    subscription: {
+      plan: { type: String, default: 'professional' },
+      billingCycle: { type: String, enum: ['monthly', 'annual'], default: 'monthly' },
+      status: { type: String, enum: ['active', 'trialing', 'past_due', 'canceled'], default: 'trialing' },
+      trialEndsAt: { type: Date },
+      currentPeriodEnd: { type: Date },
+      studentQuota: { type: Number, default: 500 },
+      facultyQuota: { type: Number, default: 50 },
+      storageQuotaGB: { type: Number, default: 50 }
     },
     settings: {
       enableHostel:    { type: Boolean, default: true },

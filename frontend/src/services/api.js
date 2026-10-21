@@ -365,6 +365,30 @@ export const InstitutionsAPI = {
     } catch (err) {
       return [];
     }
+  },
+  getPublicList: async () => {
+    try {
+      const res = await apiClient.get('/institutions/public-list');
+      return res.data?.data || res.data || [];
+    } catch (err) {
+      return [];
+    }
+  },
+  onboardWorkspace: async (data) => {
+    const res = await apiClient.post('/institutions/onboard-workspace', data);
+    return res.data;
+  },
+  getBilling: async (id = 'current') => {
+    try {
+      const res = await apiClient.get(`/institutions/${id}/billing`);
+      return res.data?.data || res.data;
+    } catch (err) {
+      return null;
+    }
+  },
+  upgradeSubscription: async (id, data) => {
+    const res = await apiClient.post(`/institutions/${id}/billing/upgrade`, data);
+    return res.data?.data || res.data;
   }
 };
 

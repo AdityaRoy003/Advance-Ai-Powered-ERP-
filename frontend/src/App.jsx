@@ -93,6 +93,8 @@ const PolicySimulator = lazy(() => import('./pages/modules/PolicySimulator'));
 const ERPCompletenessHub = lazy(() => import('./pages/modules/ERPCompletenessHub'));
 const UserManagement = lazy(() => import('./pages/modules/UserManagement'));
 const ReportedIssuesHub = lazy(() => import('./pages/modules/ReportedIssuesHub'));
+const InstitutionOnboarding = lazy(() => import('./pages/InstitutionOnboarding'));
+const InstitutionalBilling = lazy(() => import('./pages/modules/InstitutionalBilling'));
 
 // Loading Fallback Component with 3D EduVerse AI Orb
 const PageLoader = () => (
@@ -164,7 +166,9 @@ function App() {
                 {/* Public QR Hall Ticket Verification */}
                 <Route path="/verify/hall-ticket/:id" element={<HallTicketVerification />} />
 
-                {/* Auth */}
+                {/* Auth & SaaS Onboarding */}
+                <Route path="/onboard" element={<InstitutionOnboarding />} />
+                <Route path="/onboard-workspace" element={<InstitutionOnboarding />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -347,6 +351,11 @@ function App() {
                   <Route path="institutions" element={
                     <RoleProtectedRoute allowedRoles={['SUPER_ADMIN']}>
                       <InstitutionManagement />
+                    </RoleProtectedRoute>
+                  } />
+                  <Route path="billing" element={
+                    <RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
+                      <InstitutionalBilling />
                     </RoleProtectedRoute>
                   } />
                   <Route path="users" element={

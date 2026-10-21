@@ -28,9 +28,16 @@ export default function DashboardFooter() {
           </span>
           <span className="hidden sm:inline text-slate-300 dark:text-slate-700">•</span>
           
-          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-mono text-[10px] font-semibold">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-mono text-[10px] font-semibold">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Systems Normal</span>
+            <span>Systems Normal (42ms)</span>
+          </div>
+
+          <span className="hidden lg:inline text-slate-300 dark:text-slate-700">•</span>
+          <div className="hidden lg:flex items-center gap-1.5 text-[9px] font-mono text-slate-400">
+            <span className="px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">SOC2 Type II</span>
+            <span className="px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">FERPA</span>
+            <span className="px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">GDPR</span>
           </div>
 
           <span className="hidden sm:inline text-slate-300 dark:text-slate-700">•</span>

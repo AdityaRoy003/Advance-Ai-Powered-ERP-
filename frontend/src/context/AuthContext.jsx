@@ -256,8 +256,13 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('eduverse_user', JSON.stringify(updated));
   };
 
+  const setSessionUser = (userData) => {
+    setUser(userData);
+    localStorage.setItem('eduverse_user', JSON.stringify(userData));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, error, login, register, logout, switchRole, updatePermissions }}>
+    <AuthContext.Provider value={{ user, loading, error, login, register, logout, switchRole, updatePermissions, setSessionUser }}>
       {children}
     </AuthContext.Provider>
   );

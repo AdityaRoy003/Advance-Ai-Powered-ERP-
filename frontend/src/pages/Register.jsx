@@ -61,6 +61,14 @@ export default function Register() {
             <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Join the EduVerse AI ERP platform</p>
           </div>
 
+          {/* Institutional Workspace Onboarding Link */}
+          <div className="p-3 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-between text-xs">
+            <span className="text-slate-300 font-medium">University / Campus Administrator?</span>
+            <Link to="/onboard" className="font-bold text-indigo-400 hover:text-indigo-300 underline shrink-0 ml-2">
+              Onboard Workspace →
+            </Link>
+          </div>
+
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">
