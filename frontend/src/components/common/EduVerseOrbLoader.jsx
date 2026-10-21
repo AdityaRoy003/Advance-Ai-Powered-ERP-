@@ -23,7 +23,8 @@ export default function EduVerseOrbLoader({
   fullScreen = false,
   showText = true,
   className = '',
-  variant = 'default'
+  variant = 'default',
+  centerOrb = true
 }) {
   // Resolve numeric dimensions
   const sizeMap = {
@@ -47,9 +48,42 @@ export default function EduVerseOrbLoader({
       aria-live="polite"
       aria-label={message || 'EduVerse AI is loading'}
     >
+      {/* ─── OPTICAL COUNTER-BALANCE (Keeps 3D Orb precisely at the vertical midpoint) ─── */}
+      {showText && centerOrb && (
+        <div 
+          className="invisible pointer-events-none select-none flex flex-col items-center gap-1.5 text-center px-4 max-w-xs sm:max-w-md"
+          aria-hidden="true"
+        >
+          {/* Brand Name mirror */}
+          <div className="flex items-center gap-2">
+            <span className="font-extrabold text-xs sm:text-sm tracking-widest uppercase font-mono">
+              EduVerse AI
+            </span>
+            <span className="inline-flex h-2 w-2" />
+          </div>
+
+          {/* Primary Status Message mirror */}
+          {message && (
+            <p className="text-xs font-semibold tracking-tight">
+              {message}
+            </p>
+          )}
+
+          {/* Submessage mirror */}
+          {submessage && (
+            <p className="text-[11px] font-mono leading-tight">
+              {submessage}
+            </p>
+          )}
+
+          {/* Shimmer Bar mirror */}
+          <div className="w-36 sm:w-44 h-1 mt-1 border border-transparent" />
+        </div>
+      )}
+
       {/* ─── 3D GLASS ORB CONTAINER ─── */}
       <div 
-        className="relative flex items-center justify-center"
+        className="relative flex items-center justify-center shrink-0"
         style={{ width: dimension, height: dimension }}
       >
         {/* Outer Volumetric Halo Glow */}
@@ -316,6 +350,7 @@ export default function EduVerseOrbLoader({
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.2 }}
+          className="flex items-center justify-center"
         >
           {loaderContent}
         </motion.div>

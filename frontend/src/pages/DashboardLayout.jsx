@@ -920,9 +920,9 @@ export default function DashboardLayout() {
         </header>
 
         {/* ─── CONTENT ─── */}
-        <main className="flex-1 p-3 sm:p-6 pb-28 md:pb-6 max-w-7xl mx-auto w-full overflow-x-hidden relative">
+        <main className="flex-1 flex flex-col p-3 sm:p-6 pb-28 md:pb-6 max-w-7xl mx-auto w-full overflow-x-hidden relative min-h-0">
           <Suspense fallback={
-            <div className="min-h-[50vh] flex items-center justify-center py-16">
+            <div className="flex-1 min-h-[calc(100dvh-120px)] md:min-h-[calc(100dvh-80px)] flex flex-col items-center justify-center w-full my-auto -mb-[100px] md:mb-0">
               <EduVerseOrbLoader 
                 size="md" 
                 message="Loading ERP Module..." 
