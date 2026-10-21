@@ -74,11 +74,18 @@ export default function AdmissionsCRM() {
     }
   };
 
+  const [submitting, setSubmitting] = useState(false);
+
   const handleCreateApplicant = async (e) => {
     e.preventDefault();
+    if (!newForm.firstName?.trim() || !newForm.lastName?.trim() || !newForm.email?.trim()) {
+      toast.error('First name, last name, and email are required');
+      return;
+    }
+    setSubmitting(true);
     try {
       await AdmissionsAPI.create(newForm);
-      toast.success('New applicant enrolled into pipeline!');
+      toast.success('🎉 New applicant enrolled into pipeline!');
       setShowNewModal(false);
       setNewForm({
         firstName: '',
@@ -91,7 +98,11 @@ export default function AdmissionsCRM() {
       });
       fetchApplications();
     } catch (err) {
-      toast.error('Failed to create applicant');
+      console.error('Failed to create applicant:', err);
+      const msg = err?.response?.data?.message || err?.message || 'Failed to create applicant';
+      toast.error(msg);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -452,7 +463,13 @@ export default function AdmissionsCRM() {
 
                 <div className="flex justify-end gap-3 pt-3">
                   <button type="button" onClick={() => setShowNewModal(false)} className="px-4 py-2 rounded-xl border border-slate-700 text-slate-300 font-bold">Cancel</button>
-                  <button type="submit" className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold">Enroll into Pipeline</button>
+                  <button 
+                    type="submit" 
+                    disabled={submitting} 
+                    className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-bold transition flex items-center gap-2"
+                  >
+                    {submitting ? 'Enrolling...' : 'Enroll into Pipeline'}
+                  </button>
                 </div>
               </form>
             </motion.div>

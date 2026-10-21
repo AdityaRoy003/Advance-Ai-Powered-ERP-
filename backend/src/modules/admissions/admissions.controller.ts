@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import mongoose from 'mongoose';
 import Application from './admissions.model.js';
 import { sendSuccess, sendError } from '../../core/response/apiResponse.js';
 
@@ -121,7 +122,8 @@ const SAMPLE_APPLICATIONS = [
 
 export const listApplications = async (req: Request, res: Response) => {
   try {
-    const institutionId = (req.user as any)?.institutionId;
+    const rawInst = (req.user as any)?.institutionId;
+    const institutionId = (rawInst && mongoose.isValidObjectId(rawInst)) ? rawInst : undefined;
     const { stage, program, search } = req.query;
 
     const filter: any = { isDeleted: { $ne: true } };
@@ -214,24 +216,28 @@ export const createApplication = async (req: Request, res: Response) => {
 
     const appNumber = `EDV-ADM-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
+    const rawInst = (req.user as any)?.institutionId;
+    const institutionId = (rawInst && mongoose.isValidObjectId(rawInst)) ? rawInst : undefined;
+
     const application = await Application.create({
       applicationNumber: appNumber,
-      firstName,
-      lastName,
-      email: email.toLowerCase(),
-      phone: phone || '+91 98000 00000',
-      program,
-      department: department || 'General Engineering',
-      entranceScore: entranceScore || 85,
-      highSchoolGPA: highSchoolGPA || 3.8,
+      firstName: String(firstName).trim(),
+      lastName: String(lastName).trim(),
+      email: String(email).toLowerCase().trim(),
+      phone: phone ? String(phone).trim() : '+91 98000 00000',
+      program: String(program).trim(),
+      department: department ? String(department).trim() : 'General Engineering',
+      entranceScore: entranceScore ? Number(entranceScore) : 85,
+      highSchoolGPA: highSchoolGPA ? Number(highSchoolGPA) : 3.8,
       stage: 'applied',
       feeStatus: 'paid',
-      institutionId: (req.user as any)?.institutionId || undefined,
+      institutionId,
       notes: [`Application submitted online on ${new Date().toLocaleDateString()}`]
     });
 
     return sendSuccess(res, 'Application submitted successfully', application, 201);
   } catch (err: any) {
+    console.error('Admissions createApplication error:', err);
     return sendError(res, err.message || 'Failed to create application', 500);
   }
 };

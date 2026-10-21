@@ -396,89 +396,107 @@ export const AdmissionsAPI = {
   getAll: async (params = {}) => {
     try {
       const res = await apiClient.get('/admissions', { params });
-      return res.data?.data || { applications: [], stageCounts: {} };
+      return res.data?.data || res.data || { applications: [], stageCounts: {} };
     } catch (err) {
+      console.error('AdmissionsAPI.getAll error:', err);
       return { applications: [], stageCounts: {} };
     }
   },
-  updateStage: async (id, stage, note = '') => {
-    const res = await apiClient.patch(`/admissions/${id}/stage`, { stage, note });
-    return res.data;
-  },
   create: async (data) => {
-    const res = await apiClient.post('/admissions/apply', data);
-    return res.data;
+    try {
+      const res = await apiClient.post('/admissions/apply', data);
+      return res.data?.data || res.data;
+    } catch (err) {
+      console.error('AdmissionsAPI.create error:', err);
+      throw err;
+    }
+  },
+  updateStage: async (id, stage, note = '') => {
+    try {
+      const res = await apiClient.patch(`/admissions/${id}/stage`, { stage, note });
+      return res.data?.data || res.data;
+    } catch (err) {
+      console.error('AdmissionsAPI.updateStage error:', err);
+      throw err;
+    }
   },
   track: async (appNumber) => {
-    const res = await apiClient.get(`/admissions/track/${appNumber}`);
-    return res.data?.data || res.data;
+    try {
+      const res = await apiClient.get(`/admissions/track/${appNumber}`);
+      return res.data?.data || res.data;
+    } catch (err) {
+      console.error('AdmissionsAPI.track error:', err);
+      throw err;
+    }
   }
 };
 
 export const MigrationAPI = {
-  validate: async (targetEntity, rows) => {
-    const res = await apiClient.post('/migration/validate', { targetEntity, rows });
+  validate: async (entityOrPayload, maybeRows) => {
+    const payload = typeof entityOrPayload === 'string'
+      ? { entity: entityOrPayload, rows: maybeRows }
+      : { entity: entityOrPayload.entity || entityOrPayload.targetEntity, rows: entityOrPayload.rows };
+    const res = await apiClient.post('/migration/validate', payload);
     return res.data?.data || res.data;
   },
-  execute: async (targetEntity, rows) => {
-    const res = await apiClient.post('/migration/execute', { targetEntity, rows });
+  execute: async (entityOrPayload, maybeRows, maybeMappings) => {
+    const payload = typeof entityOrPayload === 'string'
+      ? { entity: entityOrPayload, rows: maybeRows, mappings: maybeMappings }
+      : { entity: entityOrPayload.entity || entityOrPayload.targetEntity, rows: entityOrPayload.rows, mappings: entityOrPayload.mappings };
+    const res = await apiClient.post('/migration/execute', payload);
     return res.data?.data || res.data;
   }
 };
 
 export const PlagiarismAPI = {
-  scan: async (title, text, authorName) => {
-    const res = await apiClient.post('/plagiarism/scan', { title, text, authorName });
-    return res.data?.data || res.data;
+  scan: async (payloadOrTitle, maybeText, maybeAuthor) => {
+    const payload = typeof payloadOrTitle === 'string'
+      ? { title: payloadOrTitle, text: maybeText, student: maybeAuthor }
+      : payloadOrTitle;
+    const res = await apiClient.post('/plagiarism/scan', payload);
+    return res;
   }
 };
 
 export const LectureSummarizerAPI = {
-  process: async (title, subject, instructor, durationMinutes) => {
-    const res = await apiClient.post('/lecture-ai/process', { title, subject, instructor, durationMinutes });
-    return res.data?.data || res.data;
+  process: async (payloadOrTitle, maybeSubject, maybeInstructor, maybeDuration) => {
+    const payload = typeof payloadOrTitle === 'string'
+      ? { title: payloadOrTitle, course: maybeSubject, lecturer: maybeInstructor, duration: maybeDuration }
+      : payloadOrTitle;
+    const res = await apiClient.post('/lecture-ai/process', payload);
+    return res;
   }
 };
 
 export const SSRCompilerAPI = {
-  getMetrics: async () => {
-    try {
-      const res = await apiClient.get('/ssr/metrics');
-      return res.data?.data || res.data;
-    } catch (err) {
-      return null;
-    }
+  getMetrics: async (paramsOrFramework = {}) => {
+    const params = typeof paramsOrFramework === 'string'
+      ? { framework: paramsOrFramework }
+      : paramsOrFramework;
+    const res = await apiClient.get('/ssr/metrics', { params });
+    return res;
   }
 };
 
 export const AlumniAPI = {
   getDirectory: async (params = {}) => {
-    try {
-      const res = await apiClient.get('/alumni/directory', { params });
-      return res.data?.data || { alumni: [], stats: {} };
-    } catch (err) {
-      return { alumni: [], stats: {} };
-    }
+    const res = await apiClient.get('/alumni/directory', { params });
+    return res;
   },
-  getJobs: async () => {
-    try {
-      const res = await apiClient.get('/alumni/jobs');
-      return res.data?.data || res.data || [];
-    } catch (err) {
-      return [];
-    }
+  getJobs: async (params = {}) => {
+    const res = await apiClient.get('/alumni/jobs', { params });
+    return res;
   },
-  getEndowments: async () => {
-    try {
-      const res = await apiClient.get('/alumni/endowments');
-      return res.data?.data || res.data || [];
-    } catch (err) {
-      return [];
-    }
+  getEndowments: async (params = {}) => {
+    const res = await apiClient.get('/alumni/endowments', { params });
+    return res;
   },
-  pledge: async (campaignId, amount, donorName) => {
-    const res = await apiClient.post('/alumni/endowments/pledge', { campaignId, amount, donorName });
-    return res.data?.data || res.data;
+  pledge: async (payloadOrCampaign, maybeAmount, maybeDonor) => {
+    const payload = typeof payloadOrCampaign === 'string'
+      ? { campaignId: payloadOrCampaign, amount: maybeAmount, donorName: maybeDonor }
+      : payloadOrCampaign;
+    const res = await apiClient.post('/alumni/pledge', payload);
+    return res;
   }
 };
 
