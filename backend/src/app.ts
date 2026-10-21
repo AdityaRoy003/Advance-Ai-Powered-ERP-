@@ -74,6 +74,19 @@ app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 app.use(cookieParser());
 
+// Express 5 compatibility: Make req.query writable so mongoSanitize and hpp can sanitize query parameters
+app.use((req, _res, next) => {
+  if (req.query) {
+    Object.defineProperty(req, 'query', {
+      value: { ...req.query },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    });
+  }
+  next();
+});
+
 // 4. NoSQL Injection & Parameter Pollution Defense
 app.use((mongoSanitize as any)({ replaceWith: '_' }));
 app.use(hpp());
