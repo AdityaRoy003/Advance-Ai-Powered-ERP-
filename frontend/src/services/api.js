@@ -1060,6 +1060,37 @@ export const AcademicAPI = {
   }
 };
 
+export const IssuesAPI = {
+  reportIssue: async (data) => {
+    const res = await apiClient.post('/issues', data);
+    return res.data?.data || res.data;
+  },
+  getAll: async (params = {}) => {
+    try {
+      const res = await apiClient.get('/issues', { params });
+      return res.data?.data || res.data || [];
+    } catch {
+      return [];
+    }
+  },
+  getStats: async () => {
+    try {
+      const res = await apiClient.get('/issues/stats');
+      return res.data?.data || res.data || { total: 0, open: 0, inProgress: 0, resolved: 0, critical: 0 };
+    } catch {
+      return { total: 0, open: 0, inProgress: 0, resolved: 0, critical: 0 };
+    }
+  },
+  track: async (ticketId) => {
+    const res = await apiClient.get(`/issues/track/${ticketId}`);
+    return res.data?.data || res.data;
+  },
+  update: async (id, data) => {
+    const res = await apiClient.patch(`/issues/${id}`, data);
+    return res.data?.data || res.data;
+  }
+};
+
 export default apiClient;
 
 

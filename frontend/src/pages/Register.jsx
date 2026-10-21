@@ -5,6 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import { toast } from 'react-hot-toast';
 import { FaUser, FaEnvelope, FaLock, FaArrowLeft, FaIdCard } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import AuthFooter from '../components/layout/AuthFooter';
 
 export default function Register() {
   const { register, loading } = useAuth();
@@ -34,7 +35,7 @@ export default function Register() {
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center relative p-6 overflow-hidden ${theme === 'dark' ? 'bg-[#090d16]' : 'bg-slate-50'}`}>
+    <div className={`min-h-screen flex flex-col justify-between relative p-4 sm:p-6 overflow-hidden ${theme === 'dark' ? 'bg-[#090d16]' : 'bg-slate-50'}`}>
       {/* Background decoration */}
       <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] bg-pink-500/10 rounded-full blur-[80px] pointer-events-none" />
@@ -42,17 +43,18 @@ export default function Register() {
       {/* Back button */}
       <Link 
         to="/" 
-        className="absolute top-8 left-8 flex items-center gap-2 font-semibold text-slate-500 hover:text-indigo-600 transition"
+        className="absolute top-6 left-6 flex items-center gap-2 font-semibold text-slate-500 hover:text-indigo-600 transition z-10"
       >
         <FaArrowLeft /> Back to home
       </Link>
 
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.4 }}
-        className="w-full max-w-md my-8"
-      >
+      <div className="my-auto w-full flex items-center justify-center py-6">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+          className="w-full max-w-md my-4"
+        >
         <div className="p-8 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827]/80 backdrop-blur-md shadow-2xl flex flex-col gap-6">
           <div className="text-center">
             <h2 className="text-3xl font-extrabold tracking-tight">Create Account</h2>
@@ -149,6 +151,9 @@ export default function Register() {
           </p>
         </div>
       </motion.div>
+      </div>
+
+      <AuthFooter />
     </div>
   );
 }

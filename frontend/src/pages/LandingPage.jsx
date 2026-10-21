@@ -8,6 +8,7 @@ import {
   FaFileAlt, FaCalendarCheck, FaCode, FaGlobe, FaAngleDown,
   FaLinkedin, FaGithub, FaTwitter, FaRegStar, FaStar
 } from 'react-icons/fa';
+import PublicFooter from '../components/layout/PublicFooter';
 
 // Stat counter card (separate component to avoid hooks-in-map violation)
 function StatCounter({ end, label, suffix }) {
@@ -677,34 +678,8 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="border-t border-slate-200 dark:border-slate-800/60 py-12 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-slate-400">
-          <Link to="/" className="flex items-center gap-2 font-extrabold text-slate-900 dark:text-white">
-            <div className="bg-indigo-600 p-1.5 rounded-lg">
-              <FaRobot className="text-white text-sm" />
-            </div>
-            EduVerse ERP
-          </Link>
-          
-          <div className="flex gap-6 font-semibold">
-            <a href="#features" className="hover:text-indigo-500 transition">Features</a>
-            <a href="#pricing" className="hover:text-indigo-500 transition">Pricing</a>
-            <a href="#faq" className="hover:text-indigo-500 transition">FAQ</a>
-            <Link to="/login" className="hover:text-indigo-500 transition">Login</Link>
-          </div>
-
-          <div className="flex gap-4 text-lg">
-            <a href="#" className="hover:text-indigo-500 transition"><FaGithub /></a>
-            <a href="#" className="hover:text-indigo-500 transition"><FaLinkedin /></a>
-            <a href="#" className="hover:text-indigo-500 transition"><FaTwitter /></a>
-          </div>
-        </div>
-        <div className="text-center mt-8 text-xs text-slate-500">
-          © 2026 EduVerse ERP. Built with React, TypeScript & Express. All rights reserved.
-        </div>
-      </footer>
-
+      {/* REUSABLE ENTERPRISE PUBLIC FOOTER */}
+      <PublicFooter />
     </div>
   );
 }

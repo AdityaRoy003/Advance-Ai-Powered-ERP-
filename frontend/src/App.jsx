@@ -9,6 +9,7 @@ import { SocketProvider } from './context/SocketContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { AccessibilityProvider } from './context/AccessibilityContext';
 import { CookieConsentProvider } from './context/CookieConsentContext';
+import { SupportModalProvider } from './context/SupportModalContext';
 
 // Privacy & Consent Components
 import CookieConsentBanner from './components/privacy/CookieConsentBanner';
@@ -141,12 +142,13 @@ function App() {
           <SocketProvider>
             <LanguageProvider>
               <AccessibilityProvider>
-                <BrowserRouter>
-                  <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
-                  <CookieConsentBanner />
-                  <CookieConsentModal />
-                  <PrivacyPolicyModal />
-                  <Suspense fallback={<PageLoader />}>
+                <SupportModalProvider>
+                  <BrowserRouter>
+                    <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+                    <CookieConsentBanner />
+                    <CookieConsentModal />
+                    <PrivacyPolicyModal />
+                    <Suspense fallback={<PageLoader />}>
                     <Routes>
                 {/* Marketing / Landing */}
                 <Route path="/" element={<LandingPage />} />
@@ -405,7 +407,8 @@ function App() {
               </Routes>
             </Suspense>
           </BrowserRouter>
-              </AccessibilityProvider>
+        </SupportModalProvider>
+      </AccessibilityProvider>
             </LanguageProvider>
           </SocketProvider>
         </CookieConsentProvider>

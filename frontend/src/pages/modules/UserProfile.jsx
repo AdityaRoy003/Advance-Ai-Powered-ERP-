@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useCookieConsent } from '../../context/CookieConsentContext';
 import { toast } from 'react-hot-toast';
-import { AuthAPI } from '../../services/api';
+import { AuthAPI, IssuesAPI } from '../../services/api';
 import { 
   FaUser, FaTools, FaCheckCircle, FaTimesCircle, FaClock, FaShieldAlt, 
   FaRobot, FaProjectDiagram, FaGlobe, FaSearch, FaBell, FaLock, 
@@ -15,7 +15,8 @@ import {
   FaPlus, FaCloudUploadAlt, FaPlay, FaSync, FaCheck, FaShareAlt,
   FaMapMarkerAlt, FaExclamationTriangle, FaSatellite, FaMicrochip,
   FaHospital, FaTree, FaBolt, FaWater, FaTrafficLight, FaDesktop,
-  FaLaptop, FaTabletAlt, FaEye, FaEyeSlash, FaBookmark
+  FaLaptop, FaTabletAlt, FaEye, FaEyeSlash, FaBookmark, FaBug,
+  FaPaperPlane, FaComments, FaFilter
 } from 'react-icons/fa';
 
 // FaSliders is not in react-icons/fa, use FaSlidersH as alias
@@ -179,6 +180,62 @@ export default function UserProfile() {
     toast.success('New AI Query saved to library!');
   };
 
+  // 30. User Reported Issues Management State (Super Admin)
+  const [issuesList, setIssuesList] = useState([]);
+  const [issuesStats, setIssuesStats] = useState({ total: 0, open: 0, inProgress: 0, resolved: 0, critical: 0 });
+  const [loadingIssues, setLoadingIssues] = useState(false);
+  const [selectedIssueModal, setSelectedIssueModal] = useState(null);
+  const [issueStatusFilter, setIssueStatusFilter] = useState('ALL');
+  const [issueSearchQuery, setIssueSearchQuery] = useState('');
+  const [resolutionNoteInput, setResolutionNoteInput] = useState('');
+  const [targetStatusInput, setTargetStatusInput] = useState('In Progress');
+  const [updatingIssue, setUpdatingIssue] = useState(false);
+
+  const fetchIssues = async () => {
+    setLoadingIssues(true);
+    try {
+      const [list, stats] = await Promise.all([
+        IssuesAPI.getAll(),
+        IssuesAPI.getStats()
+      ]);
+      setIssuesList(list || []);
+      setIssuesStats(stats || { total: 0, open: 0, inProgress: 0, resolved: 0, critical: 0 });
+    } catch (err) {
+      console.warn('Failed to fetch issues in UserProfile', err);
+    } finally {
+      setLoadingIssues(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'user_issues' || user?.role === 'SUPER_ADMIN') {
+      fetchIssues();
+    }
+  }, [activeTab]);
+
+  const handleUpdateIssueStatus = async (e) => {
+    e.preventDefault();
+    if (!selectedIssueModal) return;
+
+    setUpdatingIssue(true);
+    try {
+      const updated = await IssuesAPI.update(selectedIssueModal._id, {
+        status: targetStatusInput,
+        resolutionNotes: resolutionNoteInput.trim(),
+        updateMessage: resolutionNoteInput.trim() || `Status updated to ${targetStatusInput}`
+      });
+
+      toast.success(`Ticket ${updated.ticketId} updated to ${updated.status}!`);
+      setSelectedIssueModal(null);
+      setResolutionNoteInput('');
+      fetchIssues();
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to update issue status');
+    } finally {
+      setUpdatingIssue(false);
+    }
+  };
+
   // Section List with RBAC metadata & Icons
   const allSections = [
     { id: 'overview', name: '1. Profile Overview', icon: <FaUser />, roles: ['ALL'] },
@@ -209,7 +266,8 @@ export default function UserProfile() {
     { id: 'developer', name: '26. Developer Settings', icon: <FaTerminal />, roles: ['Researcher', 'Developer', 'Super Admin'] },
     { id: 'analytics', name: '27. Analytics & Impact', icon: <FaChartLine />, roles: ['ALL'] },
     { id: 'emergency', name: '28. Emergency Safety Profile', icon: <FaAmbulance />, roles: ['Disaster Response Team', 'Citizen', 'ALL'] },
-    { id: 'rbac', name: '29. Role-Based Sections (RBAC)', icon: <FaSlidersH />, roles: ['ALL'] }
+    { id: 'rbac', name: '29. Role-Based Sections (RBAC)', icon: <FaSlidersH />, roles: ['ALL'] },
+    { id: 'user_issues', name: '30. User Reported Issues & Resolution Desk', icon: <FaBug />, roles: ['Super Admin', 'SUPER_ADMIN', 'ALL'] }
   ];
 
   // Filter sections by search and RBAC persona
@@ -234,7 +292,16 @@ export default function UserProfile() {
             <span className="text-xxs font-mono font-bold text-emerald-400 uppercase tracking-widest">Active Online</span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            {user?.role === 'SUPER_ADMIN' && (
+              <button 
+                onClick={() => { setActiveTab('user_issues'); fetchIssues(); }}
+                className="bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 px-3.5 py-2 rounded-xl text-xxs font-bold transition flex items-center gap-2 shadow-lg shadow-rose-500/10"
+              >
+                <FaBug className="text-rose-400" />
+                <span>Manage Issues ({issuesStats.open || 0} Open)</span>
+              </button>
+            )}
             <button 
               onClick={() => setActiveTab('personal')}
               className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xxs font-bold shadow-lg shadow-indigo-600/30 transition flex items-center gap-2"
@@ -1116,6 +1183,290 @@ export default function UserProfile() {
                   </tbody>
                 </table>
               </div>
+            </div>
+          )}
+
+          {/* TAB 30: USER REPORTED ISSUES & RESOLUTION DESK (SUPER ADMIN) */}
+          {activeTab === 'user_issues' && (
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                <div>
+                  <h2 className="text-xl font-extrabold text-white flex items-center gap-2">
+                    <FaBug className="text-rose-400" /> User Reported Issues & Resolution Desk
+                  </h2>
+                  <p className="text-slate-400 text-xs mt-1">
+                    Manage support tickets submitted across the public website and authenticated portals. Provide direct status updates and resolution notes to users.
+                  </p>
+                </div>
+                <button
+                  onClick={fetchIssues}
+                  disabled={loadingIssues}
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition flex items-center gap-2 self-start sm:self-auto border border-slate-700"
+                >
+                  <FaSync className={loadingIssues ? 'animate-spin' : ''} />
+                  <span>Refresh Queue</span>
+                </button>
+              </div>
+
+              {/* Metrics KPI Cards */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="p-4 rounded-2xl border border-slate-800 bg-slate-900/60 flex flex-col gap-1">
+                  <span className="text-xxs font-mono uppercase text-slate-400 font-bold">Total Issues</span>
+                  <span className="text-2xl font-black text-white">{issuesStats.total}</span>
+                  <span className="text-xxs text-slate-500">Across all institutions</span>
+                </div>
+                <div className="p-4 rounded-2xl border border-rose-500/30 bg-rose-950/20 flex flex-col gap-1">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xxs font-mono uppercase text-rose-300 font-bold">Open / Pending</span>
+                    <span className="w-2 h-2 rounded-full bg-rose-400 animate-pulse" />
+                  </div>
+                  <span className="text-2xl font-black text-rose-400">{issuesStats.open}</span>
+                  <span className="text-xxs text-rose-300/70">Awaiting engineering review</span>
+                </div>
+                <div className="p-4 rounded-2xl border border-amber-500/30 bg-amber-950/20 flex flex-col gap-1">
+                  <span className="text-xxs font-mono uppercase text-amber-300 font-bold">In Progress</span>
+                  <span className="text-2xl font-black text-amber-400">{issuesStats.inProgress}</span>
+                  <span className="text-xxs text-amber-300/70">Under active investigation</span>
+                </div>
+                <div className="p-4 rounded-2xl border border-emerald-500/30 bg-emerald-950/20 flex flex-col gap-1">
+                  <span className="text-xxs font-mono uppercase text-emerald-300 font-bold">Resolved / Closed</span>
+                  <span className="text-2xl font-black text-emerald-400">{issuesStats.resolved}</span>
+                  <span className="text-xxs text-emerald-300/70">Delivered fixes</span>
+                </div>
+              </div>
+
+              {/* Filters & Search Controls */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-900/40 p-3 rounded-2xl border border-slate-800">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-xxs font-mono text-slate-400 uppercase mr-1 flex items-center gap-1">
+                    <FaFilter /> Filter:
+                  </span>
+                  {['ALL', 'Open', 'In Progress', 'Resolved'].map((st) => (
+                    <button
+                      key={st}
+                      onClick={() => setIssueStatusFilter(st)}
+                      className={`px-3 py-1.5 rounded-xl text-xxs font-bold transition ${
+                        issueStatusFilter === st
+                          ? 'bg-indigo-600 text-white shadow-md'
+                          : 'bg-slate-800 text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      {st}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="relative min-w-[220px]">
+                  <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xxs" />
+                  <input
+                    type="text"
+                    value={issueSearchQuery}
+                    onChange={(e) => setIssueSearchQuery(e.target.value)}
+                    placeholder="Search ticket ID, title, user email..."
+                    className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:border-indigo-500 focus:outline-none placeholder-slate-500"
+                  />
+                </div>
+              </div>
+
+              {/* Issues Table / List */}
+              <div className="space-y-3">
+                {loadingIssues ? (
+                  <div className="py-12 text-center text-slate-500 font-mono text-xs">
+                    Loading user reported issues queue...
+                  </div>
+                ) : (
+                  issuesList
+                    .filter((item) => {
+                      const matchesStatus = issueStatusFilter === 'ALL' || item.status === issueStatusFilter;
+                      const q = issueSearchQuery.toLowerCase().trim();
+                      const matchesQuery = !q || 
+                        item.ticketId?.toLowerCase().includes(q) ||
+                        item.title?.toLowerCase().includes(q) ||
+                        item.reportedBy?.email?.toLowerCase().includes(q) ||
+                        item.reportedBy?.name?.toLowerCase().includes(q);
+                      return matchesStatus && matchesQuery;
+                    })
+                    .map((item) => (
+                      <div
+                        key={item._id || item.ticketId}
+                        className="p-4 sm:p-5 rounded-2xl border border-slate-800 bg-slate-900/60 hover:border-slate-700 transition flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+                      >
+                        <div className="flex-1 space-y-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-mono font-bold text-xs text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-lg border border-indigo-500/20">
+                              {item.ticketId}
+                            </span>
+                            <span className={`px-2 py-0.5 rounded-full text-xxs font-bold uppercase tracking-wider ${
+                              item.status === 'Resolved' || item.status === 'Closed'
+                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                : item.status === 'In Progress' || item.status === 'Under Review'
+                                ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                                : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                            }`}>
+                              ● {item.status}
+                            </span>
+                            <span className="px-2 py-0.5 rounded-lg bg-slate-800 text-slate-300 font-mono text-xxs">
+                              {item.category}
+                            </span>
+                            <span className={`px-2 py-0.5 rounded-lg text-xxs font-mono font-bold ${
+                              item.severity === 'Critical' ? 'bg-rose-900/50 text-rose-300' :
+                              item.severity === 'High' ? 'bg-amber-900/50 text-amber-300' :
+                              'bg-slate-800 text-slate-400'
+                            }`}>
+                              {item.severity} Priority
+                            </span>
+                          </div>
+
+                          <h3 className="text-sm font-bold text-white tracking-tight">{item.title}</h3>
+                          <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">{item.description}</p>
+
+                          <div className="flex flex-wrap items-center gap-4 text-xxs text-slate-500 font-mono pt-1">
+                            <span>User: <strong className="text-slate-300">{item.reportedBy?.name}</strong> ({item.reportedBy?.email})</span>
+                            <span>Role: <strong className="text-slate-300">{item.reportedBy?.role}</strong></span>
+                            <span>Reported: {new Date(item.createdAt).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex sm:flex-col items-center sm:items-end gap-2 shrink-0 w-full sm:w-auto justify-end">
+                          <button
+                            onClick={() => {
+                              setSelectedIssueModal(item);
+                              setTargetStatusInput(item.status);
+                              setResolutionNoteInput(item.resolutionNotes || '');
+                            }}
+                            className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition shadow-md flex items-center gap-2"
+                          >
+                            <FaEdit /> Resolve & Update User
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                )}
+              </div>
+
+              {/* RESOLUTION DRAWER / MODAL */}
+              {selectedIssueModal && (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[10004] flex items-center justify-center p-4 overflow-y-auto">
+                  <div className="w-full max-w-2xl bg-[#0a0f1d] border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5 text-xs text-slate-300 max-h-[90vh] overflow-y-auto">
+                    <div className="flex justify-between items-start border-b border-slate-800 pb-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-bold text-sm text-indigo-400">{selectedIssueModal.ticketId}</span>
+                          <span className="px-2 py-0.5 rounded-full text-xxs font-bold bg-slate-800 text-slate-300">
+                            {selectedIssueModal.category}
+                          </span>
+                        </div>
+                        <h3 className="text-base font-bold text-white mt-1">{selectedIssueModal.title}</h3>
+                      </div>
+                      <button
+                        onClick={() => setSelectedIssueModal(null)}
+                        className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white"
+                      >
+                        <FaTimes />
+                      </button>
+                    </div>
+
+                    <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-850 space-y-1">
+                      <span className="text-xxs font-mono uppercase text-slate-400 font-bold block">User Description</span>
+                      <p className="text-xs text-slate-300 leading-relaxed">{selectedIssueModal.description}</p>
+                      <div className="pt-2 text-xxs font-mono text-slate-500">
+                        Reported by {selectedIssueModal.reportedBy?.name} ({selectedIssueModal.reportedBy?.email})
+                      </div>
+                    </div>
+
+                    {/* Timeline of past updates */}
+                    <div>
+                      <span className="text-xxs font-mono uppercase text-slate-400 font-bold block mb-2">Previous Status & User Updates</span>
+                      <div className="space-y-1.5 max-h-36 overflow-y-auto">
+                        {(selectedIssueModal.updates || []).map((upd, idx) => (
+                          <div key={idx} className="p-2 rounded-lg bg-slate-900/50 border border-slate-800 text-xxs flex justify-between gap-2">
+                            <div>
+                              <span className="font-bold text-slate-200">{upd.updatedBy}: </span>
+                              <span className="text-slate-300">{upd.message}</span>
+                            </div>
+                            <span className="font-mono text-slate-500 shrink-0">
+                              {new Date(upd.timestamp).toLocaleDateString()}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Form to update status and send message to user */}
+                    <form onSubmit={handleUpdateIssueStatus} className="space-y-4 pt-2 border-t border-slate-800">
+                      <div>
+                        <label className="block text-xxs font-mono uppercase text-slate-400 font-bold mb-1">
+                          Update Issue Lifecycle Status
+                        </label>
+                        <select
+                          value={targetStatusInput}
+                          onChange={(e) => setTargetStatusInput(e.target.value)}
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs font-semibold focus:border-indigo-500 focus:outline-none"
+                        >
+                          <option value="Open">Open — Awaiting Engineering Triage</option>
+                          <option value="In Progress">In Progress — Work Underway</option>
+                          <option value="Under Review">Under Review — Testing Fix</option>
+                          <option value="Resolved">Resolved — Fix Deployed & Verified</option>
+                          <option value="Closed">Closed — Complete</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <div className="flex justify-between items-center mb-1">
+                          <label className="block text-xxs font-mono uppercase text-slate-400 font-bold">
+                            Resolution Update & User Guidance Note
+                          </label>
+                          <span className="text-xxs text-slate-500">Visible to user via Ticket Tracker</span>
+                        </div>
+                        <textarea
+                          rows={3}
+                          value={resolutionNoteInput}
+                          onChange={(e) => setResolutionNoteInput(e.target.value)}
+                          placeholder="Explain the fix, steps taken, or what the user should verify..."
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs resize-none focus:border-indigo-500 focus:outline-none"
+                        />
+                      </div>
+
+                      {/* Quick preset chips */}
+                      <div className="flex flex-wrap gap-1.5">
+                        <span className="text-xxs font-mono text-slate-400 mr-1 self-center">Quick Presets:</span>
+                        {[
+                          'Hotfix deployed in core module. Please refresh.',
+                          'Under active investigation by infrastructure team.',
+                          'Resolved in build v2.4.0. Verified.',
+                          'Please provide browser version and network logs.'
+                        ].map((preset, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => setResolutionNoteInput(preset)}
+                            className="px-2 py-1 rounded-lg bg-slate-850 hover:bg-slate-800 text-slate-400 hover:text-white text-xxs transition font-mono"
+                          >
+                            + {preset.slice(0, 24)}...
+                          </button>
+                        ))}
+                      </div>
+
+                      <div className="flex justify-end gap-3 pt-2">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedIssueModal(null)}
+                          className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={updatingIssue}
+                          className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-emerald-600/30 disabled:opacity-50"
+                        >
+                          {updatingIssue ? 'Saving...' : <><FaPaperPlane /> Commit Update & Notify User</>}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

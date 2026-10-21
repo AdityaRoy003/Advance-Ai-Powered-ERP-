@@ -5,6 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import { toast } from 'react-hot-toast';
 import { FaEnvelope, FaLock, FaRobot, FaArrowLeft, FaEye, FaEyeSlash, FaCopy, FaCheck } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import AuthFooter from '../components/layout/AuthFooter';
 
 export default function Login() {
   const { login, loading } = useAuth();
@@ -31,21 +32,22 @@ export default function Login() {
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center relative p-6 overflow-hidden ${theme === 'dark' ? 'bg-[#090d16]' : 'bg-slate-50'}`}>
+    <div className={`min-h-screen flex flex-col justify-between relative p-4 sm:p-6 overflow-hidden ${theme === 'dark' ? 'bg-[#090d16]' : 'bg-slate-50'}`}>
       {/* Background blobs */}
       <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] bg-pink-500/10 rounded-full blur-[80px] pointer-events-none" />
 
-      <Link to="/" className="absolute top-8 left-8 flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-indigo-400 transition">
+      <Link to="/" className="absolute top-6 left-6 flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-indigo-400 transition z-10">
         <FaArrowLeft /> Back to home
       </Link>
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.4 }}
-        className="w-full max-w-md"
-      >
+      <div className="my-auto w-full flex items-center justify-center py-8">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+          className="w-full max-w-md"
+        >
         {/* Login card */}
         <div className="p-8 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827]/80 backdrop-blur-md shadow-2xl flex flex-col gap-6">
           <div className="text-center flex flex-col items-center">
@@ -111,6 +113,9 @@ export default function Login() {
           </p>
         </div>
       </motion.div>
+      </div>
+
+      <AuthFooter />
     </div>
   );
 }

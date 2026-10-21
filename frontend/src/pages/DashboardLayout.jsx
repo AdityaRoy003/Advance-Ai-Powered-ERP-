@@ -23,6 +23,7 @@ import { useAccessibility } from '../context/AccessibilityContext';
 import { useCookieConsent } from '../context/CookieConsentContext';
 import AIAssistantWidget from '../components/AIAssistantWidget';
 import EduVerseOrbLoader from '../components/common/EduVerseOrbLoader';
+import DashboardFooter from '../components/layout/DashboardFooter';
 
 // ─── NOTIFICATION CATEGORIES ───
 const NOTIF_CATEGORIES = ['All', 'Academic', 'Finance', 'Transport', 'Hostel', 'Security', 'System'];
@@ -920,9 +921,9 @@ export default function DashboardLayout() {
         </header>
 
         {/* ─── CONTENT ─── */}
-        <main className="flex-1 flex flex-col p-3 sm:p-6 pb-28 md:pb-6 max-w-7xl mx-auto w-full overflow-x-hidden relative min-h-0">
+        <main className="flex-1 flex flex-col p-3 sm:p-6 pb-8 md:pb-6 max-w-7xl mx-auto w-full overflow-x-hidden relative min-h-0">
           <Suspense fallback={
-            <div className="flex-1 min-h-[calc(100dvh-120px)] md:min-h-[calc(100dvh-80px)] flex flex-col items-center justify-center w-full my-auto -mb-[100px] md:mb-0">
+            <div className="flex-1 min-h-[calc(100dvh-120px)] md:min-h-[calc(100dvh-80px)] flex flex-col items-center justify-center w-full my-auto">
               <EduVerseOrbLoader 
                 size="md" 
                 message="Loading ERP Module..." 
@@ -934,6 +935,9 @@ export default function DashboardLayout() {
           </Suspense>
           <AIAssistantWidget />
         </main>
+
+        {/* ─── AUTHENTICATED ERP FOOTER ─── */}
+        <DashboardFooter />
 
         {/* ─── MOBILE BOTTOM NAVIGATION BAR ─── */}
         <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#111827]/95 backdrop-blur-lg border-t border-slate-800/80 px-2 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] flex items-center justify-around shadow-2xl">

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { AcademicAPI } from '../services/api';
 import { FaCheckCircle, FaExclamationTriangle, FaShieldAlt, FaQrcode, FaArrowLeft, FaPrint } from 'react-icons/fa';
 import EduVerseOrbLoader from '../components/common/EduVerseOrbLoader';
+import PublicFooter from '../components/layout/PublicFooter';
 
 export default function HallTicketVerification() {
   const { id } = useParams();
@@ -136,6 +137,7 @@ export default function HallTicketVerification() {
           </div>
         ) : null}
       </div>
+      <PublicFooter />
     </div>
   );
 }
