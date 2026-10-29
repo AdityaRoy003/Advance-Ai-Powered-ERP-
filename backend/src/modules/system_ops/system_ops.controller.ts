@@ -195,7 +195,7 @@ export const updatePrivacyConsent = async (req: Request, res: Response) => {
       { userId },
       { $set: updates },
       {
-        new: true,
+        returnDocument: 'after',
         upsert: true,
         setDefaultsOnInsert: true,
         // Provide required fields for upsert case

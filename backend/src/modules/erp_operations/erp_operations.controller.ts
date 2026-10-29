@@ -707,7 +707,7 @@ export const retryDispatch = async (req: Request, res: Response) => {
     const log = await DispatchLog.findOneAndUpdate(
       { messageId },
       { $set: { status: 'DELIVERED' }, $inc: { retryCount: 1 } },
-      { new: true }
+      { returnDocument: 'after' }
     );
     return sendSuccess(res, `Message ${messageId} retried and delivered successfully`, log);
   } catch (err: any) {
@@ -807,7 +807,7 @@ export const resolveDuplicateRecord = async (req: Request, res: Response) => {
     const record = await DuplicateRecord.findByIdAndUpdate(
       duplicateId,
       { $set: { status: resolutionAction === 'MERGE' ? 'MERGED' : 'DISMISSED' } },
-      { new: true }
+      { returnDocument: 'after' }
     );
     return sendSuccess(res, `Duplicate record resolution: ${resolutionAction} completed`, record);
   } catch (err: any) {
@@ -836,7 +836,7 @@ export const restoreDeletedRecord = async (req: Request, res: Response) => {
     const restored = await SoftDeleteAudit.findByIdAndUpdate(
       id,
       { $set: { isRestored: true } },
-      { new: true }
+      { returnDocument: 'after' }
     );
     return sendSuccess(res, 'Record successfully restored from recycle bin with change history preserved', restored);
   } catch (err: any) {

@@ -31,7 +31,7 @@ export const createHostelRoom = async (req: Request, res: Response) => {
 
 export const updateHostelRoom = async (req: Request, res: Response) => {
   try {
-    const room = await HostelRoom.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const room = await HostelRoom.findByIdAndUpdate(req.params.id, req.body, { returnDocument: 'after' });
     return sendSuccess(res, 'Hostel room updated', room);
   } catch (err: any) {
     return sendError(res, err.message || 'Failed to update hostel room', 400);

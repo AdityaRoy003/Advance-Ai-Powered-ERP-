@@ -294,7 +294,7 @@ export const seedDatabase = async () => {
             loginAttempts: 0
           }
         },
-        { upsert: true, new: true }
+        { upsert: true, returnDocument: 'after' }
       );
     }
 

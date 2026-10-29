@@ -52,7 +52,7 @@ export const getAccreditationReport = async (req: Request, res: Response) => {
 export const updateCriterionScore = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const report = await Accreditation.findByIdAndUpdate(id, { $set: req.body }, { new: true });
+    const report = await Accreditation.findByIdAndUpdate(id, { $set: req.body }, { returnDocument: 'after' });
     return sendSuccess(res, 'Accreditation criterion updated', report, 200);
   } catch (err: any) {
     return sendError(res, err.message || 'Update failed', 500);

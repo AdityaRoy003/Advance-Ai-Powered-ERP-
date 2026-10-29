@@ -179,7 +179,7 @@ class AuthService {
       }
     }
 
-    const user = await User.findByIdAndUpdate(userId, { $set: filteredUpdates }, { new: true }).select('-passwordHash');
+    const user = await User.findByIdAndUpdate(userId, { $set: filteredUpdates }, { returnDocument: 'after' }).select('-passwordHash');
     if (!user) throw new AppError('User not found', 404);
     return user;
   }

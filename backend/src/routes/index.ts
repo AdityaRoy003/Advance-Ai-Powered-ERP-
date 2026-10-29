@@ -54,7 +54,7 @@ router.get('/', (req, res) => {
   });
 });
 
-router.get('/health', (req, res) => {
+router.get(['/health', '/v1/health'], (req, res) => {
   return sendSuccess(res, 'API is healthy', {
     server: 'Running',
     database: 'Connection handled by config/database.js',

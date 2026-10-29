@@ -124,7 +124,7 @@ export const updateUser = async (req: Request, res: Response) => {
       delete updates.password;
     }
 
-    const user = await User.findByIdAndUpdate(id, { $set: updates }, { new: true }).select('-passwordHash');
+    const user = await User.findByIdAndUpdate(id, { $set: updates }, { returnDocument: 'after' }).select('-passwordHash');
     if (!user) return sendError(res, 'User not found', 404);
 
     return sendSuccess(res, 'User updated successfully', user, 200);
@@ -136,7 +136,7 @@ export const updateUser = async (req: Request, res: Response) => {
 export const deleteUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const user = await User.findByIdAndUpdate(id, { isDeleted: true, deletedAt: new Date(), status: 'inactive' }, { new: true });
+    const user = await User.findByIdAndUpdate(id, { isDeleted: true, deletedAt: new Date(), status: 'inactive' }, { returnDocument: 'after' });
     if (!user) return sendError(res, 'User not found', 404);
 
     return sendSuccess(res, 'User soft-deleted successfully', { id: user._id }, 200);
@@ -148,7 +148,7 @@ export const deleteUser = async (req: Request, res: Response) => {
 export const restoreUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const user = await User.findByIdAndUpdate(id, { isDeleted: false, deletedAt: undefined, status: 'active' }, { new: true });
+    const user = await User.findByIdAndUpdate(id, { isDeleted: false, deletedAt: undefined, status: 'active' }, { returnDocument: 'after' });
     if (!user) return sendError(res, 'User not found', 404);
 
     return sendSuccess(res, 'User restored successfully', user, 200);
@@ -211,7 +211,7 @@ export const updateUserStatus = async (req: Request, res: Response) => {
     const user = await User.findByIdAndUpdate(
       id,
       { $set: updateData },
-      { new: true }
+      { returnDocument: 'after' }
     ).select('-passwordHash');
 
     if (!user) {
@@ -250,7 +250,7 @@ export const resetUserPassword = async (req: Request, res: Response) => {
         },
         $unset: { lockUntil: 1 }
       },
-      { new: true }
+      { returnDocument: 'after' }
     ).select('-passwordHash');
 
     if (!user) {

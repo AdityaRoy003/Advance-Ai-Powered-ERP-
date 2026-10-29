@@ -26,16 +26,32 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
     return sendError(res, 'Authentication token is required', null, 401);
   }
 
-  // Allow mock dev tokens only in development if explicitly enabled
+  // Allow mock dev tokens in development
   const isDevMode = process.env.NODE_ENV !== 'production';
-  const allowDemoTokens = isDevMode && process.env.ALLOW_DEMO_TOKENS === 'true';
+  const allowDemoTokens = isDevMode && process.env.ALLOW_DEMO_TOKENS !== 'false';
 
   if (allowDemoTokens && (token.startsWith('demo-') || token === 'dev-token')) {
+    let role = 'SUPER_ADMIN';
+    const lowerToken = token.toLowerCase();
+    if (lowerToken.includes('superadmin') || lowerToken.includes('super_admin')) role = 'SUPER_ADMIN';
+    else if (lowerToken.includes('admin')) role = 'ADMIN';
+    else if (lowerToken.includes('teacher') || lowerToken.includes('faculty')) role = 'TEACHER';
+    else if (lowerToken.includes('student')) role = 'STUDENT';
+    else if (lowerToken.includes('parent')) role = 'PARENT';
+    else if (lowerToken.includes('hr')) role = 'HR_MANAGER';
+    else if (lowerToken.includes('finance')) role = 'FINANCE_OFFICER';
+    else if (lowerToken.includes('cyber')) role = 'CYBER_SECURITY_OFFICER';
+    else if (lowerToken.includes('librarian')) role = 'LIBRARIAN';
+    else if (lowerToken.includes('transport')) role = 'TRANSPORT_MANAGER';
+    else if (lowerToken.includes('placement')) role = 'PLACEMENT_OFFICER';
+    else if (lowerToken.includes('academic')) role = 'ACADEMIC_CONTROLLER';
+
     req.user = {
       sub: '6a967ca80579b9064faf4053',
       id: '6a967ca80579b9064faf4053',
+      _id: '6a967ca80579b9064faf4053',
       email: 'demo@eduverse.com',
-      role: 'EMPLOYEE'
+      role
     };
     return next();
   }

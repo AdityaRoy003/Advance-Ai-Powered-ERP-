@@ -209,7 +209,7 @@ export const updateTicketStatus = async (req: Request, res: Response) => {
     if (feedbackRating) update.feedbackRating = feedbackRating;
     if (status === 'Repaired' || status === 'Closed') update.resolvedAt = new Date();
 
-    const ticket = await MaintenanceTicket.findByIdAndUpdate(id, { $set: update }, { new: true });
+    const ticket = await MaintenanceTicket.findByIdAndUpdate(id, { $set: update }, { returnDocument: 'after' });
     return sendSuccess(res, 'Ticket status updated', ticket);
   } catch (error: any) {
     return sendError(res, error.message || 'Failed to update ticket', null, 500);

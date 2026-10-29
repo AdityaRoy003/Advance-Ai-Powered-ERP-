@@ -96,7 +96,6 @@ const institutionSchema = new Schema<IInstitution>(
 );
 
 institutionSchema.index({ status: 1 });
-institutionSchema.index({ code: 1 });
 institutionSchema.index({ isDeleted: 1 });
 
 export default mongoose.model<IInstitution>('Institution', institutionSchema);

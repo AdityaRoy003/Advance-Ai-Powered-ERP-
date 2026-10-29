@@ -61,7 +61,7 @@ export const createCourse = async (req: Request, res: Response) => {
 
 export const updateCourse = async (req: Request, res: Response) => {
   try {
-    const course = await Course.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
+    const course = await Course.findByIdAndUpdate(req.params.id, { $set: req.body }, { returnDocument: 'after' });
     if (!course) return sendError(res, 'Course not found', 404);
     return sendSuccess(res, 'Course updated successfully', course, 200);
   } catch (err: any) {
@@ -71,7 +71,7 @@ export const updateCourse = async (req: Request, res: Response) => {
 
 export const deleteCourse = async (req: Request, res: Response) => {
   try {
-    const course = await Course.findByIdAndUpdate(req.params.id, { status: 'inactive' }, { new: true });
+    const course = await Course.findByIdAndUpdate(req.params.id, { status: 'inactive' }, { returnDocument: 'after' });
     if (!course) return sendError(res, 'Course not found', 404);
     return sendSuccess(res, 'Course deactivated successfully', { id: course._id }, 200);
   } catch (err: any) {

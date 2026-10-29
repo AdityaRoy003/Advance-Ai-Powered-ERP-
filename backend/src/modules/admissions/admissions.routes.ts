@@ -18,5 +18,8 @@ router.post('/apply', createApplication);
 // CRM Administration
 router.get('/', listApplications);
 router.patch('/:id/stage', updateApplicationStage);
+router.put('/:id/stage', updateApplicationStage);
+router.patch('/stage/:id', updateApplicationStage);
+router.put('/stage/:id', updateApplicationStage);
 
 export default router;

@@ -94,6 +94,9 @@ app.use(hpp());
 // 5. HTTP Logging
 app.use(morgan('dev'));
 
+// Root health check for monitors, load balancers, and container orchestrators
+app.get('/health', (req, res) => res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() }));
+
 // 6. API Routes with Global Rate Limiting and Cache Control
 app.use(env.API_PREFIX, apiLimiter, noCacheSensitiveEndpoints, routes);
 

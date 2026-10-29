@@ -38,7 +38,7 @@ export const createDrive = async (req: Request, res: Response) => {
 
 export const applyForDrive = async (req: Request, res: Response) => {
   try {
-    const drive = await PlacementDrive.findByIdAndUpdate(req.params.id, { $inc: { applicantsCount: 1 } }, { new: true });
+    const drive = await PlacementDrive.findByIdAndUpdate(req.params.id, { $inc: { applicantsCount: 1 } }, { returnDocument: 'after' });
     if (!drive) return sendError(res, 'Placement drive not found', 404);
     return sendSuccess(res, 'Application submitted successfully', drive, 200);
   } catch (err: any) {

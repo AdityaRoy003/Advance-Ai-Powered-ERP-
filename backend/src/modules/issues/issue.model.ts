@@ -30,7 +30,7 @@ export interface IIssue extends Document {
 
 const IssueSchema = new Schema<IIssue>(
   {
-    ticketId: { type: String, required: true, unique: true, index: true },
+    ticketId: { type: String, required: true, unique: true },
     title: { type: String, required: true, trim: true },
     description: { type: String, required: true },
     category: {

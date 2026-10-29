@@ -119,7 +119,7 @@ export const updateInstitution = async (req: Request, res: Response) => {
     const institution = await Institution.findByIdAndUpdate(
       id,
       { $set: updates },
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     );
     if (!institution) return sendError(res, 'Institution not found', 404);
 
@@ -136,7 +136,7 @@ export const suspendInstitution = async (req: Request, res: Response) => {
     const institution = await Institution.findByIdAndUpdate(
       id,
       { status: 'suspended' },
-      { new: true }
+      { returnDocument: 'after' }
     );
     if (!institution) return sendError(res, 'Institution not found', 404);
 
@@ -156,7 +156,7 @@ export const reactivateInstitution = async (req: Request, res: Response) => {
     const institution = await Institution.findByIdAndUpdate(
       id,
       { status: 'active' },
-      { new: true }
+      { returnDocument: 'after' }
     );
     if (!institution) return sendError(res, 'Institution not found', 404);
 
@@ -176,7 +176,7 @@ export const deleteInstitution = async (req: Request, res: Response) => {
     const institution = await Institution.findByIdAndUpdate(
       id,
       { isDeleted: true, deletedAt: new Date(), status: 'inactive' },
-      { new: true }
+      { returnDocument: 'after' }
     );
     if (!institution) return sendError(res, 'Institution not found', 404);
 
@@ -540,7 +540,7 @@ export const upgradeSubscription = async (req: Request, res: Response) => {
           'subscription.storageQuotaGB': quotas.storageQuotaGB
         }
       },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     if (!updated) return sendError(res, 'Institution not found', 404);

@@ -714,7 +714,7 @@ export const generateHallTickets = async (req: Request, res: Response) => {
           isPublished: true,
           verificationHash: hash
         },
-        { upsert: true, new: true }
+        { upsert: true, returnDocument: 'after' }
       );
 
       generated.push(ticketDoc);
