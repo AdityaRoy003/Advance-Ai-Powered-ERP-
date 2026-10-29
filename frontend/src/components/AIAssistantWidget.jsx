@@ -47,7 +47,7 @@ export default function AIAssistantWidget() {
   };
 
   return (
-    <div className="fixed bottom-20 sm:bottom-6 right-3 sm:right-6 z-40 flex flex-col items-end gap-3 font-semibold text-xs">
+    <div className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] sm:bottom-6 right-3.5 sm:right-6 z-40 flex flex-col items-end gap-3 font-semibold text-xs">
       
       {/* Chat Window Panel */}
       <AnimatePresence>
@@ -133,10 +133,10 @@ export default function AIAssistantWidget() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-full flex items-center justify-center shadow-xl shadow-indigo-600/30 hover:shadow-indigo-600/50 transition cursor-pointer"
+        className="w-12 h-12 sm:w-13 sm:h-13 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-full flex items-center justify-center shadow-lg shadow-indigo-600/25 border border-white/20 hover:shadow-indigo-600/40 transition cursor-pointer select-none"
         title="Ask ERP AI Copilot"
       >
-        <FaRobot size={18} className="sm:text-[22px] animate-pulse" />
+        <FaRobot size={18} className="sm:text-[20px]" />
       </motion.button>
 
     </div>

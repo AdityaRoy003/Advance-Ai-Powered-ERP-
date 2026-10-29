@@ -228,9 +228,20 @@
   .animate-\[spinOrbit_16s_linear_infinite\],
   .animate-\[spinOrbit_8s_linear_infinite\],
   .animate-\[spinOrbitReverse_11s_linear_infinite\],
-  .animate-\[orbBreathe_4s_ease-in-out_infinite\] {
+  .animate-\[orbBreathe_4s_ease-in-out_infinite\],
+  .animate-\[subtleFloat_3\.5s_ease-in-out_infinite_alternate\] {
     animation: none !important;
   }
 }
+
+@keyframes subtleFloat {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-1.5px);
+  }
+}
+
 
 
