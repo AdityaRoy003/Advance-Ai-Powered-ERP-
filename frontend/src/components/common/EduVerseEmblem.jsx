@@ -98,3 +98,4 @@ export default function EduVerseEmblem({ size = 28, className = '' }) {
     </div>
   );
 }
+

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  FaShieldAlt, FaFileContract, FaCookieBite, FaBug 
+  FaMapMarkerAlt, FaEnvelope, FaPhoneAlt, FaBug, 
+  FaShieldAlt, FaFileContract, FaCookieBite, FaLinkedin, 
+  FaTwitter, FaGithub, FaInstagram 
 } from 'react-icons/fa';
 import EduVerseEmblem from '../common/EduVerseEmblem';
 import { useCookieConsent } from '../../context/CookieConsentContext';
@@ -8,14 +10,14 @@ import { useSupportModals } from '../../context/SupportModalContext';
 
 export default function DashboardFooter() {
   const currentYear = new Date().getFullYear();
-  const appVersion = 'v2.4.0';
+  const appVersion = 'v2.4.0 (Enterprise)';
 
   const { openPreferences, openPolicyDrawer } = useCookieConsent();
   const { openReportIssueModal, openTermsModal } = useSupportModals();
 
   // Genuine live health & measured network latency state
   const [telemetry, setTelemetry] = useState({
-    status: 'checking', // 'operational' | 'degraded' | 'offline'
+    status: 'checking',
     latency: null,
     label: 'Systems Operational'
   });
@@ -49,7 +51,6 @@ export default function DashboardFooter() {
           }
         }
       } catch {
-        // Fallback check to API endpoint
         try {
           const altStart = performance.now();
           const altRes = await fetch('http://localhost:5000/api/v1/health', {
@@ -86,117 +87,226 @@ export default function DashboardFooter() {
 
   return (
     <footer 
-      className="relative mt-auto border-t border-slate-200/80 dark:border-slate-800/80 bg-white/75 dark:bg-[#070b14]/92 backdrop-blur-xl text-slate-500 dark:text-slate-400 py-4 px-3 sm:px-6 transition-colors duration-300 pb-[calc(5.75rem+env(safe-area-inset-bottom,0px))] md:pb-4 shadow-[0_-4px_24px_rgba(0,0,0,0.05)] dark:shadow-[0_-8px_32px_rgba(0,0,0,0.45)] select-none before:absolute before:top-0 before:left-0 before:right-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-cyan-500/25 dark:before:via-cyan-400/20 before:to-transparent"
+      className="mt-auto border-t border-[#1a386b] dark:border-slate-800 bg-[#0e254d] dark:bg-[#071329] text-slate-200 dark:text-slate-200 pt-8 sm:pt-12 pb-32 sm:pb-20 px-4 sm:px-6 lg:px-10 transition-colors select-none shadow-[0_-8px_30px_rgba(0,0,0,0.25)]"
       role="contentinfo"
-      aria-label="EduVerse ERP Dashboard Footer"
+      aria-label="EduVerse ERP Corporate Footer"
     >
-      <div className="max-w-7xl mx-auto flex flex-col gap-3.5">
+      <div className="max-w-7xl mx-auto">
         
-        {/* ─── TIER 1: BRAND ROW & SUPPORT/LEGAL NAVIGATION ─── */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-3 md:gap-6">
+        {/* ─── MAIN FOOTER GRID (JUNO ERP CORPORATE STYLE) ─── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-10">
           
-          {/* Brand Row: 3D Emblem, Brand Title & Subtitle */}
-          <div className="flex items-center gap-2.5 text-center sm:text-left justify-center md:justify-start">
-            <EduVerseEmblem size={26} />
-            <div className="flex items-baseline gap-2">
-              <span className="font-extrabold text-xs sm:text-sm text-slate-800 dark:text-slate-100 tracking-tight">
-                EduVerse AI
-              </span>
-              <span className="text-[11px] text-slate-400 dark:text-slate-500 hidden xs:inline">
-                Your intelligent education platform
-              </span>
+          {/* Column 1 & 2: Brand & Registered Sales Office */}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="flex items-center gap-3">
+              <EduVerseEmblem size={32} />
+              <div>
+                <span className="font-extrabold text-base sm:text-lg text-white tracking-tight block">
+                  EduVerse AI ERP
+                </span>
+                <span className="text-[11px] text-cyan-300 font-mono">
+                  Autonomous Higher Education Governance
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-3.5 pt-2 text-xs text-slate-200">
+              {/* Office Location */}
+              <div className="flex items-start gap-3">
+                <FaMapMarkerAlt className="text-cyan-400 mt-1 shrink-0 text-sm" />
+                <div>
+                  <p className="font-bold text-white text-xs">Sales & Administrative HQ</p>
+                  <p className="text-slate-300 text-xs mt-0.5 leading-relaxed">
+                    #4, 3rd Floor, Innovation Nexus, Tech Park, Pune (MH) - 411028
+                  </p>
+                </div>
+              </div>
+
+              {/* Email */}
+              <div className="flex items-center gap-3">
+                <FaEnvelope className="text-cyan-400 shrink-0 text-sm" />
+                <a 
+                  href="mailto:contactus@eduverse.ai" 
+                  className="text-slate-200 hover:text-white hover:underline transition font-mono text-xs"
+                >
+                  contactus@eduverse.ai
+                </a>
+              </div>
+
+              {/* Phone Helpline */}
+              <div className="flex items-center gap-3">
+                <FaPhoneAlt className="text-cyan-400 shrink-0 text-xs" />
+                <span className="text-slate-300 font-mono text-xs">+91 (020) 4123-8800</span>
+              </div>
             </div>
           </div>
 
-          {/* Support and Legal Navigation: Ghost-style controls with consistent touch zones */}
-          {/* On mobile: pr-14 ensures dedicated clearance for the floating AI assistant widget */}
-          <nav 
-            className="w-full md:w-auto grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center md:justify-end gap-1 sm:gap-1.5 pr-14 md:pr-0"
-            aria-label="Footer navigation links"
-          >
-            <button
-              type="button"
-              onClick={openReportIssueModal}
-              className="inline-flex items-center justify-center sm:justify-start gap-1.5 px-2.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition text-xxs font-medium focus:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500 min-h-[34px]"
-              title="Report an issue or unexpected system behavior"
-            >
-              <FaBug className="text-rose-400/90 text-[10px] shrink-0" />
-              <span>Report an Issue</span>
-            </button>
+          {/* Column 3: Company */}
+          <div className="space-y-3">
+            <h3 className="font-extrabold text-sm text-white tracking-wide">
+              Company
+            </h3>
+            <ul className="space-y-2.5 text-xs text-slate-300">
+              <li>
+                <button 
+                  type="button" 
+                  onClick={openTermsModal} 
+                  className="hover:text-white hover:underline transition text-left"
+                >
+                  About
+                </button>
+              </li>
+              <li>
+                <button 
+                  type="button" 
+                  onClick={openPolicyDrawer} 
+                  className="hover:text-white hover:underline transition text-left"
+                >
+                  Privacy Policy
+                </button>
+              </li>
+              <li>
+                <button 
+                  type="button" 
+                  onClick={openTermsModal} 
+                  className="hover:text-white hover:underline transition text-left"
+                >
+                  Terms & Conditions
+                </button>
+              </li>
+              <li>
+                <span className="text-slate-300">Partners</span>
+              </li>
+            </ul>
+          </div>
 
-            <button
-              type="button"
-              onClick={openPolicyDrawer}
-              className="inline-flex items-center justify-center sm:justify-start gap-1.5 px-2.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition text-xxs font-medium focus:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500 min-h-[34px]"
-              title="View Institutional Privacy Policy"
-            >
-              <FaShieldAlt className="text-emerald-400/90 text-[10px] shrink-0" />
-              <span>Privacy</span>
-            </button>
+          {/* Column 4: Resources */}
+          <div className="space-y-3">
+            <h3 className="font-extrabold text-sm text-white tracking-wide">
+              Resources
+            </h3>
+            <ul className="space-y-2.5 text-xs text-slate-300">
+              <li>
+                <span className="text-slate-300">Guides and resources</span>
+              </li>
+              <li>
+                <span className="text-slate-300">Blog</span>
+              </li>
+              <li>
+                <button 
+                  type="button" 
+                  onClick={openReportIssueModal} 
+                  className="hover:text-white hover:underline transition text-left flex items-center gap-1.5"
+                >
+                  <span>Support</span>
+                </button>
+              </li>
+              <li className="pt-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-blue-900/60 border border-blue-600/40 text-[11px] font-mono text-cyan-300 font-bold">
+                  ISO/IEC 27001:2025
+                </span>
+              </li>
+            </ul>
+          </div>
 
-            <button
-              type="button"
-              onClick={openTermsModal}
-              className="inline-flex items-center justify-center sm:justify-start gap-1.5 px-2.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-indigo-400 dark:hover:text-indigo-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition text-xxs font-medium focus:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500 min-h-[34px]"
-              title="View Terms of Service"
-            >
-              <FaFileContract className="text-indigo-400/90 text-[10px] shrink-0" />
-              <span>Terms</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={openPreferences}
-              className="inline-flex items-center justify-center sm:justify-start gap-1.5 px-2.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition text-xxs font-medium focus:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500 min-h-[34px]"
-              title="Manage Cookie and Telemetry Preferences"
-            >
-              <FaCookieBite className="text-amber-400/90 text-[10px] shrink-0" />
-              <span>Cookie Preferences</span>
-            </button>
-          </nav>
+          {/* Column 5: Get in touch */}
+          <div className="space-y-3">
+            <h3 className="font-extrabold text-sm text-white tracking-wide">
+              Get in touch
+            </h3>
+            <ul className="space-y-2.5 text-xs text-slate-300">
+              <li>
+                <button 
+                  type="button" 
+                  onClick={openReportIssueModal} 
+                  className="hover:text-white hover:underline transition text-left"
+                >
+                  Contact
+                </button>
+              </li>
+              <li>
+                <button 
+                  type="button" 
+                  onClick={openPreferences} 
+                  className="hover:text-cyan-300 hover:underline transition text-left font-semibold text-cyan-300"
+                >
+                  Cookie Preferences
+                </button>
+              </li>
+              <li className="pt-2">
+                <p className="font-bold text-xs text-white mb-2.5">Socials</p>
+                <div className="flex items-center gap-4 text-base text-slate-300">
+                  <a 
+                    href="https://instagram.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="hover:text-pink-400 transition" 
+                    aria-label="EduVerse Instagram"
+                  >
+                    <FaInstagram />
+                  </a>
+                  <a 
+                    href="https://twitter.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="hover:text-cyan-400 transition" 
+                    aria-label="EduVerse Twitter / X"
+                  >
+                    <FaTwitter />
+                  </a>
+                  <a 
+                    href="https://linkedin.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="hover:text-blue-400 transition" 
+                    aria-label="EduVerse LinkedIn"
+                  >
+                    <FaLinkedin />
+                  </a>
+                  <a 
+                    href="https://github.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="hover:text-white transition" 
+                    aria-label="EduVerse GitHub"
+                  >
+                    <FaGithub />
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </div>
 
         </div>
 
-        {/* ─── TIER 2: SYSTEM STATUS & COPYRIGHT ROW ─── */}
-        <div className="pt-2.5 border-t border-slate-200/50 dark:border-slate-800/50 flex flex-col sm:flex-row items-center justify-between gap-2 text-xxs text-slate-400 dark:text-slate-500">
-          
-          {/* Copyright & Application Version */}
-          <div className="flex items-center gap-2">
-            <span>© {currentYear} EduVerse AI</span>
-            <span className="text-slate-300 dark:text-slate-700">•</span>
-            <span className="font-mono text-[10px] px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800/70 text-slate-500 dark:text-slate-400 border border-slate-200/60 dark:border-slate-700/50">
-              {appVersion}
-            </span>
+        {/* ─── BOTTOM SUB-FOOTER ROW ─── */}
+        <div className="mt-10 pt-6 border-t border-blue-900/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-300">
+          <div className="flex items-center gap-2 text-center sm:text-left flex-wrap justify-center sm:justify-start">
+            <span>© {currentYear} EduVerse AI ERP. All rights reserved.</span>
+            <span className="hidden sm:inline">•</span>
+            <span className="font-mono text-[10px] text-cyan-300 font-semibold">{appVersion}</span>
           </div>
 
-          {/* Genuine Measured System Status & Latency Badge */}
-          <div className="inline-flex items-center gap-2 pr-14 sm:pr-0">
+          <div className="flex items-center gap-2.5">
             <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border font-mono text-[10px] font-medium transition-colors ${
               telemetry.status === 'operational'
-                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
-                : telemetry.status === 'degraded'
-                ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
-                : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
+                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                : 'bg-amber-500/15 text-amber-300 border-amber-500/30'
             }`}>
               <span className="relative flex h-1.5 w-1.5">
                 {telemetry.status === 'operational' && (
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 )}
-                <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${
-                  telemetry.status === 'operational' ? 'bg-emerald-500' : telemetry.status === 'degraded' ? 'bg-amber-500' : 'bg-rose-500'
-                }`}></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400"></span>
               </span>
               <span>{telemetry.label}</span>
             </div>
-
-            {/* Measured Network Round-Trip Latency */}
             {telemetry.latency !== null && (
-              <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">
+              <span className="text-[10px] font-mono text-cyan-300">
                 {telemetry.latency}ms
               </span>
             )}
           </div>
-
         </div>
 
       </div>
