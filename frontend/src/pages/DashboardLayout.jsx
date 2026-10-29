@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, useRef } from 'react';
 import { useNavigate, Link, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -92,6 +92,7 @@ export default function DashboardLayout() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showA11yModal, setShowA11yModal] = useState(false);
   const { openVoiceAssistant, isListening: isVoiceListening } = useVoiceAssistant();
+  const scrollContainerRef = useRef(null);
 
   // ─── Active Tenant / Campus Switcher State ───
   const [campuses, setCampuses] = useState([]);
@@ -135,12 +136,15 @@ export default function DashboardLayout() {
     ? campuses.filter(c => !campusSearch || c.name?.toLowerCase().includes(campusSearch.toLowerCase()) || c.code?.toLowerCase().includes(campusSearch.toLowerCase()))
     : [activeCampus];
 
-  // Auto-close mobile drawer on route change
+  // Auto-close mobile drawer on route change & scroll to top of page
   useEffect(() => {
     setMobileDrawerOpen(false);
     setShowNotifications(false);
     setShowProfileMenu(false);
     setShowCampusSwitcher(false);
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
   }, [location.pathname]);
 
   // Global Ctrl+K Search
@@ -719,10 +723,13 @@ export default function DashboardLayout() {
       </AnimatePresence>
 
       {/* ─── MAIN CONTAINER ─── */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+      <div 
+        ref={scrollContainerRef}
+        className="flex-1 flex flex-col min-w-0 min-h-[100dvh] h-[100dvh] overflow-y-auto"
+      >
         
         {/* ─── TOP BAR ─── */}
-        <header className="sticky top-0 z-30 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-[#090d16]/90 backdrop-blur-md px-2.5 sm:px-6 py-2 sm:py-3.5 flex items-center justify-between shadow-sm gap-1.5 sm:gap-4">
+        <header className="sticky top-0 z-30 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-[#090d16]/90 backdrop-blur-md px-2.5 sm:px-6 py-2 sm:py-3.5 flex items-center justify-between shadow-sm gap-1.5 sm:gap-4">
           
           {/* Left: Hamburger + Search trigger */}
           <div className="flex items-center gap-1.5 sm:gap-3 sm:flex-1 max-w-md min-w-0">
@@ -1152,7 +1159,7 @@ export default function DashboardLayout() {
         </header>
 
         {/* ─── CONTENT ─── */}
-        <main className="flex-1 flex flex-col p-3 sm:p-6 pb-8 md:pb-6 max-w-7xl mx-auto w-full overflow-x-hidden relative min-h-0">
+        <main className="flex-1 flex flex-col p-3 sm:p-6 pb-8 md:pb-6 max-w-7xl mx-auto w-full overflow-x-hidden relative">
           <Suspense fallback={
             <div className="flex-1 min-h-[calc(100dvh-120px)] md:min-h-[calc(100dvh-80px)] flex flex-col items-center justify-center w-full my-auto">
               <EduVerseOrbLoader 

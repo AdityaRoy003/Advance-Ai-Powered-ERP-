@@ -87,7 +87,7 @@ export default function DashboardFooter() {
 
   return (
     <footer 
-      className="mt-auto border-t border-[#1a386b] dark:border-slate-800 bg-[#0e254d] dark:bg-[#071329] text-slate-200 dark:text-slate-200 pt-8 sm:pt-12 pb-32 sm:pb-20 px-4 sm:px-6 lg:px-10 transition-colors select-none shadow-[0_-8px_30px_rgba(0,0,0,0.25)]"
+      className="mt-auto w-full shrink-0 border-t border-[#1a386b] dark:border-slate-800 bg-[#0e254d] dark:bg-[#071329] text-slate-200 dark:text-slate-200 pt-8 sm:pt-12 pb-32 sm:pb-20 px-4 sm:px-6 lg:px-10 transition-colors select-none shadow-[0_-8px_30px_rgba(0,0,0,0.25)]"
       role="contentinfo"
       aria-label="EduVerse ERP Corporate Footer"
     >
