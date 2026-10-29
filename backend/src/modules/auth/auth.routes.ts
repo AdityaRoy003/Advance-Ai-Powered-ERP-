@@ -9,7 +9,8 @@ import {
   verifyEmail,
   resendVerification,
   profile,
-  updateProfile
+  updateProfile,
+  deleteAccount
 } from './auth.controller.js';
 import { authenticate } from './auth.middleware.js';
 import { authLimiter } from '../../middlewares/rateLimiter.middleware.js';
@@ -26,5 +27,6 @@ router.post('/verify-email', verifyEmail);
 router.post('/resend-verification', authLimiter, resendVerification);
 router.get('/profile', authenticate, profile);
 router.put('/profile', authenticate, updateProfile);
+router.delete('/delete-account', authenticate, deleteAccount);
 
 export default router;

@@ -1,6 +1,9 @@
 import type { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import User from './user.model.js';
+import Student from '../students/student.model.js';
+import Teacher from '../teachers/teacher.model.js';
+import AuditLog from '../cybersecurity/audit.model.js';
 import { sendSuccess, sendError } from '../../core/response/apiResponse.js';
 
 export const listUsers = async (req: Request, res: Response) => {
@@ -268,6 +271,106 @@ export const resetUserPassword = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Permanent Account Deletion (Self-Service Right to Erasure / GDPR / DPDP)
+ * Allows any authenticated user to permanently purge their account and personal records.
+ */
+export const deleteOwnAccountPermanently = async (req: Request, res: Response) => {
+  try {
+    const userId = (req.user as any)?.id || (req.user as any)?._id || (req.user as any)?.sub;
+    if (!userId) {
+      return sendError(res, 'Authentication required to delete account', 401);
+    }
+
+    const { confirmationText, password, reason } = req.body || {};
+
+    // 1. Mandatory Safeguard: Explicit uppercase confirmation phrase
+    if (!confirmationText || confirmationText.trim().toUpperCase() !== 'DELETE') {
+      return sendError(res, "Accidental protection: Please type 'DELETE' to confirm permanent account erasure.", 400);
+    }
+
+    // 2. Fetch target user account
+    const user = await User.findById(userId);
+    if (!user) {
+      return sendError(res, 'User account not found', 404);
+    }
+
+    // 3. Password Verification (if user has passwordHash configured and provided a password)
+    if (password && user.passwordHash) {
+      const isMatch = await bcrypt.compare(password, user.passwordHash);
+      if (!isMatch) {
+        return sendError(res, 'Incorrect security password. Account deletion request rejected.', 401);
+      }
+    }
+
+    // 4. Critical Super Admin Safeguard:
+    // Prevent deleting the system's sole Super Admin to avoid permanently orphaning the ERP instance.
+    if (user.role === 'SUPER_ADMIN') {
+      const remainingSuperAdmins = await User.countDocuments({
+        role: 'SUPER_ADMIN',
+        isDeleted: { $ne: true },
+        _id: { $ne: user._id }
+      });
+
+      if (remainingSuperAdmins < 1) {
+        return sendError(
+          res,
+          'Operation prohibited: Cannot permanently delete the sole Super Administrator. Please assign another Super Admin account before deleting this profile.',
+          403
+        );
+      }
+    }
+
+    // 5. Enterprise Security Audit Logging
+    try {
+      await AuditLog.create({
+        user: user.email,
+        action: 'PERMANENT_ACCOUNT_DELETION',
+        oldVal: JSON.stringify({
+          userId: String(user._id),
+          email: user.email,
+          role: user.role,
+          name: `${user.firstName} ${user.lastName}`,
+          institutionId: (user as any).institutionId || null,
+          deletionReason: reason || 'Self-initiated permanent deletion'
+        }),
+        newVal: 'PURGED_PERMANENTLY',
+        ip: req.ip || req.socket.remoteAddress || 'unknown'
+      });
+    } catch (auditErr) {
+      // Non-blocking log persistence
+      console.warn('Audit log write skipped for account deletion:', auditErr);
+    }
+
+    // 6. Cascade Delete Linked Institutional Artifacts
+    await Promise.allSettled([
+      Student.deleteMany({ userId: user._id }),
+      Teacher.deleteMany({ userId: user._id })
+    ]);
+
+    // 7. Hard Delete the User record from MongoDB
+    await User.findByIdAndDelete(user._id);
+
+    // 8. Invalidate HTTP Sessions and Cookies
+    res.clearCookie('eduverse_session', { path: '/' });
+    res.clearCookie('refreshToken', { path: '/' });
+    res.clearCookie('XSRF-TOKEN', { path: '/' });
+
+    return sendSuccess(
+      res,
+      'Your account and all associated personal records have been permanently deleted from EduVerse ERP.',
+      {
+        deleted: true,
+        deletedAt: new Date().toISOString(),
+        userId: String(userId)
+      },
+      200
+    );
+  } catch (err: any) {
+    return sendError(res, err.message || 'Failed to permanently delete user account', 500);
+  }
+};
+
 export default {
   listUsers,
   getUser,
@@ -277,5 +380,6 @@ export default {
   restoreUser,
   bulkImportUsers,
   updateUserStatus,
-  resetUserPassword
+  resetUserPassword,
+  deleteOwnAccountPermanently
 };

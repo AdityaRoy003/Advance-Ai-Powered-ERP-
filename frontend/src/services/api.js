@@ -52,6 +52,10 @@ export const AuthAPI = {
   updateProfile: async (profileData) => {
     const res = await apiClient.put('/auth/profile', profileData);
     return res.data?.data || res.data;
+  },
+  deleteAccount: async (payload = {}) => {
+    const res = await apiClient.delete('/auth/delete-account', { data: payload });
+    return res.data;
   }
 };
 
@@ -86,6 +90,10 @@ export const UsersAPI = {
   },
   delete: async (id) => {
     const res = await apiClient.delete(`/users/${id}`);
+    return res.data;
+  },
+  deleteMyAccount: async (payload = {}) => {
+    const res = await apiClient.delete('/users/me/permanent-delete', { data: payload });
     return res.data;
   },
   restore: async (id) => {

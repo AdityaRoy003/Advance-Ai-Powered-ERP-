@@ -3,6 +3,7 @@ import type { Request, Response } from 'express';
 import authService from './auth.service.js';
 import { sendSuccess, sendError } from '../../core/response/apiResponse.js';
 import AppError from '../../core/errors/AppError.js';
+import { deleteOwnAccountPermanently } from '../users/user.controller.js';
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -103,6 +104,8 @@ export const updateProfile = async (req: Request, res: Response) => {
   }
 };
 
+export const deleteAccount = deleteOwnAccountPermanently;
+
 export default {
   register,
   login,
@@ -113,5 +116,6 @@ export default {
   verifyEmail,
   resendVerification,
   profile,
-  updateProfile
+  updateProfile,
+  deleteAccount
 };

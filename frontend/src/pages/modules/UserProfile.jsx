@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useCookieConsent } from '../../context/CookieConsentContext';
 import { toast } from 'react-hot-toast';
-import { AuthAPI, IssuesAPI } from '../../services/api';
+import { AuthAPI, UsersAPI, IssuesAPI } from '../../services/api';
 import { 
   FaUser, FaTools, FaCheckCircle, FaTimesCircle, FaClock, FaShieldAlt, 
   FaRobot, FaProjectDiagram, FaGlobe, FaSearch, FaBell, FaLock, 
@@ -23,14 +24,31 @@ import {
 const FaSliders = FaSlidersH;
 
 export default function UserProfile() {
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { user, logout } = useAuth();
   const { theme } = useTheme();
   const { consent, openModal: openCookieConsentModal, openPreferences, withdrawConsent, policyVersion } = useCookieConsent();
 
-  // Active section tab state (Default: 'overview')
-  const [activeTab, setActiveTab] = useState('overview');
+  // Active section tab state (Default: 'overview' or URL param ?tab=xxx)
+  const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') || 'overview');
   const [selectedRoleFilter, setSelectedRoleFilter] = useState('ALL');
   const [searchTabQuery, setSearchTabQuery] = useState('');
+
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
+
+  // Permanent Account Deletion Modal & Form State
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteConfirmationText, setDeleteConfirmationText] = useState('');
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteReason, setDeleteReason] = useState('Graduation / Leaving institution');
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [deleteErrorMessage, setDeleteErrorMessage] = useState('');
 
   // 1. Overview & Stats State
   const [userBio, setUserBio] = useState('Authorized System User at EduVerse ERP.');
@@ -236,6 +254,37 @@ export default function UserProfile() {
     }
   };
 
+  const handleDeleteAccount = async (e) => {
+    e.preventDefault();
+    if (deleteConfirmationText.trim().toUpperCase() !== 'DELETE') {
+      setDeleteErrorMessage("Please type 'DELETE' in uppercase to confirm permanent deletion.");
+      return;
+    }
+
+    setIsDeletingAccount(true);
+    setDeleteErrorMessage('');
+    try {
+      await UsersAPI.deleteMyAccount({
+        confirmationText: deleteConfirmationText.trim().toUpperCase(),
+        password: deletePassword,
+        reason: deleteReason
+      });
+
+      toast.success('Your account and all personal records have been permanently erased.');
+      setIsDeleteModalOpen(false);
+      if (typeof logout === 'function') {
+        await logout();
+      }
+      navigate('/login', { replace: true });
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Failed to delete account. Please verify credentials.';
+      setDeleteErrorMessage(msg);
+      toast.error(msg);
+    } finally {
+      setIsDeletingAccount(false);
+    }
+  };
+
   // Section List with RBAC metadata & Icons
   const allSections = [
     { id: 'overview', name: '1. Profile Overview', icon: <FaUser />, roles: ['ALL'] },
@@ -267,7 +316,8 @@ export default function UserProfile() {
     { id: 'analytics', name: '27. Analytics & Impact', icon: <FaChartLine />, roles: ['ALL'] },
     { id: 'emergency', name: '28. Emergency Safety Profile', icon: <FaAmbulance />, roles: ['Disaster Response Team', 'Citizen', 'ALL'] },
     { id: 'rbac', name: '29. Role-Based Sections (RBAC)', icon: <FaSlidersH />, roles: ['ALL'] },
-    { id: 'user_issues', name: '30. User Reported Issues & Resolution Desk', icon: <FaBug />, roles: ['Super Admin', 'SUPER_ADMIN', 'ALL'] }
+    { id: 'user_issues', name: '30. User Reported Issues & Resolution Desk', icon: <FaBug />, roles: ['Super Admin', 'SUPER_ADMIN', 'ALL'] },
+    { id: 'danger_zone', name: '31. Danger Zone & Account Deletion', icon: <FaTrash className="text-rose-400" />, roles: ['ALL'] }
   ];
 
   // Filter sections by search and RBAC persona
@@ -276,6 +326,51 @@ export default function UserProfile() {
     const matchesRole = selectedRoleFilter === 'ALL' || sec.roles.includes('ALL') || sec.roles.includes(selectedRoleFilter);
     return matchesSearch && matchesRole;
   });
+
+  const renderDangerZoneCard = () => (
+    <div className="p-5 sm:p-6 rounded-2xl border border-rose-500/30 bg-gradient-to-br from-rose-950/40 via-red-950/20 to-slate-900 flex flex-col gap-4 shadow-xl shadow-rose-950/20">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-rose-500/20 pb-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="p-2 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20">
+              <FaExclamationTriangle />
+            </span>
+            <div>
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                Danger Zone: Permanent Account Deletion
+                <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-mono font-bold uppercase tracking-wider">
+                  Irreversible
+                </span>
+              </h3>
+              <span className="text-xxs text-rose-400/90 font-mono">Statutory GDPR / DPDP Right to Erasure</span>
+            </div>
+          </div>
+          <p className="text-xs text-slate-300 mt-2 leading-relaxed max-w-2xl">
+            Permanently delete your user account, active login tokens, student/faculty institutional profiles, exam records, and personal identifiers. This action is definitive and cannot be reversed by system administrators.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            setDeleteConfirmationText('');
+            setDeletePassword('');
+            setDeleteErrorMessage('');
+            setIsDeleteModalOpen(true);
+          }}
+          className="self-start sm:self-center px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-rose-600/30 transition shrink-0 cursor-pointer border border-rose-400/30 active:scale-95"
+        >
+          <FaTrash /> Delete Account Permanently
+        </button>
+      </div>
+      <div className="flex flex-wrap items-center justify-between gap-2 text-xxs text-slate-400 pt-1">
+        <div className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+          <span>Requires typing confirmation phrase & password verification</span>
+        </div>
+        <span className="text-slate-500">Super Admin accounts are protected against accidental total lockout</span>
+      </div>
+    </div>
+  );
 
   return (
     <motion.div 
@@ -721,6 +816,9 @@ export default function UserProfile() {
                   </div>
                 ))}
               </div>
+
+              {/* Security Danger Zone */}
+              {renderDangerZoneCard()}
             </div>
           )}
 
@@ -861,6 +959,9 @@ export default function UserProfile() {
                   <a href="/privacy" className="text-indigo-400 hover:underline font-bold">Open Full Privacy & Consent Center →</a>
                 </div>
               </div>
+
+              {/* Privacy / GDPR Right to Erasure Danger Zone */}
+              {renderDangerZoneCard()}
             </div>
           )}
 
@@ -1470,8 +1571,214 @@ export default function UserProfile() {
             </div>
           )}
 
+          {/* TAB 31: DANGER ZONE & ACCOUNT DELETION */}
+          {activeTab === 'danger_zone' && (
+            <div className="flex flex-col gap-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-extrabold text-white flex items-center gap-2">
+                  <FaExclamationTriangle className="text-rose-400" /> Account Lifecycle & Danger Zone
+                </h2>
+                <span className="px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/30 text-xs font-mono font-bold">
+                  DPDP / GDPR Erasure
+                </span>
+              </div>
+
+              {/* Comprehensive explanation banner */}
+              <div className="p-5 rounded-2xl border border-slate-800 bg-slate-900/60 flex flex-col gap-3">
+                <span className="font-bold text-white text-sm">Account Erasure Policy & Rights</span>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Under global data privacy regulations (GDPR Article 17 Right to Erasure, India DPDP Act 2023, and institutional compliance standards), every authenticated user has the right to completely and permanently erase their profile and associated personal data from EduVerse ERP.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80">
+                    <span className="text-rose-400 font-bold text-xs block mb-1">Immediate Invalidation</span>
+                    <p className="text-xxs text-slate-400">All session cookies, refresh tokens, and passkeys are instantly destroyed upon execution.</p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80">
+                    <span className="text-rose-400 font-bold text-xs block mb-1">Cascade Record Purge</span>
+                    <p className="text-xxs text-slate-400">Student enrollment, faculty timetables, and personal demographic logs are permanently scrubbed.</p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80">
+                    <span className="text-rose-400 font-bold text-xs block mb-1">Audit Logged</span>
+                    <p className="text-xxs text-slate-400">An immutable cryptographic event hash is logged for statutory institutional audit compliance.</p>
+                  </div>
+                </div>
+              </div>
+
+              {renderDangerZoneCard()}
+            </div>
+          )}
+
         </div>
       </div>
+
+      {/* ─── PERMANENT ACCOUNT DELETION CONFIRMATION MODAL ─── */}
+      <AnimatePresence>
+        {isDeleteModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md overflow-y-auto">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              transition={{ duration: 0.2 }}
+              className="bg-slate-900 border border-rose-500/40 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative overflow-hidden my-auto"
+            >
+              {/* Ambient Red Glow */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 via-red-500 to-amber-500" />
+              <div className="absolute -top-24 -right-24 w-48 h-48 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
+
+              {/* Close Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (!isDeletingAccount) {
+                    setIsDeleteModalOpen(false);
+                    setDeleteErrorMessage('');
+                  }
+                }}
+                disabled={isDeletingAccount}
+                className="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-xl bg-slate-800/50 hover:bg-slate-800 transition cursor-pointer disabled:opacity-50"
+              >
+                <FaTimesCircle className="text-lg" />
+              </button>
+
+              {/* Modal Header */}
+              <div className="flex items-center gap-3.5 mb-5">
+                <div className="p-3 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/30 text-xl shadow-lg shadow-rose-950/30">
+                  <FaExclamationTriangle />
+                </div>
+                <div>
+                  <h3 className="text-lg font-extrabold text-white">Permanently Delete Account</h3>
+                  <p className="text-xxs text-rose-400 font-mono font-bold">IRREVERSIBLE ACTION · STATUTORY RIGHT TO ERASURE</p>
+                </div>
+              </div>
+
+              {/* Sole Super Admin Notice */}
+              {user?.role === 'SUPER_ADMIN' && (
+                <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs mb-4 flex items-start gap-2.5">
+                  <span className="text-amber-400 text-base leading-none">⚠️</span>
+                  <div className="leading-relaxed">
+                    <strong>Super Admin Notice:</strong> If this account is the sole active Super Admin in the system, deletion will be blocked by system governance until another Super Admin is assigned.
+                  </div>
+                </div>
+              )}
+
+              {/* Warning List */}
+              <div className="p-4 rounded-xl bg-slate-950/90 border border-slate-800 flex flex-col gap-2 mb-4 text-xs text-slate-300">
+                <span className="font-bold text-white text-xs block mb-1">What happens when you delete:</span>
+                <div className="flex items-start gap-2 text-xxs text-slate-400">
+                  <span className="text-rose-400 font-bold">✕</span>
+                  <span>Your profile credentials, passkeys, and active sessions will be destroyed.</span>
+                </div>
+                <div className="flex items-start gap-2 text-xxs text-slate-400">
+                  <span className="text-rose-400 font-bold">✕</span>
+                  <span>All associated academic enrollments, grades, and faculty records are permanently purged.</span>
+                </div>
+                <div className="flex items-start gap-2 text-xxs text-slate-400">
+                  <span className="text-rose-400 font-bold">✕</span>
+                  <span>You will lose access to all institutional workspaces immediately.</span>
+                </div>
+              </div>
+
+              {deleteErrorMessage && (
+                <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs mb-4 flex items-center gap-2">
+                  <FaTimesCircle className="shrink-0 text-rose-400" />
+                  <span>{deleteErrorMessage}</span>
+                </div>
+              )}
+
+              {/* Form */}
+              <form onSubmit={handleDeleteAccount} className="flex flex-col gap-4">
+                <div>
+                  <label className="block text-xxs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Reason for Deletion (Optional)
+                  </label>
+                  <select
+                    value={deleteReason}
+                    onChange={(e) => setDeleteReason(e.target.value)}
+                    disabled={isDeletingAccount}
+                    className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-rose-500 transition"
+                  >
+                    <option value="Graduation / Leaving institution">Graduation / Leaving institution</option>
+                    <option value="Privacy and data protection concerns">Privacy and data protection concerns</option>
+                    <option value="Switching to a different institutional account">Switching to a different institutional account</option>
+                    <option value="Temporary or test account">Temporary or test account</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xxs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Account Security Password
+                  </label>
+                  <input
+                    type="password"
+                    value={deletePassword}
+                    onChange={(e) => setDeletePassword(e.target.value)}
+                    disabled={isDeletingAccount}
+                    placeholder="Enter your current password"
+                    className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-rose-500 transition font-mono"
+                  />
+                  <span className="text-[10px] text-slate-500 mt-1 block">
+                    Verify account ownership prior to permanent purge.
+                  </span>
+                </div>
+
+                <div>
+                  <label className="block text-xxs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Confirmation Safeguard
+                  </label>
+                  <p className="text-xxs text-slate-400 mb-2">
+                    To confirm this irreversible deletion, type <strong className="text-rose-400 font-mono font-bold tracking-widest">DELETE</strong> in the box below:
+                  </p>
+                  <input
+                    type="text"
+                    value={deleteConfirmationText}
+                    onChange={(e) => setDeleteConfirmationText(e.target.value)}
+                    disabled={isDeletingAccount}
+                    placeholder="Type DELETE"
+                    className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-rose-400 placeholder-slate-600 focus:outline-none focus:border-rose-500 transition font-mono font-bold tracking-widest"
+                  />
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!isDeletingAccount) {
+                        setIsDeleteModalOpen(false);
+                        setDeleteErrorMessage('');
+                      }
+                    }}
+                    disabled={isDeletingAccount}
+                    className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition cursor-pointer disabled:opacity-50"
+                  >
+                    Cancel / Keep Account
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={deleteConfirmationText.trim().toUpperCase() !== 'DELETE' || isDeletingAccount}
+                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-rose-600/30 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer active:scale-95"
+                  >
+                    {isDeletingAccount ? (
+                      <>
+                        <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                        <span>Purging Records...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaTrash />
+                        <span>Permanently Delete My Account</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

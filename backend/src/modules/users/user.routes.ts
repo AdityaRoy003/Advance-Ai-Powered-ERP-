@@ -8,7 +8,8 @@ import {
   restoreUser,
   bulkImportUsers,
   updateUserStatus,
-  resetUserPassword
+  resetUserPassword,
+  deleteOwnAccountPermanently
 } from './user.controller.js';
 
 import { authorizeRoles } from '../../middlewares/rbac.middleware.js';
@@ -17,6 +18,9 @@ const router = Router();
 
 // Administrative management requires SUPER_ADMIN, ADMIN, or HR_MANAGER
 const adminOnly = authorizeRoles('SUPER_ADMIN', 'ADMIN', 'HR_MANAGER');
+
+// Self-service account deletion for any authenticated user (must be declared before /:id)
+router.delete('/me/permanent-delete', deleteOwnAccountPermanently);
 
 router.get('/', listUsers);
 router.post('/', adminOnly, createUser);
