@@ -145,7 +145,8 @@ export default function DashboardLayout() {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = 0;
     }
-  }, [location.pathname]);
+    window.scrollTo(0, 0);
+  }, [location.pathname, location.key]);
 
   // Global Ctrl+K Search
   const [showGlobalSearch, setShowGlobalSearch] = useState(false);
@@ -1159,7 +1160,7 @@ export default function DashboardLayout() {
         </header>
 
         {/* ─── CONTENT ─── */}
-        <main className="flex-1 flex flex-col p-3 sm:p-6 pb-8 md:pb-6 max-w-7xl mx-auto w-full overflow-x-hidden relative">
+        <main className="flex-1 shrink-0 flex flex-col p-3 sm:p-6 pb-8 md:pb-6 max-w-7xl mx-auto w-full relative">
           <Suspense fallback={
             <div className="flex-1 min-h-[calc(100dvh-120px)] md:min-h-[calc(100dvh-80px)] flex flex-col items-center justify-center w-full my-auto">
               <EduVerseOrbLoader 
