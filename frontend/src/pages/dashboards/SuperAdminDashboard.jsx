@@ -316,10 +316,10 @@ export default function SuperAdminDashboard() {
           <p className="opacity-90 text-sm mt-1">Multi-tenant hierarchy, RBAC permissions, system configuration, AI & security center.</p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
           <button 
             onClick={() => setShowUserModal(true)}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-5 rounded-xl sm:rounded-2xl shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 text-xs"
+            className="w-full sm:w-auto justify-center bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-5 rounded-xl sm:rounded-2xl shadow-lg shadow-indigo-600/30 transition flex items-center gap-2 text-xs"
           >
             <FaUserPlus /> Provision User Account
           </button>
@@ -327,7 +327,7 @@ export default function SuperAdminDashboard() {
       </div>
 
       {/* Navigation Module Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800 scrollbar-none -mx-1 px-1">
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800 scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent -mx-1 px-1 touch-pan-x">
         {[
           { id: 'org_hierarchy', label: 'Organization Hierarchy (Multi-Tenant)', icon: <FaSitemap /> },
           { id: 'reported_issues', label: 'Reported Issues Desk', icon: <FaExclamationTriangle className="text-amber-400" /> },
