@@ -1,0 +1,212 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <!-- Background Ambient Glow -->
+    <radialGradient id="ambientGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.8">
+        <animate attributeName="stop-opacity" values="0.8;0.3;0.8" dur="3s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="50%" stop-color="#6366f1" stop-opacity="0.5">
+        <animate attributeName="stop-opacity" values="0.5;0.8;0.5" dur="3s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="100%" stop-color="#a855f7" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- 3D Outer Rim Gradient -->
+    <linearGradient id="rimGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22d3ee" />
+      <stop offset="45%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#d946ef" />
+    </linearGradient>
+
+    <!-- Deep 3D Sphere Body Gradient -->
+    <radialGradient id="sphereCore" cx="38%" cy="32%" r="65%">
+      <stop offset="0%" stop-color="#1e1b4b" />
+      <stop offset="40%" stop-color="#0f172a" />
+      <stop offset="85%" stop-color="#050814" />
+      <stop offset="100%" stop-color="#020308" />
+    </radialGradient>
+
+    <!-- Orbital Ring Gradient -->
+    <linearGradient id="orbitalRing1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.9" />
+      <stop offset="50%" stop-color="#a855f7" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.9" />
+    </linearGradient>
+
+    <!-- Inner 3D Diamond / Mortarboard Gradient -->
+    <linearGradient id="mortarboardTop" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="60%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+
+    <!-- 3D Specular Highlight Crescent -->
+    <linearGradient id="specularGlint" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85" />
+      <stop offset="35%" stop-color="#ffffff" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Drop Shadow for 3D depth -->
+    <filter id="glowFilter" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <style>
+      @keyframes spin3D {
+        0% { transform: rotate3d(1, 1, 0.5, 0deg); }
+        50% { transform: rotate3d(1, 1, 0.5, 180deg); }
+        100% { transform: rotate3d(1, 1, 0.5, 360deg); }
+      }
+      @keyframes pulseCore {
+        0%, 100% { transform: scale(1); opacity: 0.95; }
+        50% { transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 6px #38bdf8); }
+      }
+      @keyframes floatMortar {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-2px) rotate(2deg); }
+      }
+      @keyframes orbitElectron {
+        0% { transform: rotate(0deg) translate(22px) rotate(0deg); }
+        100% { transform: rotate(360deg) translate(22px) rotate(-360deg); }
+      }
+      .orbital-ring {
+        transform-origin: 32px 32px;
+        animation: spin3D 8s linear infinite;
+      }
+      .ai-core {
+        transform-origin: 32px 32px;
+        animation: pulseCore 3s ease-in-out infinite;
+      }
+      .mortar-icon {
+        transform-origin: 32px 32px;
+        animation: floatMortar 3s ease-in-out infinite;
+      }
+      .electron-node {
+        transform-origin: 32px 32px;
+        animation: orbitElectron 4s linear infinite;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .orbital-ring, .ai-core, .mortar-icon, .electron-node {
+          animation: none !important;
+        }
+      }
+    </style>
+  </defs>
+
+  <!-- 1. Ambient Glow Halo -->
+  <circle cx="32" cy="32" r="30" fill="url(#ambientGlow)" />
+
+  <!-- 2. Gyroscopic Orbital Ring 1 (Behind Core) -->
+  <g transform="translate(32, 32)">
+    <g>
+      <animateTransform 
+        attributeName="transform" 
+        type="rotate" 
+        from="0" 
+        to="360" 
+        dur="6s" 
+        repeatCount="indefinite" 
+      />
+      <ellipse cx="0" cy="0" rx="27" ry="9" fill="none" stroke="url(#orbitalRing1)" stroke-width="1.8" stroke-dasharray="8 4" opacity="0.85" />
+    </g>
+  </g>
+
+  <!-- 3. Gyroscopic Orbital Ring 2 (Cross Axis) -->
+  <g transform="translate(32, 32)">
+    <g>
+      <animateTransform 
+        attributeName="transform" 
+        type="rotate" 
+        from="360" 
+        to="0" 
+        dur="8s" 
+        repeatCount="indefinite" 
+      />
+      <ellipse cx="0" cy="0" rx="10" ry="26" fill="none" stroke="url(#rimGrad)" stroke-width="1.2" stroke-dasharray="6 3" opacity="0.6" />
+    </g>
+  </g>
+
+  <!-- 4. Deep 3D Glass Sphere Body -->
+  <circle cx="32" cy="32" r="23" fill="url(#sphereCore)" stroke="url(#rimGrad)" stroke-width="1.8" />
+
+  <!-- 5. Internal Quantum Node Ring -->
+  <circle cx="32" cy="32" r="16" fill="none" stroke="#38bdf8" stroke-width="0.8" stroke-dasharray="3 3" opacity="0.4">
+    <animateTransform 
+      attributeName="transform" 
+      type="rotate" 
+      from="0 32 32" 
+      to="360 32 32" 
+      dur="12s" 
+      repeatCount="indefinite" 
+    />
+  </circle>
+
+  <!-- 6. 3D Isometric Mortarboard + AI Nexus Emblem -->
+  <g class="mortar-icon">
+    <!-- Top Rhombus / Cap (Isometric 3D) -->
+    <polygon points="32,20 44,26 32,32 20,26" fill="url(#mortarboardTop)" filter="url(#glowFilter)">
+      <animate attributeName="fill-opacity" values="0.9;1;0.9" dur="2.5s" repeatCount="indefinite" />
+    </polygon>
+
+    <!-- Under-shadow facet for 3D thickness -->
+    <polygon points="20,26 32,32 32,34.5 20,28.5" fill="#4338ca" opacity="0.9" />
+    <polygon points="44,26 32,32 32,34.5 44,28.5" fill="#1e1b4b" opacity="0.9" />
+
+    <!-- Cap Skull Beanie Ring -->
+    <path d="M25,29 C25,36 39,36 39,29" fill="none" stroke="#22d3ee" stroke-width="1.6" stroke-linecap="round" />
+
+    <!-- Graduation Tassel Hanging Left with 3D Ball -->
+    <path d="M32,26 L17,29.5 L16,36" fill="none" stroke="#f43f5e" stroke-width="1.2" stroke-linecap="round">
+      <animate attributeName="stroke" values="#f43f5e;#fb7185;#f43f5e" dur="3s" repeatCount="indefinite" />
+    </path>
+    <circle cx="16" cy="36.5" r="1.3" fill="#f43f5e" />
+
+    <!-- Center AI Glowing Core Node -->
+    <circle cx="32" cy="26" r="2.2" fill="#ffffff" filter="url(#glowFilter)">
+      <animate attributeName="r" values="2;2.8;2" dur="1.8s" repeatCount="indefinite" />
+    </circle>
+  </g>
+
+  <!-- 7. Orbiting Quantum Electron Light Particle -->
+  <g transform="translate(32, 32)">
+    <g>
+      <animateTransform 
+        attributeName="transform" 
+        type="rotate" 
+        from="0" 
+        to="360" 
+        dur="3.2s" 
+        repeatCount="indefinite" 
+      />
+      <circle cx="23" cy="0" r="2" fill="#22d3ee" filter="url(#glowFilter)" />
+      <circle cx="23" cy="0" r="3.5" fill="#22d3ee" opacity="0.4" />
+    </g>
+  </g>
+
+  <g transform="translate(32, 32)">
+    <g>
+      <animateTransform 
+        attributeName="transform" 
+        type="rotate" 
+        from="180" 
+        to="540" 
+        dur="4.5s" 
+        repeatCount="indefinite" 
+      />
+      <circle cx="-23" cy="0" r="1.8" fill="#d946ef" filter="url(#glowFilter)" />
+      <circle cx="-23" cy="0" r="3" fill="#d946ef" opacity="0.4" />
+    </g>
+  </g>
+
+  <!-- 8. Top Curved Specular Glass Crescent Reflection -->
+  <path d="M 14,24 A 20,20 0 0,1 50,24 A 20,11 0 0,0 14,24 Z" fill="url(#specularGlint)" opacity="0.75">
+    <animate attributeName="opacity" values="0.75;0.4;0.75" dur="4s" repeatCount="indefinite" />
+  </path>
+
+  <!-- 9. Subtle Bottom Rim Caustic Glow -->
+  <ellipse cx="32" cy="51" rx="14" ry="3" fill="#6366f1" opacity="0.35" filter="url(#glowFilter)">
+    <animate attributeName="opacity" values="0.35;0.65;0.35" dur="3s" repeatCount="indefinite" />
+  </ellipse>
+</svg>

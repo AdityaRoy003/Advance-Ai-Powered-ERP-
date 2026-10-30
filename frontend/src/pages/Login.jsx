@@ -6,6 +6,7 @@ import { toast } from 'react-hot-toast';
 import { FaEnvelope, FaLock, FaRobot, FaArrowLeft, FaEye, FaEyeSlash, FaCopy, FaCheck } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import AuthFooter from '../components/layout/AuthFooter';
+import EduVerseLogo3D from '../components/common/EduVerseLogo3D';
 
 export default function Login() {
   const { login, loading } = useAuth();
@@ -51,8 +52,8 @@ export default function Login() {
         {/* Login card */}
         <div className="p-8 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827]/80 backdrop-blur-md shadow-2xl flex flex-col gap-6">
           <div className="text-center flex flex-col items-center">
-            <div className="bg-indigo-600 p-3.5 rounded-2xl shadow-xl shadow-indigo-600/35 mb-4 text-white">
-              <FaRobot className="text-2xl" />
+            <div className="mb-4">
+              <EduVerseLogo3D size="lg" showText={false} />
             </div>
             <h2 className="text-3xl font-extrabold tracking-tight">Welcome Back</h2>
             <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Sign in to your EduVerse ERP account</p>

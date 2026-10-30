@@ -9,6 +9,7 @@ import {
   FaLinkedin, FaGithub, FaTwitter, FaRegStar, FaStar
 } from 'react-icons/fa';
 import PublicFooter from '../components/layout/PublicFooter';
+import EduVerseLogo3D from '../components/common/EduVerseLogo3D';
 
 // Stat counter card (separate component to avoid hooks-in-map violation)
 function StatCounter({ end, label, suffix }) {
@@ -198,13 +199,8 @@ export default function LandingPage() {
       {/* STICKY NAVBAR */}
       <header className="sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800/80 bg-white/70 dark:bg-[#090d16]/70 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-6">
-          <Link to="/" className="flex items-center gap-3 font-extrabold text-lg">
-            <div className="bg-indigo-600 p-2 rounded-xl shadow-lg shadow-indigo-600/30">
-              <FaRobot className="text-white text-lg" />
-            </div>
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              EduVerse ERP
-            </span>
+          <Link to="/" className="flex items-center gap-3" title="EduVerse AI ERP">
+            <EduVerseLogo3D size="md" showText={true} />
           </Link>
 
           <nav className="hidden md:flex items-center gap-7 text-sm font-semibold text-slate-500 dark:text-slate-400">

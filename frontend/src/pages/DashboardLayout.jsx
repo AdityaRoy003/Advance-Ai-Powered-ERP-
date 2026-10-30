@@ -27,6 +27,7 @@ import { InstitutionsAPI } from '../services/api';
 import toast from 'react-hot-toast';
 import AIAssistantWidget from '../components/AIAssistantWidget';
 import EduVerseOrbLoader from '../components/common/EduVerseOrbLoader';
+import EduVerseLogo3D from '../components/common/EduVerseLogo3D';
 import DashboardFooter from '../components/layout/DashboardFooter';
 
 // ─── NOTIFICATION CATEGORIES ───
@@ -499,15 +500,8 @@ export default function DashboardLayout() {
         className="hidden md:flex flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827]/70 backdrop-blur-sm sticky top-0 h-screen overflow-y-auto z-40"
       >
         <div className="p-5 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
-          <Link to="/" className="flex items-center gap-3 overflow-hidden">
-            <div className="bg-indigo-600 p-2.5 rounded-xl text-white shadow-lg shadow-indigo-600/30">
-              <FaRobot className="text-lg" />
-            </div>
-            {sidebarOpen && (
-              <span className="font-extrabold text-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent truncate">
-                EduVerse ERP
-              </span>
-            )}
+          <Link to="/" className="flex items-center gap-3 overflow-hidden" title="EduVerse AI ERP">
+            <EduVerseLogo3D size="md" showText={sidebarOpen} />
           </Link>
           <button 
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -595,13 +589,8 @@ export default function DashboardLayout() {
               className="relative w-80 max-w-[85vw] h-full bg-[#111827] border-r border-slate-800 flex flex-col z-10 shadow-2xl overflow-y-auto"
             >
               <div className="p-4 flex items-center justify-between border-b border-slate-800">
-                <Link to="/" className="flex items-center gap-3">
-                  <div className="bg-indigo-600 p-2 rounded-xl text-white">
-                    <FaRobot className="text-base" />
-                  </div>
-                  <span className="font-extrabold text-base bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-transparent">
-                    EduVerse ERP
-                  </span>
+                <Link to="/" className="flex items-center gap-3" onClick={() => setMobileDrawerOpen(false)}>
+                  <EduVerseLogo3D size="md" showText={true} />
                 </Link>
                 <button
                   onClick={() => setMobileDrawerOpen(false)}
