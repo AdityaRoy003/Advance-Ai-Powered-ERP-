@@ -25,17 +25,21 @@ apiClient.interceptors.request.use((config) => {
   if (savedUser) {
     try {
       const parsed = JSON.parse(savedUser);
-      if (parsed?.token && !parsed.token.startsWith('demo-')) {
+      if (parsed?.token) {
         config.headers.Authorization = `Bearer ${parsed.token}`;
       } else {
-        config.headers.Authorization = 'Bearer demo-superadmin-token';
+        const role = parsed?.role ? String(parsed.role).toLowerCase() : 'student';
+        config.headers.Authorization = `Bearer demo-${role}-token`;
       }
+      if (parsed?.email) config.headers['X-User-Email'] = parsed.email;
+      if (parsed?.role) config.headers['X-User-Role'] = parsed.role;
+      if (parsed?.id || parsed?._id) config.headers['X-User-Id'] = String(parsed.id || parsed._id);
     } catch (e) {
       console.error('Error parsing token from storage', e);
-      config.headers.Authorization = 'Bearer demo-superadmin-token';
+      config.headers.Authorization = 'Bearer demo-student-token';
     }
   } else {
-    config.headers.Authorization = 'Bearer demo-superadmin-token';
+    config.headers.Authorization = 'Bearer demo-student-token';
   }
   return config;
 });
@@ -93,7 +97,21 @@ export const UsersAPI = {
     return res.data;
   },
   deleteMyAccount: async (payload = {}) => {
-    const res = await apiClient.delete('/users/me/permanent-delete', { data: payload });
+    let email = payload.email;
+    let userId = payload.userId;
+    try {
+      const savedUser = localStorage.getItem('eduverse_user');
+      if (savedUser) {
+        const parsed = JSON.parse(savedUser);
+        if (!email) email = parsed.email;
+        if (!userId) userId = parsed.id || parsed._id;
+      }
+    } catch {
+      // ignore
+    }
+    const res = await apiClient.delete('/users/me/permanent-delete', {
+      data: { ...payload, email, userId }
+    });
     return res.data;
   },
   restore: async (id) => {

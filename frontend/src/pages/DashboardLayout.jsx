@@ -1146,7 +1146,7 @@ export default function DashboardLayout() {
                         <FaUser /> View Full Profile
                       </button>
                       <button 
-                        onClick={() => { setShowProfileMenu(false); navigate('/dashboard/profile?tab=danger_zone'); }}
+                        onClick={() => { setShowProfileMenu(false); navigate('/dashboard/account-deletion'); }}
                         className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-bold text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 rounded-xl transition border border-rose-500/20 cursor-pointer"
                       >
                         <FaExclamationTriangle className="text-rose-400" /> Account Security & Deletion

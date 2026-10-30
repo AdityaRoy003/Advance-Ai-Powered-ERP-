@@ -48,6 +48,7 @@ const PermissionsManager = lazy(() => import('./pages/modules/PermissionsManager
 const AuditLogs = lazy(() => import('./pages/modules/AuditLogs'));
 const ApprovalsWorkflow = lazy(() => import('./pages/modules/ApprovalsWorkflow'));
 const UserProfile = lazy(() => import('./pages/modules/UserProfile'));
+const AccountDeletion = lazy(() => import('./pages/modules/AccountDeletion'));
 const Library = lazy(() => import('./pages/modules/Library'));
 const Hostel = lazy(() => import('./pages/modules/Hostel'));
 const Transport = lazy(() => import('./pages/modules/Transport'));
@@ -381,6 +382,8 @@ function App() {
                   {/* General ERP Modules */}
                   <Route path="approvals" element={<ApprovalsWorkflow />} />
                   <Route path="profile" element={<UserProfile />} />
+                  <Route path="account-deletion" element={<AccountDeletion />} />
+                  <Route path="delete-account" element={<AccountDeletion />} />
                   <Route path="library" element={<Library />} />
                   <Route path="hostel" element={<Hostel />} />
                   <Route path="transport" element={<Transport />} />

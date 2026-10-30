@@ -267,7 +267,9 @@ export default function UserProfile() {
       await UsersAPI.deleteMyAccount({
         confirmationText: deleteConfirmationText.trim().toUpperCase(),
         password: deletePassword,
-        reason: deleteReason
+        reason: deleteReason,
+        email: user?.email,
+        userId: user?.id || user?._id
       });
 
       toast.success('Your account and all personal records have been permanently erased.');
@@ -349,18 +351,27 @@ export default function UserProfile() {
             Permanently delete your user account, active login tokens, student/faculty institutional profiles, exam records, and personal identifiers. This action is definitive and cannot be reversed by system administrators.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => {
-            setDeleteConfirmationText('');
-            setDeletePassword('');
-            setDeleteErrorMessage('');
-            setIsDeleteModalOpen(true);
-          }}
-          className="self-start sm:self-center px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-rose-600/30 transition shrink-0 cursor-pointer border border-rose-400/30 active:scale-95"
-        >
-          <FaTrash /> Delete Account Permanently
-        </button>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => navigate('/dashboard/account-deletion')}
+            className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-2 border border-slate-700 transition"
+          >
+            Open Dedicated Portal →
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setDeleteConfirmationText('');
+              setDeletePassword('');
+              setDeleteErrorMessage('');
+              setIsDeleteModalOpen(true);
+            }}
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-600/30 transition cursor-pointer border border-rose-400/30 active:scale-95"
+          >
+            <FaTrash /> Delete Account Permanently
+          </button>
+        </div>
       </div>
       <div className="flex flex-wrap items-center justify-between gap-2 text-xxs text-slate-400 pt-1">
         <div className="flex items-center gap-2">
