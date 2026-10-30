@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { toast } from 'react-hot-toast';
-import { FaEnvelope, FaArrowLeft, FaKey, FaLock, FaShieldAlt } from 'react-icons/fa';
+import { FaEnvelope, FaArrowLeft, FaKey, FaLock, FaShieldAlt, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { AuthAPI } from '../services/api';
 import AuthFooter from '../components/layout/AuthFooter';
@@ -13,6 +13,7 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [step, setStep] = useState(1); // 1 = Request OTP, 2 = Verify OTP & Set Password
   const [loading, setLoading] = useState(false);
   const [devOtpHint, setDevOtpHint] = useState('');
@@ -149,13 +150,21 @@ export default function ForgotPassword() {
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><FaLock /></span>
                   <input 
-                    type="password" 
+                    type={showPassword ? 'text' : 'password'} 
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="At least 6 characters"
-                    className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 focus:border-indigo-500 focus:outline-none transition font-semibold text-xs"
+                    className="w-full pl-11 pr-12 py-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 focus:border-indigo-500 focus:outline-none transition font-semibold text-xs"
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition focus:outline-none cursor-pointer"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
                 </div>
               </div>
 

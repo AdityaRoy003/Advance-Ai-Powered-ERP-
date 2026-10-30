@@ -398,6 +398,7 @@ function App() {
                   <Route path="digital-twin" element={<DigitalCampusTwin />} />
                   <Route path="ai-firewall" element={<AIFirewallCenter />} />
                   <Route path="lms" element={<LMSPlatform />} />
+                  <Route path="courses" element={<LMSPlatform />} />
                   <Route path="student-success" element={<StudentSuccessEarlyWarning />} />
                   <Route path="career-ai" element={<CareerIntelligence />} />
                   <Route path="research" element={<ResearchInnovationPortal />} />
