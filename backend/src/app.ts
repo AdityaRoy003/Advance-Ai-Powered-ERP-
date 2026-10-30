@@ -39,7 +39,20 @@ app.use(
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'X-XSRF-TOKEN', 'X-CSRF-TOKEN']
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+      'X-XSRF-TOKEN',
+      'X-CSRF-TOKEN',
+      'X-User-Email',
+      'X-User-Role',
+      'X-User-Id',
+      'x-user-email',
+      'x-user-role',
+      'x-user-id'
+    ]
   })
 );
 

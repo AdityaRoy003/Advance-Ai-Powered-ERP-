@@ -316,3 +316,4 @@ export default function AccountDeletion() {
     </motion.div>
   );
 }
+

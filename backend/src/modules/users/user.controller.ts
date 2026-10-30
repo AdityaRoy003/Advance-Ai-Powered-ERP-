@@ -288,10 +288,13 @@ export const deleteOwnAccountPermanently = async (req: Request, res: Response) =
       return sendError(res, "Accidental protection: Please type 'DELETE' to confirm permanent account erasure.", 400);
     }
 
-    // 2. Fetch target user account (by ObjectId or fallback to email)
-    let user = userId && mongoose.isValidObjectId(userId) ? await User.findById(userId) : null;
-    if (!user && userEmail) {
+    // 2. Fetch target user account (prefer matching authenticated email, or valid ObjectId)
+    let user = null;
+    if (userEmail && userEmail !== 'demo@eduverse.com') {
       user = await User.findOne({ email: String(userEmail).toLowerCase() });
+    }
+    if (!user && userId && mongoose.isValidObjectId(userId)) {
+      user = await User.findById(userId);
     }
     if (!user && req.body?.email) {
       user = await User.findOne({ email: String(req.body.email).toLowerCase() });

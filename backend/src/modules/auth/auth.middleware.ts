@@ -35,7 +35,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
   const userIdHeader = (req.headers['x-user-id'] as string) || '';
 
   if (allowDemoTokens && (token.startsWith('demo-') || token === 'dev-token')) {
-    let role = userRoleHeader ? userRoleHeader.toUpperCase() : 'SUPER_ADMIN';
+    let role = userRoleHeader ? userRoleHeader.toUpperCase() : 'STUDENT';
     const lowerToken = token.toLowerCase();
     if (lowerToken.includes('superadmin') || lowerToken.includes('super_admin')) role = 'SUPER_ADMIN';
     else if (lowerToken.includes('admin')) role = 'ADMIN';
@@ -51,7 +51,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
     else if (lowerToken.includes('academic')) role = 'ACADEMIC_CONTROLLER';
 
     const email = userEmailHeader || (role === 'STUDENT' ? 'student@eduverse.com' : role === 'SUPER_ADMIN' ? 'superadmin@eduverse.com' : 'demo@eduverse.com');
-    const resolvedId = userIdHeader || '6a967ca80579b9064faf4053';
+    const resolvedId = userIdHeader || `demo-${role.toLowerCase()}-id`;
 
     req.user = {
       sub: resolvedId,
